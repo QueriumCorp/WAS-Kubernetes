@@ -2,6 +2,9 @@
 # AWS Setup Script
 # 19-04-2021
 
+
+AWS_BUCKET_NAME="querium-was-creds"
+
 trap "exit" INT
 eks_Exists=""
 cleanup() {
@@ -438,8 +441,7 @@ saveCredsFunction() {
   echo "ENDPOINT_INFO_URL:http://$BASE_URL/.applicationserver/info"
   echo "RESTART_URL:http://$BASE_URL/.applicationserver/kernel/restart" >>creds
 
-  creds_bucket_suffix="$lower_cluster_name-creds-"
-  creds_bucket_name="$creds_bucket_suffix$account_id"
+  creds_bucket_name=$AWS_BUCKET_NAME
 
   created_bucket=$(aws s3api create-bucket --bucket $creds_bucket_name --region $GET_REGION)
 
@@ -492,7 +494,7 @@ SetupFunction() {
   fi
 
   echo
-  log_debug "Phase 2 of 5: Build Amazon Kubernetes Cluster (EKS)"
+  log_debug "Phase 2 of 5: Configure Amazon Kubernetes Cluster (EKS)"
   printf "${GREEN}☑${YELLOW}☑${CYAN}□□□${NORMAL} Phase ${YELLOW}2${NORMAL} of ${GREEN}5${NORMAL}: Build Amazon Kubernetes Cluster (EKS)\\n"
 
   CFILE=~/.kube/config
@@ -551,7 +553,7 @@ SetupFunction() {
 
   # Create dynamodb table for terraform
 
-  dynamodb_table="terraform-state-locking-$lower_cluster_name"
+  dynamodb_table="${var.cookiecutter_common_resource_name}-was-terraform-lock"
   dynamodb_check=$(aws dynamodb list-tables --output text | grep "$dynamodb_table" | awk '{print $2}')
 
   if [ -z $dynamodb_check ]; then
@@ -570,8 +572,12 @@ SetupFunction() {
   echo
   log_debug "Phase 3 of 5: Deploy Dependencies"
   printf "${GREEN}☑☑${YELLOW}☑${CYAN}□□${NORMAL} Phase ${YELLOW}3${NORMAL} of ${GREEN}5${NORMAL}: Deploy Dependencies\\n"
-  run_ok "kubectl apply -f ingress-controller/" "Setup Ingress Controller"
-  run_ok "kubectl apply -f metrics-server/" "Setup Metrics Server"
+  
+  # mcdaniel: we already have these
+  # --------------------------------------------------------------------------- 
+  #run_ok "kubectl apply -f ingress-controller/" "Setup Ingress Controller"
+  #run_ok "kubectl apply -f metrics-server/" "Setup Metrics Server"
+  
   sed -i -e 's/- --node-group-auto-discovery=asg:tag=k8s.io\/cluster-autoscaler\/enabled,k8s.io\/cluster-autoscaler\/.*/- --node-group-auto-discovery=asg:tag=k8s.io\/cluster-autoscaler\/enabled,k8s.io\/cluster-autoscaler\/'"$GET_CLUSTER_NAME"'/g' cluster-autoscaler/cluster-autoscaler-autodiscover.yaml
   run_ok "kubectl apply -f cluster-autoscaler/" "Setup Cluster Autoscaler"
   cd efs
@@ -579,9 +585,9 @@ SetupFunction() {
   kubectl apply -f namespace.yaml >>$LOG_PATH
   kubectl config set-context --current --namespace=efs-sc >>$LOG_PATH
   cluster_name=$GET_CLUSTER_NAME
-  group_name="efs-mount-eks-$cluster_name"
-  description="efs-mount-eks-$cluster_name"
-  token_name="eks-efs-$cluster_name"
+  group_name="efs-mount-eks-$cluster_name-was"
+  description="efs-mount-eks-$cluster_name-was"
+  token_name="eks-efs-$cluster_name-was"
   region=$GET_REGION
   vpc_id=$(aws eks describe-cluster --name $cluster_name --query "cluster.resourcesVpcConfig.vpcId" --output text)
   cidr_block=$(aws ec2 describe-vpcs --vpc-ids $vpc_id --query "Vpcs[].CidrBlock" --output text)
@@ -753,7 +759,9 @@ EOF
   run_ok "kubectl create -f strimzi-kafka-deployment/ && sleep 15 && kubectl wait --for=condition=ready --timeout=60m pod -l name=strimzi-cluster-operator && kubectl create -f kafka && sleep 15 && kubectl wait --for=condition=ready --timeout=60m pod -l statefulset.kubernetes.io/pod-name=kafka-persistent-zookeeper-0 && sleep 15 && kubectl wait --for=condition=ready --timeout=60m pod -l statefulset.kubernetes.io/pod-name=kafka-persistent-kafka-0 && sleep 15 && kubectl wait --for=condition=ready --timeout=60m pod -l app.kubernetes.io/name=entity-operator && kubectl create -f kafkabridge && sleep 15 && kubectl wait --for=condition=ready --timeout=60m pod -l app.kubernetes.io/name=kafka-bridge" "Deploying Kafka Cluster (can take upto 10 minutes)"
   run_ok "kafkaoperatorCheck" "Setting Up Kafka"
 
-  run_ok "kubectl config set-context --current --namespace=was" "Set WAS Namespace as default"
+  # mcdaniel: don't need to do this.
+  #run_ok "kubectl config set-context --current --namespace=was" "Set WAS Namespace as default"
+  
   run_ok "kubectl apply -f pvc/" "Setup Persistent Volume Claims"
   run_ok "kubectl apply -f services/" "Setup Services"
   run_ok "kubectl apply -f ingress/" "Setup Ingress"
@@ -1049,8 +1057,7 @@ DeleteFunction() {
   lower_cluster_name=$(echo $GET_CLUSTER_NAME | tr '[:upper:]' '[:lower:]')
   lower_cluster_name=$(echo $lower_cluster_name | tr -d '\r')
 
-  creds_bucket_suffix="$lower_cluster_name-creds-"
-  creds_bucket_name=$creds_bucket_suffix$account_id
+  creds_bucket_name=$AWS_BUCKET_NAME
 
   # Download credentials from S3 bucket
   fetched_creds=$(aws s3api get-object --bucket $creds_bucket_name --region $GET_REGION --key creds creds | grep ContentLength | awk '{print $2}' | sed -e 's/"//g')
@@ -1305,8 +1312,7 @@ getCredsFunction() {
   region=$(echo $GET_REGION | tr -d '\r')
   lower_cluster_name=$(echo $GET_CLUSTER_NAME | tr '[:upper:]' '[:lower:]')
   lower_cluster_name=$(echo $lower_cluster_name | tr -d '\r')
-  creds_bucket_suffix="$lower_cluster_name-creds-"
-  creds_bucket_name=$creds_bucket_suffix$account_id
+  creds_bucket_name=$AWS_BUCKET_NAME
 
   fetched_creds=$(aws s3api get-object --bucket $creds_bucket_name --region $region --key creds creds | grep ContentLength | awk '{print $2}' | sed -e 's/"//g')
 
