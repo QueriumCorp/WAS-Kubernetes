@@ -6,11 +6,11 @@ terraform {
     dynamodb_table = "${var.dynamodb_table}"
     encrypt        = true
   }
-  required_version = "~> 1.2.4"
+  required_version = "~> 1.3"
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 3.75.2"
+      version = "~> 4.48"
     }
   }
 }

@@ -24,7 +24,7 @@ The following CLI tools are required to be installed on your local machine to co
 * AMI Instance Type: Standard_D8s_v3
 * Disk Size: 30GB
 * Node Group scaling configuration: [Minimum size: 2, Maximum size: 10, Desired size: 2]
-* Kubernetes Version: 1.22
+* Kubernetes Version: 1.27
 
 To change any of the above defaults open `Source/terraform/variables.tf` and modify accordingly and save file.
 

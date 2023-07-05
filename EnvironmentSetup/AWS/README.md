@@ -11,7 +11,7 @@ The following CLI tools are required to be installed on your local machine to co
 
 * **AWS CLIv2** - https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html#getting-started-install-instructions
 
-* **Kubectl >= 1.24** - https://kubernetes.io/docs/tasks/tools/install-kubectl/
+* **Kubectl >= 1.27** - https://kubernetes.io/docs/tasks/tools/install-kubectl/
 
 * **Docker v20.10 or newer** - https://docs.docker.com/get-docker/
 
@@ -26,7 +26,7 @@ The automated configuration tool will use the following default values when buil
 * AMI Instance Type: c5.2xlarge
 * Disk Size: 30GB
 * Node Group scaling configuration: [Minimum size: 2, Maximum size: 10, Desired size: 2]
-* Kubernetes Version: 1.22
+* Kubernetes Version: 1.27
 
 To change any of the above defaults open `Source/terraform/variables.tf`, modify accordingly and save file.
 
