@@ -62,9 +62,12 @@ This will interactively prompt for your AWS IAM user access key, secret key and 
 
 **Step 4.** Run the following command to retrieve your base URL and application URLs:
 
-	docker-compose up --build -d && clear && docker exec -it aws-setup-manager bash setup --endpoint-info
+	# mcdaniel: instead of this, we're going to build and then push to AWS ECR
+	# docker-compose up --build -d && clear && docker exec -it aws-setup-manager bash setup --endpoint-info
 
-
+	./querium-build-and-push.sh
+	
+	
 The output of this command will follow this pattern:
 	
 	Base URL - Active Web Elements Server: http://<your-base-url>/
