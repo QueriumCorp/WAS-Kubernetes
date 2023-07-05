@@ -507,12 +507,12 @@ SetupFunction() {
   cd terraform
   CURRENT_REGION_VAL=$(grep -A1 -i "region         =" main.tf | head -n 1 | awk '{print $3}')
   sed -i -e 's/'"$CURRENT_REGION_VAL"'/"'"$GET_REGION"'"/g' main.tf
-  suffix="terraformtfstate"
+  suffix="terraform-tfstate"
   lower_cluster_name=$(echo $GET_CLUSTER_NAME | tr '[:upper:]' '[:lower:]')
   lower_cluster_name=$(echo $lower_cluster_name | tr -d '\r')
   get_user_info=$(aws sts get-caller-identity)
   account_id=$(echo $get_user_info | grep -oP '(?<="Account": ")[^"]*')
-  terraform_bucket_name=$suffix-$lower_cluster_name-$account_id
+  terraform_bucket_name=$account_id-$suffix-$lower_cluster_name
   CURRENT_BUCKET_VAL=$(grep -i "bucket         =" main.tf | awk '{print $3}' | head -n 1)
   sed -i -e 's/'"$CURRENT_BUCKET_VAL"'/"'"$terraform_bucket_name"'"/g' main.tf
   CURRENT_DYNAMODB_VAL=$(grep -i "dynamodb_table =" main.tf | awk '{print $3}' | head -n 1)
