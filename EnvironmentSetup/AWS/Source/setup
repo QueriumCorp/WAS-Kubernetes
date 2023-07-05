@@ -561,11 +561,10 @@ SetupFunction() {
 
   if [ X"$eks_Exists" = X"$val" ]; then
     echo
-    log_debug "Skipping Cluster creation"
+    log_debug "Found existing cluster. Re-running terraform"
     echo
-  else
-    run_ok "terraform init && terraform workspace new $workspace && terraform workspace select $workspace && terraform refresh && terraform plan && terraform apply -auto-approve" "Building EKS - (can take upto 30 minutes)"
   fi
+  run_ok "terraform init && terraform workspace new $workspace && terraform workspace select $workspace && terraform refresh && terraform plan && terraform apply -auto-approve" "Building EKS - (can take upto 30 minutes)"
 
     # Update kubeconfig
 
@@ -698,7 +697,7 @@ node:
     # EFS Vol ID, IP, Region
     # "fs-01234567":
     #   ip: 10.10.2.2
-    #   region: us-east-2
+    #   region: us-east-1
   dnsPolicy: ClusterFirst
   dnsConfig:
     {}
@@ -1207,7 +1206,7 @@ cleanconfiguration() {
   sed -i -e 's/'"$GET_CLUSTER_NAME"'/${var.cluster-name}/g' main.tf
   sed -i -e 's/'"$TERRAFORM_BUCKET"'/terraform-tfstate-${var.cluster-name}/g' main.tf
   GET_REGION=$(echo $GET_REGION | tr -d '\r')
-  sed -i -e 's/'"$GET_REGION"'/us-east-2/g' variables.tf
+  sed -i -e 's/'"$GET_REGION"'/us-east-1/g' variables.tf
   awk '!/terraform-s3-bucket-name/' variables.tf >tmpfile && mv tmpfile variables.tf >>$LOG_PATH
   rm -rf .terraform*
   rm -rf stopspinning*

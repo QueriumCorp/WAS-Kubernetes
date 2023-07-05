@@ -22,7 +22,7 @@ The following CLI tools are required to be installed on your local machine to co
 The automated configuration tool will use the following default values when building EKS and configuring WAS.
 
 * Cluster Name: WAS
-* Region: us-east-2
+* Region: us-east-1
 * AMI Instance Type: c5.2xlarge
 * Disk Size: 30GB
 * Node Group scaling configuration: [Minimum size: 2, Maximum size: 10, Desired size: 2]
