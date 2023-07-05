@@ -560,9 +560,16 @@ SetupFunction() {
 
   workspace="$lower_cluster_name-$GET_REGION"
 
-  run_ok "terraform init && terraform workspace new $workspace && terraform workspace select $workspace && terraform refresh && terraform plan && terraform apply -auto-approve" "Building EKS - (can take upto 30 minutes)"
-  
-  # Update kubeconfig
+  if [ X"$eks_Exists" = X"$val" ]; then
+    echo
+    log_error "Skipping Cluster creation"
+    echo
+    exit 1
+  else
+    run_ok "terraform init && terraform workspace new $workspace && terraform workspace select $workspace && terraform refresh && terraform plan && terraform apply -auto-approve" "Building EKS - (can take upto 30 minutes)"
+  fi
+
+    # Update kubeconfig
 
   run_ok "aws eks --region $GET_REGION update-kubeconfig --name $GET_CLUSTER_NAME" "Generate kubeconfig configuration"
   cd ..
