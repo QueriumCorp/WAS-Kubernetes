@@ -486,7 +486,7 @@ SetupFunction() {
   val="yes"
   if [ X"$eks_Exists" = X"$val" ]; then
     echo
-    log_error "Cluster already exists. Yippee!!"
+    log_debug "Cluster already exists. Yippee!!"
     echo
   fi
 
@@ -561,9 +561,8 @@ SetupFunction() {
 
   if [ X"$eks_Exists" = X"$val" ]; then
     echo
-    log_error "Skipping Cluster creation"
+    log_debug "Skipping Cluster creation"
     echo
-    exit 1
   else
     run_ok "terraform init && terraform workspace new $workspace && terraform workspace select $workspace && terraform refresh && terraform plan && terraform apply -auto-approve" "Building EKS - (can take upto 30 minutes)"
   fi
