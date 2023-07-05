@@ -21,6 +21,6 @@ RUN apt-get update && apt-get install software-properties-common apt-transport-h
 	helm repo add stable https://charts.helm.sh/stable && \
 	curl -fsSL https://apt.releases.hashicorp.com/gpg | apt-key add -  && \
 	echo "deb [arch=amd64] https://apt.releases.hashicorp.com focal main" | tee /etc/apt/sources.list && \
-	apt-get update && apt-get install terraform=1.5.2 -y
+	apt-get update && apt-get install terraform -y
 WORKDIR /
 ENTRYPOINT ["bash"]
