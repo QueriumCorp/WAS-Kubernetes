@@ -538,8 +538,8 @@ SetupFunction() {
   # Create terraform S3 bucket
 
   if [ -z $bucket_check ]; then
-    if [ X"$GET_REGION" = X"us-east-2" ]; then
-      run_ok "aws s3api create-bucket --bucket $terraform_bucket_name --endpoint-url https://s3.us-east-2.amazonaws.com && sleep 10" "Creating Bucket for terraform"
+    if [ X"$GET_REGION" = X"us-east-1" ]; then
+      run_ok "aws s3api create-bucket --bucket $terraform_bucket_name --endpoint-url https://s3.us-east-1.amazonaws.com && sleep 10" "Creating Bucket for terraform"
     else
       run_ok "aws s3api create-bucket --bucket $terraform_bucket_name --region $GET_REGION --create-bucket-configuration LocationConstraint=$GET_REGION && sleep 10" "Creating Bucket for terraform"
     fi
