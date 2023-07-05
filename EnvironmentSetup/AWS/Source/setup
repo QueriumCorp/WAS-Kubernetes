@@ -538,8 +538,8 @@ SetupFunction() {
   # Create terraform S3 bucket
 
   if [ -z $bucket_check ]; then
-    if [ X"$GET_REGION" = X"us-east-1" ]; then
-      run_ok "aws s3api create-bucket --bucket $terraform_bucket_name --endpoint-url https://s3.us-east-1.amazonaws.com && sleep 10" "Creating Bucket for terraform"
+    if [ X"$GET_REGION" = X"us-east-2" ]; then
+      run_ok "aws s3api create-bucket --bucket $terraform_bucket_name --endpoint-url https://s3.us-east-2.amazonaws.com && sleep 10" "Creating Bucket for terraform"
     else
       run_ok "aws s3api create-bucket --bucket $terraform_bucket_name --region $GET_REGION --create-bucket-configuration LocationConstraint=$GET_REGION && sleep 10" "Creating Bucket for terraform"
     fi
@@ -1104,79 +1104,79 @@ DeleteFunction() {
   val="no"
   if [ X"$eks_Exists" = X"$val" ]; then
     echo
-    log_error "Trying to delete Cluster when it doesn't exist. What are you trying to do?"
+    log_debug "No EKS cluster found. Skipping."
     echo
-    exit 1
+  else
+    cd ../..
+
+    echo
+    log_debug "Phase 2 of 5: Delete Wolfram Application Server Deployments"
+    printf "${GREEN}☑${YELLOW}☑${CYAN}□□□${NORMAL} Phase ${YELLOW}2${NORMAL} of ${GREEN}5${NORMAL}: Delete Wolfram Application Server Deployments\\n"
+
+    cd Source
+
+    # Update kubeconfig
+    run_ok "aws eks update-kubeconfig --region $GET_REGION --name $GET_CLUSTER_NAME" "Updating kubeconfig"
+    
+    # Switch context
+    run_ok "kubectl config use-context arn:aws:eks:$GET_REGION:$account_id:cluster/$GET_CLUSTER_NAME " "Switching Context"
+    
+    BASE_URL=$(kubectl get svc -n ingress-nginx | awk '{print $4}' | sed -n '2p')
+    sed -i -e "s/$BASE_URL/domain.com/g" deployments/active-web-elements-server-deployment.yaml
+
+    run_ok "kubectl delete --ignore-not-found=true -f deployments/" "Deleting Deployments"
+
+    run_ok "kafkaShutdown" "Deleting Kafka Cluster"
+    run_ok "kubectl delete secret generic basic-auth --ignore-not-found=true" "Deleting NGINX Auth"
+
+    run_ok "kubectl delete --ignore-not-found=true -f ingress/" "Deleting Ingress"
+    run_ok "kubectl delete --ignore-not-found=true -f hpa/" "Deleting Horizontal Pod Autoscaler"
+    run_ok "kubectl delete --ignore-not-found=true -f services/" "Deleting Services"
+    run_ok "kubectl delete --ignore-not-found=true -f pvc/" "Deleting Persistent Volume Claims"
+    run_ok "kubectl delete --ignore-not-found=true -f strimzi-kafka-deployment/ && kubectl delete --ignore-not-found=true -f kafka && kubectl delete --ignore-not-found=true -f kafkabridge" "Deleting Kafka Cluster Operator"
+    run_ok "kubectl delete --ignore-not-found=true apiservice v1beta1.custom.metrics.k8s.io && kubectl delete --ignore-not-found=true -f namespace/" "Deleting WAS Namespace"
+    run_ok "kubectl config set-context --current --namespace=default" "Reset Namespace"
+
+    echo
+    log_debug "Phase 3 of 5: Delete Dependencies"
+    printf "${GREEN}☑☑${YELLOW}☑${CYAN}□□${NORMAL} Phase ${YELLOW}3${NORMAL} of ${GREEN}5${NORMAL}: Delete Dependencies\\n"
+    run_ok "kubectl delete --ignore-not-found=true -f ingress-controller/" "Deleting Ingress Controller"
+    run_ok "kubectl delete --ignore-not-found=true -f metrics-server/" "Deleting Metrics Server"
+    run_ok "kubectl delete --ignore-not-found=true -f cluster-autoscaler/" "Deleting Cluster Autoscaler"
+    sed -i -e 's/- --node-group-auto-discovery=asg:tag=k8s.io\/cluster-autoscaler\/enabled,k8s.io\/cluster-autoscaler\/.*/- --node-group-auto-discovery=asg:tag=k8s.io\/cluster-autoscaler\/enabled,k8s.io\/cluster-autoscaler\/name/g' cluster-autoscaler/cluster-autoscaler-autodiscover.yaml
+    cd efs
+    set -e
+    kubectl patch storageclass gp2 -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}' >>$LOG_PATH
+    run_ok "kubectl delete --ignore-not-found=true daemonsets,replicasets,deployments,pods,statefulsets,rc,svc,sc,pv,pvc,ingress,hpa --all --all-namespaces" "Deleting all namespace resources"
+
+    efs_mounts=$(aws efs describe-mount-targets --file-system-id $EFS_FS_ID --profile default --region $GET_REGION | grep "MountTargetId" | cut -d '"' -f 4)
+
+    # Delete EFS mount targets
+    for eachval in $efs_mounts; do
+      aws efs delete-mount-target --mount-target-id $eachval
+      sleep 5
+    done
+
+    run_ok "sleep 15 && aws efs delete-file-system --file-system-id $EFS_FS_ID" "Deleting EFS Storage System"
+    rm -rf values*
+    kubectl delete --ignore-not-found=true -f namespace.yaml >>$LOG_PATH
+    suffix_efs_sc="efs-mount-eks-"
+    efs_sc_id=$(aws ec2 describe-security-groups --output text | grep $suffix_efs_sc$GET_CLUSTER_NAME | awk '{print $3}')
+    
+    # Delete security groups
+    aws ec2 delete-security-group --group-id $efs_sc_id >>$LOG_PATH
+    cd ..
+
+    echo
+    log_debug "Phase 4 of 5: Delete Amazon Kubernetes Cluster (EKS)"
+    printf "${GREEN}☑☑☑${YELLOW}☑${CYAN}□${NORMAL} Phase ${YELLOW}4${NORMAL} of ${GREEN}5${NORMAL}: Delete Amazon Kubernetes Cluster (EKS)\\n"
+    cd terraform
+    sed -i -e 's~'"terraform-tfstate-"'$'"{var.cluster-name}"~$TERRAFORM_BUCKET~g main.tf
+    sed -i -e 's~'"$"'{var.aws-region}'~$GET_REGION~g main.tf
+    run_ok "sleep 5 && terraform init && terraform workspace select $WORKSPACE && terraform refresh && terraform destroy -auto-approve || true" "Deleting EKS"
+    set +e
+
   fi
-
-  cd ../..
-
-  echo
-  log_debug "Phase 2 of 5: Delete Wolfram Application Server Deployments"
-  printf "${GREEN}☑${YELLOW}☑${CYAN}□□□${NORMAL} Phase ${YELLOW}2${NORMAL} of ${GREEN}5${NORMAL}: Delete Wolfram Application Server Deployments\\n"
-
-  cd Source
-
-  # Update kubeconfig
-  run_ok "aws eks update-kubeconfig --region $GET_REGION --name $GET_CLUSTER_NAME" "Updating kubeconfig"
-  
-  # Switch context
-  run_ok "kubectl config use-context arn:aws:eks:$GET_REGION:$account_id:cluster/$GET_CLUSTER_NAME " "Switching Context"
-  
-  BASE_URL=$(kubectl get svc -n ingress-nginx | awk '{print $4}' | sed -n '2p')
-  sed -i -e "s/$BASE_URL/domain.com/g" deployments/active-web-elements-server-deployment.yaml
-
-  run_ok "kubectl delete --ignore-not-found=true -f deployments/" "Deleting Deployments"
-
-  run_ok "kafkaShutdown" "Deleting Kafka Cluster"
-  run_ok "kubectl delete secret generic basic-auth --ignore-not-found=true" "Deleting NGINX Auth"
-
-  run_ok "kubectl delete --ignore-not-found=true -f ingress/" "Deleting Ingress"
-  run_ok "kubectl delete --ignore-not-found=true -f hpa/" "Deleting Horizontal Pod Autoscaler"
-  run_ok "kubectl delete --ignore-not-found=true -f services/" "Deleting Services"
-  run_ok "kubectl delete --ignore-not-found=true -f pvc/" "Deleting Persistent Volume Claims"
-  run_ok "kubectl delete --ignore-not-found=true -f strimzi-kafka-deployment/ && kubectl delete --ignore-not-found=true -f kafka && kubectl delete --ignore-not-found=true -f kafkabridge" "Deleting Kafka Cluster Operator"
-  run_ok "kubectl delete --ignore-not-found=true apiservice v1beta1.custom.metrics.k8s.io && kubectl delete --ignore-not-found=true -f namespace/" "Deleting WAS Namespace"
-  run_ok "kubectl config set-context --current --namespace=default" "Reset Namespace"
-
-  echo
-  log_debug "Phase 3 of 5: Delete Dependencies"
-  printf "${GREEN}☑☑${YELLOW}☑${CYAN}□□${NORMAL} Phase ${YELLOW}3${NORMAL} of ${GREEN}5${NORMAL}: Delete Dependencies\\n"
-  run_ok "kubectl delete --ignore-not-found=true -f ingress-controller/" "Deleting Ingress Controller"
-  run_ok "kubectl delete --ignore-not-found=true -f metrics-server/" "Deleting Metrics Server"
-  run_ok "kubectl delete --ignore-not-found=true -f cluster-autoscaler/" "Deleting Cluster Autoscaler"
-  sed -i -e 's/- --node-group-auto-discovery=asg:tag=k8s.io\/cluster-autoscaler\/enabled,k8s.io\/cluster-autoscaler\/.*/- --node-group-auto-discovery=asg:tag=k8s.io\/cluster-autoscaler\/enabled,k8s.io\/cluster-autoscaler\/name/g' cluster-autoscaler/cluster-autoscaler-autodiscover.yaml
-  cd efs
-  set -e
-  kubectl patch storageclass gp2 -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}' >>$LOG_PATH
-  run_ok "kubectl delete --ignore-not-found=true daemonsets,replicasets,deployments,pods,statefulsets,rc,svc,sc,pv,pvc,ingress,hpa --all --all-namespaces" "Deleting all namespace resources"
-
-  efs_mounts=$(aws efs describe-mount-targets --file-system-id $EFS_FS_ID --profile default --region $GET_REGION | grep "MountTargetId" | cut -d '"' -f 4)
-
-  # Delete EFS mount targets
-  for eachval in $efs_mounts; do
-    aws efs delete-mount-target --mount-target-id $eachval
-    sleep 5
-  done
-
-  run_ok "sleep 15 && aws efs delete-file-system --file-system-id $EFS_FS_ID" "Deleting EFS Storage System"
-  rm -rf values*
-  kubectl delete --ignore-not-found=true -f namespace.yaml >>$LOG_PATH
-  suffix_efs_sc="efs-mount-eks-"
-  efs_sc_id=$(aws ec2 describe-security-groups --output text | grep $suffix_efs_sc$GET_CLUSTER_NAME | awk '{print $3}')
-  
-  # Delete security groups
-  aws ec2 delete-security-group --group-id $efs_sc_id >>$LOG_PATH
-  cd ..
-
-  echo
-  log_debug "Phase 4 of 5: Delete Amazon Kubernetes Cluster (EKS)"
-  printf "${GREEN}☑☑☑${YELLOW}☑${CYAN}□${NORMAL} Phase ${YELLOW}4${NORMAL} of ${GREEN}5${NORMAL}: Delete Amazon Kubernetes Cluster (EKS)\\n"
-  cd terraform
-  sed -i -e 's~'"terraform-tfstate-"'$'"{var.cluster-name}"~$TERRAFORM_BUCKET~g main.tf
-  sed -i -e 's~'"$"'{var.aws-region}'~$GET_REGION~g main.tf
-  run_ok "sleep 5 && terraform init && terraform workspace select $WORKSPACE && terraform refresh && terraform destroy -auto-approve || true" "Deleting EKS"
-  set +e
 
   echo
   log_debug "Phase 5 of 5: Cleanup"
@@ -1207,7 +1207,7 @@ cleanconfiguration() {
   sed -i -e 's/'"$GET_CLUSTER_NAME"'/${var.cluster-name}/g' main.tf
   sed -i -e 's/'"$TERRAFORM_BUCKET"'/terraform-tfstate-${var.cluster-name}/g' main.tf
   GET_REGION=$(echo $GET_REGION | tr -d '\r')
-  sed -i -e 's/'"$GET_REGION"'/us-east-1/g' variables.tf
+  sed -i -e 's/'"$GET_REGION"'/us-east-2/g' variables.tf
   awk '!/terraform-s3-bucket-name/' variables.tf >tmpfile && mv tmpfile variables.tf >>$LOG_PATH
   rm -rf .terraform*
   rm -rf stopspinning*
@@ -1319,7 +1319,6 @@ getCredsFunction() {
     echo
     log_error "There is no creds file in S3 bucket. Did you update the cluster name and region in terraform/variables.tf file?"
     echo
-    exit 1
   fi
 
   echo "Stored values are"
