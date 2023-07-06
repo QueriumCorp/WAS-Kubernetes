@@ -1,7 +1,6 @@
 data "aws_availability_zones" "available" {
 }
 
-
 resource "aws_iam_policy" "worker_policy" {
   name        = "node-workers-policy-${local.cluster_name}"
   description = "Node Workers IAM policies"
@@ -36,7 +35,7 @@ module "eks" {
     coredns = {}
     kube-proxy = {}
     aws-ebs-csi-driver = {
-      service_account_role_arn = aws_iam_role.AmazonEKS_EBS_CSI_DriverRole.arn
+      service_account_role_arn = aws_iam_role.AmazonEKS_EBS_CSI_DriverRoleWAS.arn
     }
   }
 
@@ -54,6 +53,14 @@ module "eks" {
       protocol                   = "-1"
       from_port                  = 8443
       to_port                    = 8443
+      type                       = "ingress"
+      source_node_security_group = true
+    }
+    port_443 = {
+      description                = "WAS: open port 443 to vpc"
+      protocol                   = "-1"
+      from_port                  = 443
+      to_port                    = 443
       type                       = "ingress"
       source_node_security_group = true
     }
@@ -87,7 +94,8 @@ module "eks" {
   }
 
   iam_role_additional_policies = {
-      WorkersAdditionalPolicies = aws_iam_policy.worker_policy.arn
+    WorkersAdditionalPolicies = aws_iam_policy.worker_policy.arn
+    AmazonEBSCSIDriverPolicy = data.aws_iam_policy.AmazonEBSCSIDriverPolicy.arn
   }
 
 }
@@ -99,3 +107,42 @@ resource "null_resource" "kubectl-init" {
   }
   depends_on = [module.eks.cluster_name]
 }
+
+
+resource "aws_security_group" "worker_group_mgmt" {
+  name_prefix = "${local.cluster_name}-eks_hosting_group_mgmt"
+  description = "WAS: Ingress CLB worker group management"
+  vpc_id      = module.vpc.vpc_id
+
+  ingress {
+    description = "WAS: Ingress CLB"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+
+    cidr_blocks = [
+      "10.0.0.0/8",
+    ]
+  }
+
+}
+
+resource "aws_security_group" "all_worker_mgmt" {
+  name_prefix = "${local.cluster_name}-eks_all_worker_management"
+  description = "WAS: Ingress CLB worker management"
+  vpc_id      = module.vpc.vpc_id
+
+  ingress {
+    description = "WAS: Ingress CLB"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+
+    cidr_blocks = [
+      "10.0.0.0/8",
+      "172.16.0.0/12",
+      "192.168.0.0/16",
+    ]
+  }
+}
+
