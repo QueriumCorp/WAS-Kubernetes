@@ -1,11 +1,11 @@
 module "vpc" {
   source                 = "terraform-aws-modules/vpc/aws"
   version                = "~> 5.0.0"
-  name                   = "${local.cluster_name}-vpc"
-  cidr                   = "10.168.0.0/16"
+  name                   = local.cluster_name
+  cidr                   = var.cidr
   azs                    = data.aws_availability_zones.available.names
-  private_subnets        = ["10.168.128.0/18", "10.168.192.0/18"]
-  public_subnets         = ["10.168.0.0/18", "10.168.64.0/18"]
+  private_subnets        = var.private_subnets
+  public_subnets         = var.public_subnets
   enable_nat_gateway     = true
   single_nat_gateway     = true
   enable_dns_hostnames   = true

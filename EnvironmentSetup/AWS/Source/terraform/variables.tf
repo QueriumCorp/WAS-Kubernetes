@@ -7,6 +7,20 @@ variable "aws_region" {
   default = "us-east-1"
 }
 
+variable "cidr" {
+  type = string
+  default = "10.168.0.0/16"
+}
+
+variable "private_subnets" {
+  type = list()
+  default = ["10.168.128.0/18", "10.168.192.0/18"]
+}
+variable "public_subnets" {
+  type = list()
+  default = ["10.168.0.0/18", "10.168.64.0/18"]  
+}
+
 variable "cluster_name" {
   default = "WAS"
 }

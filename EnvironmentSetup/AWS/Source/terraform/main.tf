@@ -4,9 +4,6 @@ locals {
   account_id      = var.account_id
 }
 
-provider "aws" {
-  region = "us-east-1"
-}
 terraform {
   backend "s3" {
     bucket         = "320713933456-terraform-tfstate-was-01"
@@ -17,5 +14,3 @@ terraform {
     encrypt        = false
   }
 }
-
-

@@ -30,6 +30,44 @@ module "eks" {
   aws_auth_users            = var.aws_auth_users
   kms_key_owners            = var.kms_key_owners
 
+
+  cluster_addons = {
+    vpc-cni = {}
+    coredns = {}
+    kube-proxy = {}
+    aws-ebs-csi-driver = {
+      service_account_role_arn = aws_iam_role.AmazonEKS_EBS_CSI_DriverRole.arn
+    }
+  }
+
+  node_security_group_additional_rules = {
+    ingress_self_all = {
+      description = "WAS: Node to node all ports/protocols"
+      protocol    = "-1"
+      from_port   = 0
+      to_port     = 0
+      type        = "ingress"
+      cidr_blocks = var.private_subnets
+    }
+    port_8443 = {
+      description                = "WAS: open port 8443 to vpc"
+      protocol                   = "-1"
+      from_port                  = 8443
+      to_port                    = 8443
+      type                       = "ingress"
+      source_node_security_group = true
+    }
+    egress_all = {
+      description      = "WAS: Node all egress"
+      protocol         = "-1"
+      from_port        = 0
+      to_port          = 0
+      type             = "egress"
+      cidr_blocks      = ["0.0.0.0/0"]
+      ipv6_cidr_blocks = ["::/0"]
+    }
+  }
+
   eks_managed_node_groups = {
     eks = {
       name              = "${local.cluster_name}-worker-nodes"
@@ -52,4 +90,12 @@ module "eks" {
       WorkersAdditionalPolicies = aws_iam_policy.worker_policy.arn
   }
 
+}
+
+# force a refresh of local kubeconfig
+resource "null_resource" "kubectl-init" {
+  provisioner "local-exec" {
+    command = "aws eks --region ${local.aws_region} update-kubeconfig --name ${local.cluster_name}"
+  }
+  depends_on = [module.eks.cluster_name]
 }
