@@ -12,12 +12,6 @@ terraform {
     dynamodb_table = "terraform-state-locking-was"
     encrypt        = false
   }
-
-  required_version = "~> 1.3"
-}
-
-provider "aws" {
-  region = local.aws_region
 }
 
 data "aws_availability_zones" "available" {
@@ -52,20 +46,22 @@ module "vpc" {
 }
 
 module "eks" {
-  source                      = "terraform-aws-modules/eks/aws"
-  version                     = "~> 19.4"
-  cluster_name                = local.cluster_name
-  cluster_version             = var.cluster-version
-  subnet_ids                  = module.vpc.private_subnets
-  vpc_id                      = module.vpc.vpc_id
-  create_cloudwatch_log_group = false
+  source                          = "terraform-aws-modules/eks/aws"
+  version                         = "~> 19.4"
+  cluster_name                    = local.cluster_name
+  cluster_version                 = var.cluster-version
+  subnet_ids                      = module.vpc.private_subnets
+  vpc_id                          = module.vpc.vpc_id
+  create_cloudwatch_log_group     = false
+  cluster_endpoint_private_access = true
+  cluster_endpoint_public_access  = true
+  enable_irsa                     = true
   
   tags = {
     Environment = "Wolfram Application Server"
   }
 
   create_kms_key            = true
-  create_aws_auth_configmap = true 
   manage_aws_auth_configmap = true
   aws_auth_users            = [
     {
