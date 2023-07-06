@@ -1,5 +1,3 @@
-data "aws_availability_zones" "available" {
-}
 
 resource "aws_iam_policy" "worker_policy" {
   name        = "node-workers-policy-${local.cluster_name}"
