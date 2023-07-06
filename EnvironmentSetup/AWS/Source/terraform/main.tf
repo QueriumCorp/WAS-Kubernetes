@@ -64,7 +64,7 @@ module "eks" {
   cluster_version             = var.cluster-version
   subnet_ids                  = module.vpc.private_subnets
   vpc_id                      = module.vpc.vpc_id
-  create_cloudwatch_log_group = ºfalse
+  create_cloudwatch_log_group = false
   
   tags = {
     Environment = "Wolfram Application Server"
