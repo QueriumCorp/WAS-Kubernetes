@@ -21,8 +21,15 @@ terraform {
 data "aws_availability_zones" "available" {
 }
 
+data "aws_subnets" "was" {
+  filter {
+    name   = "vpc-id"
+    values = [ module.vpc.vpc_id ]
+  }
+}
+
 data "aws_subnet" "private_subnet" {
-  id = var.subnet_ids[random_integer.subnet_id.result]
+  id = data.aws_subnets.was[random_integer.subnet_id.result]
 }
 
 # randomize the choice of subnet. Each of the

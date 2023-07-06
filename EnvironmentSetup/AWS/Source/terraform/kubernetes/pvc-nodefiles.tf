@@ -32,7 +32,7 @@ resource "kubernetes_persistent_volume" "awes-nodefiles" {
 
   spec {
     capacity = {
-      storage = "${local.persistenceSize}Gi"
+      storage = "10Gi"
     }
     access_modes       = ["ReadWriteOnce"]
     storage_class_name = "gp2"
