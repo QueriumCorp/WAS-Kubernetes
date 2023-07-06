@@ -39,13 +39,6 @@ resource "aws_iam_role" "AmazonEKS_EBS_CSI_DriverRole" {
       }
     ]
   })
-  tags = merge(
-    local.tags,
-    {
-      "cookiecutter/resource/source"  = "hashicorp/aws/aws_iam_role"
-      "cookiecutter/resource/version" = "4.48"
-    }
-  )
 }
 
 # 3. Attach the required AWS managed policy to the role
@@ -63,8 +56,8 @@ resource "null_resource" "annotate-ebs-csi-controller" {
       # 1. configure kubeconfig locally with the credentials data of the just-created
       # kubernetes cluster.
       # ---------------------------------------
-      aws eks --region ${var.aws_region} update-kubeconfig --name ${var.namespace} --alias ${var.namespace}
-      kubectl config use-context ${var.namespace}
+      aws eks --region ${var.aws_region} update-kubeconfig --name ${var.cluster_name} --alias ${var.cluster_name}
+      kubectl config use-context ${var.cluster_name}
       kubectl config set-context --current --namespace=kube-system
 
       # 2. final install steps for EBS CSI Driver
