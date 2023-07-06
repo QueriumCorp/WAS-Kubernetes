@@ -1,17 +1,25 @@
 locals {
   cluster_name    = var.cluster-name
   aws_region      = var.aws_region
-  dynamodb_table  = var.dynamodb_table
 }
 
 terraform {
   backend "s3" {
-    bucket         = "terraform-tfstate-${local.cluster_name}"
+    bucket         = "320713933456-terraform-tfstate-was-01"
     key            = "global/s3/terraform.tfstate"
-    region         = "${local.aws_region}"
-    dynamodb_table = "${local.dynamodb_table}"
+    region         = "us-east-1"
+    dynamodb_table = "terraform-state-locking-was"
     encrypt        = true
   }
+
+  required_version = "~> 1.3"
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 4.48"
+    }
+  }
+}
 
   required_version = "~> 1.3"
   required_providers {
