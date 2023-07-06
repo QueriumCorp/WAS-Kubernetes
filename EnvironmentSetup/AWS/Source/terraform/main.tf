@@ -20,11 +20,11 @@ provider "aws" {
 }
 
 data "aws_eks_cluster" "cluster" {
-  name = module.eks.cluster_id
+  name = module.eks.cluster_name
 }
 
 data "aws_eks_cluster_auth" "cluster" {
-  name = module.eks.cluster_id
+  name = module.eks.cluster_name
 }
 
 provider "kubernetes" {
@@ -72,8 +72,6 @@ module "eks" {
   cluster_version           = var.cluster-version
   subnet_ids                = module.vpc.private_subnets
   vpc_id                    = module.vpc.vpc_id
-  # write_kubeconfig          = false
-  # cluster_create_timeout    = "120m"
   
   tags = {
     Environment = "Wolfram Application Server"
@@ -91,7 +89,7 @@ module "eks" {
       instance_types    = [var.instance_type]
 
       labels = {
-        node-group = "live"
+        node-group = "was"
       }
 
     }
