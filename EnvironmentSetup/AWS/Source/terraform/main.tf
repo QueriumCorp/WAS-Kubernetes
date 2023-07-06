@@ -1,11 +1,18 @@
+locals {
+  cluster_name    = var.cluster-name
+  aws_region      = var.aws_region
+  dynamodb_table  = var.dynamodb_table
+}
+
 terraform {
   backend "s3" {
-    bucket         = "terraform-tfstate-${var.cluster-name}"
+    bucket         = "terraform-tfstate-${local.cluster_name}"
     key            = "global/s3/terraform.tfstate"
-    region         = "${var.aws_region}"
-    dynamodb_table = "${var.dynamodb_table}"
+    region         = "${local.aws_region}"
+    dynamodb_table = "${local.dynamodb_table}"
     encrypt        = true
   }
+
   required_version = "~> 1.3"
   required_providers {
     aws = {
@@ -16,7 +23,7 @@ terraform {
 }
 
 provider "aws" {
-  region = var.aws_region
+  region = local.aws_region
 }
 
 data "aws_eks_cluster" "cluster" {
@@ -39,7 +46,7 @@ data "aws_availability_zones" "available" {
 module "vpc" {
   source                 = "terraform-aws-modules/vpc/aws"
   version                = "~> 3.18"
-  name                   = "${var.cluster-name}-vpc"
+  name                   = "${local.cluster_name}-vpc"
   cidr                   = "10.168.0.0/16"
   azs                    = data.aws_availability_zones.available.names
   private_subnets        = ["10.168.128.0/18", "10.168.192.0/18"]
@@ -50,17 +57,17 @@ module "vpc" {
 
 
   public_subnet_tags = {
-    "kubernetes.io/cluster/${var.cluster-name}" = "shared"
+    "kubernetes.io/cluster/${local.cluster_name}" = "shared"
     "kubernetes.io/role/elb"                    = "1"
   }
   private_subnet_tags = {
-    "kubernetes.io/cluster/${var.cluster-name}" = "shared"
+    "kubernetes.io/cluster/${local.cluster_name}" = "shared"
     "kubernetes.io/role/internal-elb"           = "1"
   }
   
   tags = {
     Terraform = "true"
-    Environment = "${var.cluster-name}"
+    Environment = "${local.cluster_name}"
   }
 
 }
@@ -68,7 +75,7 @@ module "vpc" {
 module "eks" {
   source                    = "terraform-aws-modules/eks/aws"
   version                   = "~> 19.4"
-  cluster_name              = var.cluster-name
+  cluster_name              = local.cluster_name
   cluster_version           = var.cluster-version
   subnet_ids                = module.vpc.private_subnets
   vpc_id                    = module.vpc.vpc_id
@@ -79,7 +86,7 @@ module "eks" {
 
   eks_managed_node_groups = {
     eks = {
-      name              = "${var.cluster-name}-worker-nodes"
+      name              = "${local.cluster_name}-worker-nodes"
       capacity_type     = "SPOT"
       enable_monitoring = false
       desired_capacity  = var.desired-worker-node
@@ -102,7 +109,7 @@ module "eks" {
 }
 
 resource "aws_iam_policy" "worker_policy" {
-  name        = "node-workers-policy-${var.cluster-name}"
+  name        = "node-workers-policy-${local.cluster_name}"
   description = "Node Workers IAM policies"
 
   policy = file("${path.module}/iam-policy.json")
