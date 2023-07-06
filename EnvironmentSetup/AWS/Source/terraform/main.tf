@@ -40,25 +40,6 @@ module "vpc" {
   single_nat_gateway     = true
   enable_dns_hostnames   = true
 
-  create_kms_key = true
-  manage_aws_auth_configmap = true
-  aws_auth_users = [
-    {
-      userarn  = "arn:aws:iam::${local.account_id}:user/mcdaniel"
-      username = "mcdaniel"
-      groups   = ["system:masters"]
-    },
-    {
-      userarn  = "arn:aws:iam::${local.account_id}:user/kent.fuka"
-      username = "kent.fuka"
-      groups   = ["system:masters"]
-    },
-  ]
-  kms_key_owners = [
-    "arn:aws:iam::${local.account_id}:user/mcdaniel",
-    "arn:aws:iam::${local.account_id}:user/kent.fuka",
-  ]
-
   public_subnet_tags = {
     "kubernetes.io/cluster/${local.cluster_name}" = "shared"
     "kubernetes.io/role/elb"                    = "1"
@@ -86,6 +67,25 @@ module "eks" {
   tags = {
     Environment = "Wolfram Application Server"
   }
+
+  create_kms_key = true
+  manage_aws_auth_configmap = true
+  aws_auth_users = [
+    {
+      userarn  = "arn:aws:iam::${local.account_id}:user/mcdaniel"
+      username = "mcdaniel"
+      groups   = ["system:masters"]
+    },
+    {
+      userarn  = "arn:aws:iam::${local.account_id}:user/kent.fuka"
+      username = "kent.fuka"
+      groups   = ["system:masters"]
+    },
+  ]
+  kms_key_owners = [
+    "arn:aws:iam::${local.account_id}:user/mcdaniel",
+    "arn:aws:iam::${local.account_id}:user/kent.fuka",
+  ]
 
   eks_managed_node_groups = {
     eks = {
