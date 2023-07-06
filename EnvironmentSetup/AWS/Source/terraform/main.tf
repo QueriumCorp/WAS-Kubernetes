@@ -1,5 +1,5 @@
 locals {
-  cluster_name    = var.cluster-name
+  cluster_name    = var.cluster_name
   aws_region      = var.aws_region
   account_id      = var.account_id
 }
@@ -49,7 +49,7 @@ module "eks" {
   source                          = "terraform-aws-modules/eks/aws"
   version                         = "~> 19.4"
   cluster_name                    = local.cluster_name
-  cluster_version                 = var.cluster-version
+  cluster_version                 = var.cluster_version
   subnet_ids                      = module.vpc.private_subnets
   vpc_id                          = module.vpc.vpc_id
   create_cloudwatch_log_group     = false

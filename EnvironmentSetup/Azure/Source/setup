@@ -489,7 +489,7 @@ azureKeysFunction() {
 SetupFunction() {
   banner=true
   cd Source/terraform
-  GET_CLUSTER_NAME=$(grep -A1 -i cluster-name variables.tf | grep -i default | awk '{print $3}' | sed -e 's/"//g' | tr -d '\n')
+  GET_CLUSTER_NAME=$(grep -A1 -i cluster_name variables.tf | grep -i default | awk '{print $3}' | sed -e 's/"//g' | tr -d '\n')
   GET_CLUSTER_NAME=$(echo $GET_CLUSTER_NAME | tr -d '\r')
   GET_REGION=$(grep -A1 -i aks_region variables.tf | grep -i default | awk '{print $3}' | sed -e 's/"//g' | tr -d '\n')
   GET_REGION=$(echo $GET_REGION | tr -d '\r')
@@ -1089,7 +1089,7 @@ NEWAKSCHECK() {
 
 CURRENTAKSCHECK() {
   cd terraform
-  GET_CLUSTER_NAME=$(grep -A1 -i cluster-name variables.tf | grep -i default | awk '{print $3}' | sed -e 's/"//g' | tr -d '\n')
+  GET_CLUSTER_NAME=$(grep -A1 -i cluster_name variables.tf | grep -i default | awk '{print $3}' | sed -e 's/"//g' | tr -d '\n')
   GET_CLUSTER_NAME=$(echo $GET_CLUSTER_NAME | tr -d '\r')
   suffix="-aks"
   CLUSTER="$GET_CLUSTER_NAME$suffix"

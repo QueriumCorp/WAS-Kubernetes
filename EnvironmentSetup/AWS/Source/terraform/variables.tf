@@ -1,15 +1,17 @@
 variable "account_id" {
-  default = "320713933456"
+  default = "01234567891"
 }
 variable "aws_region" {
+  # mcdaniel: currently only works in us-east-1
+  # have yet to invetigate why.
   default = "us-east-1"
 }
 
-variable "cluster-name" {
-  default = "wolfram"
+variable "cluster_name" {
+  default = "WAS"
 }
 
-variable "cluster-version" {
+variable "cluster_version" {
   default = "1.27"
 }
 

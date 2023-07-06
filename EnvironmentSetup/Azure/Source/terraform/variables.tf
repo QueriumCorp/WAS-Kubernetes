@@ -1,4 +1,4 @@
-variable "cluster-name" {
+variable "cluster_name" {
   default = "WAS"
 }
 
@@ -22,7 +22,7 @@ variable "max_pods" {
   default = "100"
 }
 
-variable "cluster-version" {
+variable "cluster_version" {
   default = "1.27"
 }
 

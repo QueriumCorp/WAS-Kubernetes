@@ -469,7 +469,7 @@ SetupFunction() {
   banner=true
   cd Source/terraform
 
-  GET_CLUSTER_NAME=$(grep -A1 -i cluster-name variables.tf | grep -i default | awk '{print $3}' | sed -e 's/"//g' | tr -d '\n')
+  GET_CLUSTER_NAME=$(grep -A1 -i cluster_name variables.tf | grep -i default | awk '{print $3}' | sed -e 's/"//g' | tr -d '\n')
   GET_CLUSTER_NAME=$(echo $GET_CLUSTER_NAME | tr -d '\r')
   GET_REGION=$(grep -A1 -i aws_region variables.tf | grep -i default | awk '{print $3}' | sed -e 's/"//g' | tr -d '\n')
   GET_REGION=$(echo $GET_REGION | tr -d '\r')
@@ -1043,13 +1043,13 @@ DeleteFunction() {
   account_id=$(echo $get_user_info | grep -oP '(?<="Account": ")[^"]*')
   
 
-  GET_CLUSTER_NAME=$(grep -A1 -i cluster-name variables.tf | grep -i default | awk '{print $3}' | sed -e 's/"//g' | tr -d '\n')
+  GET_CLUSTER_NAME=$(grep -A1 -i cluster_name variables.tf | grep -i default | awk '{print $3}' | sed -e 's/"//g' | tr -d '\n')
   GET_CLUSTER_NAME=$(echo $GET_CLUSTER_NAME | tr -d '\r')
   GET_REGION=$(grep -A1 -i aws_region variables.tf | grep -i default | awk '{print $3}' | sed -e 's/"//g' | tr -d '\n')
   GET_REGION=$(echo $GET_REGION | tr -d '\r')
   region=$(echo $GET_REGION | tr -d '\r')
 
-  GET_CLUSTER_NAME=$(grep -A1 -i cluster-name variables.tf | grep -i default | awk '{print $3}' | sed -e 's/"//g' | tr -d '\n')
+  GET_CLUSTER_NAME=$(grep -A1 -i cluster_name variables.tf | grep -i default | awk '{print $3}' | sed -e 's/"//g' | tr -d '\n')
   GET_CLUSTER_NAME=$(echo $GET_CLUSTER_NAME | tr -d '\r')
 
   lower_cluster_name=$(echo $GET_CLUSTER_NAME | tr '[:upper:]' '[:lower:]')
@@ -1172,7 +1172,7 @@ DeleteFunction() {
     log_debug "Phase 4 of 5: Delete Amazon Kubernetes Cluster (EKS)"
     printf "${GREEN}☑☑☑${YELLOW}☑${CYAN}□${NORMAL} Phase ${YELLOW}4${NORMAL} of ${GREEN}5${NORMAL}: Delete Amazon Kubernetes Cluster (EKS)\\n"
     cd terraform
-    sed -i -e 's~'"terraform-tfstate-"'$'"{var.cluster-name}"~$TERRAFORM_BUCKET~g main.tf
+    sed -i -e 's~'"terraform-tfstate-"'$'"{var.cluster_name}"~$TERRAFORM_BUCKET~g main.tf
     sed -i -e 's~'"$"'{var.aws-region}'~$GET_REGION~g main.tf
     run_ok "sleep 5 && terraform init && terraform workspace select $WORKSPACE && terraform refresh && terraform destroy -auto-approve || true" "Deleting EKS"
     set +e
@@ -1205,8 +1205,8 @@ cleanconfiguration() {
   echo
   log_debug "Phase 1 of 1: Clean Configuration"
 
-  sed -i -e 's/'"$GET_CLUSTER_NAME"'/${var.cluster-name}/g' main.tf
-  sed -i -e 's/'"$TERRAFORM_BUCKET"'/terraform-tfstate-${var.cluster-name}/g' main.tf
+  sed -i -e 's/'"$GET_CLUSTER_NAME"'/${var.cluster_name}/g' main.tf
+  sed -i -e 's/'"$TERRAFORM_BUCKET"'/terraform-tfstate-${var.cluster_name}/g' main.tf
   GET_REGION=$(echo $GET_REGION | tr -d '\r')
   sed -i -e 's/'"$GET_REGION"'/us-east-1/g' variables.tf
   awk '!/terraform-s3-bucket-name/' variables.tf >tmpfile && mv tmpfile variables.tf >>$LOG_PATH
@@ -1305,7 +1305,7 @@ getCredsFunction() {
 
   cd /Source/terraform
 
-  GET_CLUSTER_NAME=$(grep -A1 -i cluster-name variables.tf | grep -i default | awk '{print $3}' | sed -e 's/"//g' | tr -d '\n')
+  GET_CLUSTER_NAME=$(grep -A1 -i cluster_name variables.tf | grep -i default | awk '{print $3}' | sed -e 's/"//g' | tr -d '\n')
   GET_CLUSTER_NAME=$(echo $GET_CLUSTER_NAME | tr -d '\r')
   region=$(grep -A1 -i aws_region variables.tf | grep -i default | awk '{print $3}' | sed -e 's/"//g' | tr -d '\n')
   region=$(echo $GET_REGION | tr -d '\r')

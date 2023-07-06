@@ -19,7 +19,7 @@ provider "azurerm" {
 }
 
 resource "azurerm_resource_group" "default" {
-  name     = "${var.cluster-name}-rg"
+  name     = "${var.cluster_name}-rg"
   location = "${var.aks_region}"
 
   tags = {
@@ -28,11 +28,11 @@ resource "azurerm_resource_group" "default" {
 }
 
 resource "azurerm_kubernetes_cluster" "default" {
-  name                = "${var.cluster-name}-aks"
+  name                = "${var.cluster_name}-aks"
   location            = azurerm_resource_group.default.location
   resource_group_name = azurerm_resource_group.default.name
-  dns_prefix          = "${var.cluster-name}-k8s"
-  kubernetes_version  = "${var.cluster-version}"
+  dns_prefix          = "${var.cluster_name}-k8s"
+  kubernetes_version  = "${var.cluster_version}"
 
   default_node_pool {
     name                = "workernodes"
