@@ -34,3 +34,22 @@ variable "min-worker-node" {
 variable "max-worker-node" {
   default = "10"
 }
+
+variable "capacity_type" {
+  default = "ON_DEMAND"
+}
+
+variable "aws_auth_users" {
+  description = "Additional IAM users to add to the aws-auth configmap."
+  type = list(object({
+    userarn  = string
+    username = string
+    groups   = list(string)
+  }))
+  default = []  
+}
+
+variable "kms_key_owners" {
+  type    = list(any)
+  default = []  
+}

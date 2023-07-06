@@ -63,27 +63,13 @@ module "eks" {
 
   create_kms_key            = true
   manage_aws_auth_configmap = true
-  aws_auth_users            = [
-    {
-      userarn  = "arn:aws:iam::${local.account_id}:user/mcdaniel"
-      username = "mcdaniel"
-      groups   = ["system:masters"]
-    },
-    {
-      userarn  = "arn:aws:iam::${local.account_id}:user/kent.fuka"
-      username = "kent.fuka"
-      groups   = ["system:masters"]
-    },
-  ]
-  kms_key_owners = [
-    "arn:aws:iam::${local.account_id}:user/mcdaniel",
-    "arn:aws:iam::${local.account_id}:user/kent.fuka",
-  ]
+  aws_auth_users            = var.aws_auth_users
+  kms_key_owners            = var.kms_key_owners
 
   eks_managed_node_groups = {
     eks = {
       name              = "${local.cluster_name}-worker-nodes"
-      capacity_type     = "SPOT"
+      capacity_type     = var.capacity_type
       enable_monitoring = false
       desired_capacity  = var.desired-worker-node
       max_capacity      = var.max-worker-node
@@ -108,5 +94,5 @@ resource "aws_iam_policy" "worker_policy" {
   name        = "node-workers-policy-${local.cluster_name}"
   description = "Node Workers IAM policies"
 
-  policy = file("${path.module}/iam-policy.json")
+  policy = file("${path.module}/node-workers-policy.json")
 }
