@@ -71,16 +71,9 @@ resource "kubernetes_persistent_volume" "resources-logs" {
 #------------------------------------------------------------------------------
 resource "aws_ebs_volume" "resources-logs" {
   availability_zone = data.aws_subnet.private_subnet.availability_zone
-  size              = local.persistenceSize
+  size              = 10
 
-  tags = merge(
-    local.tags,
-    {
-      "cookiecutter/resource/source"  = "hashicorp/aws/aws_ebs_volume"
-      "cookiecutter/resource/version" = "4.48"
-    }
-  )
-
+  tags = {}
 
   # local.ebsVolumePreventDestroy defaults to 'Y'
   # for anything other than an upper case 'N' we'll assume that
