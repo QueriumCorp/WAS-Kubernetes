@@ -1,46 +1,26 @@
-data "aws_partition" "current" {}
-
 provider "aws" {
   region = "us-east-1"
   profile = "default"
 }
 
+data "aws_partition" "current" {}
+
+data "aws_eks_cluster" "eks" {
+  name = var.cluster_name
+}
+
+data "aws_eks_cluster_auth" "eks" {
+  name = var.cluster_name
+}
+
 provider "kubernetes" {
-  host                   = module.eks.cluster_endpoint
-  cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
-
-  # to ensure that we're working with a freshly generated token
-  exec {
-    api_version = "client.authentication.k8s.io/v1beta1"
-    command     = "aws"
-    args        = ["eks", "get-token", "--cluster_name", module.eks.cluster_name, "--region", "us-east-1", "--profile", "default"]
-  }
+  host                   = data.aws_eks_cluster.eks.endpoint
+  cluster_ca_certificate = base64decode(data.aws_eks_cluster.eks.certificate_authority[0].data)
+  token                  = data.aws_eks_cluster_auth.eks.token
 }
 
-# Required by Karpenter and metrics-server
 provider "kubectl" {
-  host                   = module.eks.cluster_endpoint
-  cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
-
-  # to ensure that we're working with a freshly generated token
-  exec {
-    api_version = "client.authentication.k8s.io/v1beta1"
-    command     = "aws"
-    args        = ["eks", "get-token", "--cluster_name", module.eks.cluster_name, "--region", "us-east-1", "--profile", "default"]
-  }
-}
-
-# Required by Karpenter and metrics-server
-provider "helm" {
-  kubernetes {
-    host                   = module.eks.cluster_endpoint
-    cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
-
-  # to ensure that we're working with a freshly generated token
-    exec {
-      api_version = "client.authentication.k8s.io/v1beta1"
-      command     = "aws"
-      args        = ["eks", "get-token", "--cluster_name", module.eks.cluster_name, "--region", "us-east-1", "--profile", "default"]
-    }
-  }
+  host                   = data.aws_eks_cluster.eks.endpoint
+  cluster_ca_certificate = base64decode(data.aws_eks_cluster.eks.certificate_authority.0.data)
+  token                  = data.aws_eks_cluster_auth.eks.token
 }
