@@ -1,3 +1,6 @@
+variable "account_id" {
+  default = "320713933456"
+}
 variable "aws_region" {
   default = "us-east-1"
 }

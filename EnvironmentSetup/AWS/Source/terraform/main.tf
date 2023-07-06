@@ -1,6 +1,7 @@
 locals {
   cluster_name    = var.cluster-name
   aws_region      = var.aws_region
+  account_id      = var.account_id
 }
 
 terraform {
