@@ -79,14 +79,21 @@ module "eks" {
     Environment = "Wolfram Application Server"
   }
 
-  node_groups = {
+  eks_managed_node_groups = {
     eks = {
-      name             = "${var.cluster-name}-worker-nodes"
-      desired_capacity = var.desired-worker-node
-      max_capacity     = var.max-worker-node
-      min_capacity     = var.min-worker-node
-      disk_size        = var.disk-size
+      name              = "${var.cluster-name}-worker-nodes"
+      capacity_type     = "SPOT"
+      enable_monitoring = false
+      desired_capacity  = var.desired-worker-node
+      max_capacity      = var.max-worker-node
+      min_capacity      = var.min-worker-node
+      disk_size         = var.disk-size
       instance_types    = [var.instance_type]
+
+      labels = {
+        node-group = "live"
+      }
+
     }
   }
 
