@@ -69,9 +69,10 @@ module "eks" {
     Environment = "Wolfram Application Server"
   }
 
-  create_kms_key = false
+  create_kms_key            = false
+  cluster_encryption_config = {}
   manage_aws_auth_configmap = true
-  aws_auth_users = [
+  aws_auth_users            = [
     {
       userarn  = "arn:aws:iam::${local.account_id}:user/mcdaniel"
       username = "mcdaniel"
