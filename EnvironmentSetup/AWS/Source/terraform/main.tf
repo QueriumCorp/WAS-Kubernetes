@@ -71,7 +71,6 @@ module "eks" {
   }
 
   create_kms_key            = false
-  cluster_encryption_config = {}
   manage_aws_auth_configmap = true
   aws_auth_users            = [
     {

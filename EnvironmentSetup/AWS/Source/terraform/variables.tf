@@ -6,7 +6,7 @@ variable "aws_region" {
 }
 
 variable "cluster-name" {
-  default = "WAS"
+  default = "wolfram"
 }
 
 variable "cluster-version" {
