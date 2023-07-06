@@ -70,7 +70,7 @@ module "eks" {
     Environment = "Wolfram Application Server"
   }
 
-  create_kms_key            = false
+  create_kms_key            = true
   manage_aws_auth_configmap = true
   aws_auth_users            = [
     {
