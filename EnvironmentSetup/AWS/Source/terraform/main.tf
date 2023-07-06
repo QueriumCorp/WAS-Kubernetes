@@ -70,10 +70,10 @@ module "eks" {
   version                   = "~> 19.4"
   cluster_name              = var.cluster-name
   cluster_version           = var.cluster-version
-  subnets                   = module.vpc.private_subnets
+  subnet_ids                = module.vpc.private_subnets
   vpc_id                    = module.vpc.vpc_id
-  write_kubeconfig          = false
-  cluster_create_timeout    = "120m"
+  # write_kubeconfig          = false
+  # cluster_create_timeout    = "120m"
   
   tags = {
     Environment = "Wolfram Application Server"
@@ -97,7 +97,10 @@ module "eks" {
     }
   }
 
-  workers_additional_policies = [aws_iam_policy.worker_policy.arn]
+  iam_role_additional_policies = {
+      WorkersAdditionalPolicies = aws_iam_policy.worker_policy.arn
+  }
+
 }
 
 resource "aws_iam_policy" "worker_policy" {
