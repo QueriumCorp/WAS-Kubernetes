@@ -31,7 +31,7 @@ data "aws_availability_zones" "available" {
 
 module "vpc" {
   source                 = "terraform-aws-modules/vpc/aws"
-  version                = "~> 3.18"
+  version                = "~> 5.0.0"
   name                   = "${local.cluster_name}-vpc"
   cidr                   = "10.168.0.0/16"
   azs                    = data.aws_availability_zones.available.names
