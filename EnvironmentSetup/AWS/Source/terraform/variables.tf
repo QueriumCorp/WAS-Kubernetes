@@ -33,8 +33,9 @@ variable "disk-size" {
   default = "30"
 }
 
-variable "instance_type" {
-  default = "c5.2xlarge"
+variable "instance_types" {
+  type = list(string)
+  default = ["c5.2xlarge", "t3.2xlarge", "c5d.2xlarge", "t3a.2xlarge", "t2.2xlarge	"]
 }
 
 variable "desired-worker-node" {

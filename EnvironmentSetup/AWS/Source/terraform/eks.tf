@@ -84,7 +84,7 @@ module "eks" {
       max_capacity      = var.max-worker-node
       min_capacity      = var.min-worker-node
       disk_size         = var.disk-size
-      instance_types    = [var.instance_type]
+      instance_types    = var.instance_types
 
       labels = {
         node-group = "was"
