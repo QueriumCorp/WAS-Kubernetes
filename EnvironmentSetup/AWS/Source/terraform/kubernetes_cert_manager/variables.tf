@@ -12,7 +12,6 @@ variable "root_domain" {
 
 variable "namespace" {
   type = string
-  default = "cert-manager"
 }
 
 variable "cert_manager_namespace" {
