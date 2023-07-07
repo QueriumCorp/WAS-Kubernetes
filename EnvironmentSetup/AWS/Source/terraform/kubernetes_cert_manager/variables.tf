@@ -12,14 +12,20 @@ variable "root_domain" {
 
 variable "namespace" {
   type = string
+  default = "cert-manager"
 }
 
 variable "cert_manager_namespace" {
   type = string
+  default = "cert-manager"
 }
 
 variable "aws_region" {
   type = string
+}
+variable "aws_profile" {
+  type = string
+  default = "default"
 }
 
 variable "services_subdomain" {

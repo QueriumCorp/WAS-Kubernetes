@@ -24,15 +24,7 @@
 #-----------------------------------------------------------
 locals {
 
-  tags = merge(
-    var.tags,
-    module.cookiecutter_meta.tags,
-    {
-      "cookiecutter/module/source"    = "openedx_devops/terraform/stacks/modules/kubernetes_vpa"
-      "cookiecutter/resource/source"  = "cowboysysop.github.io/charts/vertical-pod-autoscaler"
-      "cookiecutter/resource/version" = "6.0"
-    }
-  )
+  tags = {}
 
 }
 data "template_file" "vertical-pod-autoscaler-values" {
@@ -55,9 +47,3 @@ resource "helm_release" "vpa" {
 
 }
 
-#------------------------------------------------------------------------------
-#                               COOKIECUTTER META
-#------------------------------------------------------------------------------
-module "cookiecutter_meta" {
-  source = "../../../../../../../common/cookiecutter_meta"
-}
