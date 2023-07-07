@@ -32,17 +32,17 @@ spec:
         - name: KAFKA.BOOTSTRAP-SERVERS
           value: kafka-persistent-kafka-bootstrap.kafka.svc.cluster.local:9092
         - name: MINIOACCESSKEY
-          value: <your-access-key>
+          value: ${minio_access_key}
         - name: MINIOSECRETKEY
-          value: <your-secret-key>
+          value: ${minio_secret_key}
         - name: RESOURCEINFO.BUCKET
-          value: <your-resourceinfo-bucketname>
+          value: ${resource_info_bucket}
         - name: NODEFILES.BUCKET
-          value: <your-nodefiles-bucketname>
+          value: ${nodefiles_bucket}
         - name: RESOURCE.BUCKET.REGION
-          value: <your-resource-bucket-region>
+          value: ${resource_bucket_region}
         - name: NODEFILES.BUCKET.REGION
-          value: <your-nodefiles-bucket-region>
+          value: ${nodefiles_bucket_region}
         image: wolframapplicationserver/resource-manager:1.2.1
         name: resource-manager
         ports:
