@@ -7,9 +7,11 @@
 # usage: build an EKS cluster load balancer
 #------------------------------------------------------------------------------
 
-#data "tls_certificate" "cluster" {
-#  url = data.aws_eks_cluster.eks.identity[0].oidc[0].issuer
-#}
+provider "aws" {
+  region  = var.aws_region
+  profile = var.aws_profile
+}
+
 
 data "aws_eks_cluster" "eks" {
   name = var.stack_namespace

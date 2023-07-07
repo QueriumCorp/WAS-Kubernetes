@@ -4,8 +4,11 @@
 
 # client identifying information
 # -------------------------------------
-account_id = "320713933456"
-aws_region = "us-east-1"
+account_id            = "320713933456"
+aws_region            = "us-east-1"
+aws_profile           = "default"
+shared_resource_name  = "was2"
+stack_namespace       = "was2"
 
 
 # VPC
@@ -17,7 +20,6 @@ public_subnets  = ["10.168.0.0/18", "10.168.64.0/18"]
 # EKS
 # -------------------------------------
 cluster_version      = "1.27"
-shared_resource_name = "was2"
 capacity_type        = "SPOT"
 aws_auth_users = [
   # cluster will irreparably break if you remove the bastion IAM user

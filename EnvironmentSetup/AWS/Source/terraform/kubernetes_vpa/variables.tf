@@ -6,8 +6,6 @@
 #
 # usage: create an EKS cluster
 #------------------------------------------------------------------------------
-
-# for providers.tf
 variable "stack_namespace" {
   type = string
 }

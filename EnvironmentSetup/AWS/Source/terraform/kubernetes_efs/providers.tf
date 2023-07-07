@@ -11,6 +11,11 @@
 #        another alternative for each of the providers would be to rely on
 #        the local kubeconfig file.
 #------------------------------------------------------------------------------
+provider "aws" {
+  region  = var.aws_region
+  profile = var.aws_profile
+}
+
 
 # required by install_efs and install_kubeapps
 data "aws_elb_hosted_zone_id" "main" {}

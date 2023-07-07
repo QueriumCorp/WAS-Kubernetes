@@ -3,9 +3,12 @@ variable "account_id" {
   type    = string
 }
 variable "aws_region" {
-  # mcdaniel: currently only works in us-east-1
-  # have yet to invetigate why.
   default = "us-east-1"
+  type    = string
+}
+
+variable "aws_profile" {
+  default = "default"
   type    = string
 }
 

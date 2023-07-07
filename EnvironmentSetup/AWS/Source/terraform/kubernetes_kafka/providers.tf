@@ -11,6 +11,11 @@
 #        another alternative for each of the providers would be to rely on
 #        the local kubeconfig file.
 #------------------------------------------------------------------------------
+provider "aws" {
+  region  = var.aws_region
+  profile = var.aws_profile
+}
+
 
 data "aws_eks_cluster" "eks" {
   name = var.stack_namespace

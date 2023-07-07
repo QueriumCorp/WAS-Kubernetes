@@ -16,11 +16,9 @@ provider "aws" {
   profile = var.aws_profile
 }
 
-
-# required by install_dashboard and install_minio
 data "aws_elb_hosted_zone_id" "main" {}
 
-# Required by kafka
+# Required by Karpenter
 data "aws_partition" "current" {}
 
 data "aws_eks_cluster" "eks" {

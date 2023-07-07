@@ -79,21 +79,3 @@ resource "random_password" "grafana" {
   }
 }
 
-#------------------------------------------------------------------------------
-#                               COOKIECUTTER META
-#------------------------------------------------------------------------------
-module "cookiecutter_meta" {
-  source = "../../../../../../../common/cookiecutter_meta"
-}
-
-resource "kubernetes_secret" "cookiecutter" {
-  metadata {
-    name      = "cookiecutter-terraform"
-    namespace = local.prometheus
-  }
-
-  # https://stackoverflow.com/questions/64134699/terraform-map-to-string-value
-  data = {
-    tags = jsonencode(local.tags)
-  }
-}
