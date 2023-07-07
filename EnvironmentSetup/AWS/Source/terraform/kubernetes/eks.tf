@@ -35,9 +35,6 @@ module "eks" {
     aws-ebs-csi-driver = {
       service_account_role_arn = aws_iam_role.AmazonEKS_EBS_CSI_DriverRoleWAS.arn
     }
-    aws-efs-csi-driver = {
-      service_account_role_arn = aws_iam_role.AmazonEKS_EFS_CSI_DriverRoleWAS.arn
-    }
   }
 
   node_security_group_additional_rules = {

@@ -13,6 +13,10 @@
 #   helm search repo aws-efs-csi-driver/aws-efs-csi-driver
 #   helm show values aws-efs-csi-driver/aws-efs-csi-driver
 #
+#  trouble shooting
+#   helm uninstall aws-efs-csi-driver -n kube-system
+#   helm list -A
+#   terraform state rm helm_release.efs-csi-driver
 #------------------------------------------------------------------------------
 
 resource "aws_iam_policy" "AmazonEKS_EFS_CSI_Driver_Policy" {
@@ -119,13 +123,13 @@ resource "helm_release" "efs-csi-driver" {
   create_namespace = false
 
   name       = "aws-efs-csi-driver"
-  repository = "https://github.com/kubernetes-sigs/aws-efs-csi-driver"
+  repository = "https://kubernetes-sigs.github.io/aws-efs-csi-driver/"
   chart      = "aws-efs-csi-driver"
   version    = "~> 2.4"
 
   set {
     name  = "image.repository"
-    value = "${var.account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/eks/aws-efs-csi-driver"
+    value = "602401143452.dkr.ecr.${var.aws_region}.amazonaws.com/eks/aws-efs-csi-driver"
   }
   set {
     name = "controller.serviceAccount.create"
@@ -135,13 +139,25 @@ resource "helm_release" "efs-csi-driver" {
     name = "controller.serviceAccount.name"
     value = "efs-csi-controller-sa"
   }
+  set {
+    name = "sidecars.livenessProbe.image.repository"
+    value = "602401143452.dkr.ecr.${var.aws_region}.amazonaws.com/eks/livenessprobe"
+  }
+  set {
+    name = "sidecars.nodeDriverRegistrar.image.repository"
+    value = "602401143452.dkr.ecr.${var.aws_region}.amazonaws.com/eks/csi-node-driver-registrar"
+  }
+  set {
+    name = "sidecars.csiProvisioner.image.repository"
+    value = "602401143452.dkr.ecr.${var.aws_region}.amazonaws.com/eks/csi-provisioner"
+  }
 
   values = [
     data.template_file.efs-csi-driver-values.rendered
   ]
 
   depends_on = [
-    kubernetes_namespace.minio
+    module.eks
   ]
 }
 
