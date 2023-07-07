@@ -11,11 +11,11 @@
 # this mdoule.
 #
 #   brew install helm
-#   helm repo add kafka https://charts.kafka.sh/
+#   helm repo add bitnami https://charts.bitnami.com/bitnami
 #   helm repo update
-#   helm search repo kafka
-#   helm show values kafka/kafka
-#
+#   helm search repo bitnami/kafka
+#   helm show values bitnami/kafka
+
 # NOTE: run `helm repo update` prior to running this
 #       Terraform module.
 #-----------------------------------------------------------
@@ -44,7 +44,7 @@ resource "helm_release" "kafka" {
   repository = "https://charts.kafka.sh"
   chart      = "kafka"
 
-  version = "~> 0.16"
+  version = "~> 23.0"
 
   values = [
     data.template_file.kafka-values.rendered
@@ -57,7 +57,7 @@ resource "helm_release" "kafka" {
 
   set {
     name  = "clusterName"
-    value = var.stack_namespace
+    value = var.cluster_name
   }
 
   set {
