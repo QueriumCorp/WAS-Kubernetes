@@ -1,6 +1,6 @@
 
 resource "aws_iam_policy" "worker_policy" {
-  name        = "node-workers-policy-${local.cluster_name}"
+  name        = "node-workers-policy-${var.cluster_name}"
   description = "Node Workers IAM policies"
 
   policy = file("${path.module}/node-workers-policy.json")
@@ -9,8 +9,8 @@ resource "aws_iam_policy" "worker_policy" {
 module "eks" {
   source                          = "terraform-aws-modules/eks/aws"
   version                         = "~> 19.4"
-  cluster_name                    = local.cluster_name
-  cluster_version                 = local.cluster_version
+  cluster_name                    = var.cluster_name
+  cluster_version                 = var.cluster_version
   subnet_ids                      = module.vpc.private_subnets
   vpc_id                          = module.vpc.vpc_id
   create_cloudwatch_log_group     = false
@@ -24,8 +24,8 @@ module "eks" {
 
   create_kms_key            = true
   manage_aws_auth_configmap = true
-  aws_auth_users            = local.aws_auth_users
-  kms_key_owners            = local.kms_key_owners
+  aws_auth_users            = var.aws_auth_users
+  kms_key_owners            = var.kms_key_owners
 
 
   cluster_addons = {
@@ -44,7 +44,7 @@ module "eks" {
       from_port   = 0
       to_port     = 0
       type        = "ingress"
-      cidr_blocks = local.private_subnets
+      cidr_blocks = var.private_subnets
     }
     port_8443 = {
       description                = "WAS: open port 8443 to vpc"
@@ -75,14 +75,14 @@ module "eks" {
 
   eks_managed_node_groups = {
     eks = {
-      name              = "${local.cluster_name}-worker-nodes"
-      capacity_type     = local.capacity_type
+      name              = "${var.cluster_name}-worker-nodes"
+      capacity_type     = var.capacity_type
       enable_monitoring = false
-      desired_capacity  = local.desired_worker_node
-      max_capacity      = local.max_worker_node
-      min_capacity      = local.min_worker_node
-      disk_size         = local.disk_size
-      instance_types    = local.instance_types
+      desired_capacity  = var.desired_worker_node
+      max_capacity      = var.max_worker_node
+      min_capacity      = var.min_worker_node
+      disk_size         = var.disk_size
+      instance_types    = var.instance_types
 
       labels = {
         node-group = "was"
@@ -101,14 +101,14 @@ module "eks" {
 # force a refresh of local kubeconfig
 resource "null_resource" "kubectl-init" {
   provisioner "local-exec" {
-    command = "aws eks --region ${local.aws_region} update-kubeconfig --name ${local.cluster_name}"
+    command = "aws eks --region ${var.aws_region} update-kubeconfig --name ${var.cluster_name}"
   }
   depends_on = [module.eks.cluster_name]
 }
 
 
 resource "aws_security_group" "worker_group_mgmt" {
-  name_prefix = "${local.cluster_name}-eks_hosting_group_mgmt"
+  name_prefix = "${var.cluster_name}-eks_hosting_group_mgmt"
   description = "WAS: Ingress CLB worker group management"
   vpc_id      = module.vpc.vpc_id
 
@@ -126,7 +126,7 @@ resource "aws_security_group" "worker_group_mgmt" {
 }
 
 resource "aws_security_group" "all_worker_mgmt" {
-  name_prefix = "${local.cluster_name}-eks_all_worker_management"
+  name_prefix = "${var.cluster_name}-eks_all_worker_management"
   description = "WAS: Ingress CLB worker management"
   vpc_id      = module.vpc.vpc_id
 
