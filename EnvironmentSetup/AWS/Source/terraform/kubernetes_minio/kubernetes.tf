@@ -85,6 +85,6 @@ resource "kubectl_manifest" "ingress-minio" {
 }
 
 resource "kubectl_manifest" "hpa-autoscaler-resource-manager" {
-  yaml_body = file("${path.module}/yml/hpa-autoscaler-resource-manager.yaml")
-  depends_on = [ module.eks ]
+  yaml_body  = file("${path.module}/yml/hpa-autoscaler-resource-manager.yaml")
+  depends_on = [module.eks]
 }

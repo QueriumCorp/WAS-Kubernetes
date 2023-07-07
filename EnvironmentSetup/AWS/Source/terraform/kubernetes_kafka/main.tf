@@ -89,8 +89,8 @@ module "kafka_controller_irsa_role" {
   # an incomplete IAM policy.
   #version = "~> 5.3"
 
-  role_name                          = "kafka-controller-${var.stack_namespace}"
-  create_role                        = true
+  role_name                      = "kafka-controller-${var.stack_namespace}"
+  create_role                    = true
   attach_kafka_controller_policy = true
 
   kafka_controller_cluster_id = data.aws_eks_cluster.eks.name

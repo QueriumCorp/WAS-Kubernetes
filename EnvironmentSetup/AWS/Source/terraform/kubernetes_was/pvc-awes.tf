@@ -2,7 +2,7 @@
 
 resource "kubernetes_persistent_volume_claim_v1" "awes-logs" {
   metadata {
-    name = "awes-logs"
+    name      = "awes-logs"
     namespace = "was"
   }
   spec {
@@ -12,7 +12,7 @@ resource "kubernetes_persistent_volume_claim_v1" "awes-logs" {
         storage = "10Gi"
       }
     }
-    volume_name = "${kubernetes_persistent_volume.awes-logs.metadata.0.name}"
+    volume_name = kubernetes_persistent_volume.awes-logs.metadata.0.name
   }
 }
 

@@ -4,7 +4,7 @@ terraform {
     key            = "kubernetes_minio/terraform.tfstate"
     region         = "us-east-1"
     dynamodb_table = "terraform-state-locking-was2"
-    profile        = "default" 
+    profile        = "default"
     encrypt        = false
   }
 }

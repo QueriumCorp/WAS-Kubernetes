@@ -1,6 +1,6 @@
 # need this bc the default aws profile specifies us-east-2
 provider "aws" {
-  region = "us-east-1"
+  region  = "us-east-1"
   profile = "default"
 }
 

@@ -23,7 +23,7 @@
 #-----------------------------------------------------------
 locals {
   metrics_server = "metrics-server"
-  tags = {}
+  tags           = {}
 
 }
 data "template_file" "metrics-server-values" {

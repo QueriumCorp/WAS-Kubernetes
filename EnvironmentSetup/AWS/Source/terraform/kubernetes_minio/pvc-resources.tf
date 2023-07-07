@@ -2,7 +2,7 @@
 
 resource "kubernetes_persistent_volume_claim_v1" "resources-logs" {
   metadata {
-    name = "resources-logs"
+    name      = "resources-logs"
     namespace = "was"
   }
   spec {
@@ -12,7 +12,7 @@ resource "kubernetes_persistent_volume_claim_v1" "resources-logs" {
         storage = "10Gi"
       }
     }
-    volume_name = "${kubernetes_persistent_volume.resources-logs.metadata.0.name}"
+    volume_name = kubernetes_persistent_volume.resources-logs.metadata.0.name
   }
 }
 

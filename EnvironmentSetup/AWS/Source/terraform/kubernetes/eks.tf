@@ -9,7 +9,7 @@ resource "aws_iam_policy" "worker_policy" {
 module "eks" {
   source                          = "terraform-aws-modules/eks/aws"
   version                         = "~> 19.4"
-  shared_resource_name                    = var.shared_resource_name
+  shared_resource_name            = var.shared_resource_name
   cluster_version                 = var.cluster_version
   subnet_ids                      = module.vpc.private_subnets
   vpc_id                          = module.vpc.vpc_id
@@ -17,7 +17,7 @@ module "eks" {
   cluster_endpoint_private_access = true
   cluster_endpoint_public_access  = true
   enable_irsa                     = true
-  
+
   tags = {
     Environment = "Wolfram Application Server"
   }
@@ -29,8 +29,8 @@ module "eks" {
 
 
   cluster_addons = {
-    vpc-cni = {}
-    coredns = {}
+    vpc-cni    = {}
+    coredns    = {}
     kube-proxy = {}
     aws-ebs-csi-driver = {
       service_account_role_arn = aws_iam_role.AmazonEKS_EBS_CSI_DriverRoleWAS.arn
@@ -93,7 +93,7 @@ module "eks" {
 
   iam_role_additional_policies = {
     WorkersAdditionalPolicies = aws_iam_policy.worker_policy.arn
-    AmazonEBSCSIDriverPolicy = data.aws_iam_policy.AmazonEBSCSIDriverPolicy.arn
+    AmazonEBSCSIDriverPolicy  = data.aws_iam_policy.AmazonEBSCSIDriverPolicy.arn
   }
 
 }

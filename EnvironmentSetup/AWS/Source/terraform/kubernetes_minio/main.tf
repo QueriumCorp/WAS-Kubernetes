@@ -67,6 +67,6 @@ resource "helm_release" "minio" {
 #                               OTHER RESOURCES
 #------------------------------------------------------------------------------
 resource "kubectl_manifest" "hpa-autoscaler-minio" {
-  yaml_body = file("${path.module}/yml/hpa-autoscaler-minio.yaml")
-  depends_on = [ module.eks ]
+  yaml_body  = file("${path.module}/yml/hpa-autoscaler-minio.yaml")
+  depends_on = [module.eks]
 }

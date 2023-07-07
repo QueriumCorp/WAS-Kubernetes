@@ -1,7 +1,7 @@
 locals {
-  shared_resource_name    = var.shared_resource_name
-  aws_region      = var.aws_region
-  account_id      = var.account_id
+  shared_resource_name = var.shared_resource_name
+  aws_region           = var.aws_region
+  account_id           = var.account_id
 
   subnet_ids_list         = tolist(data.aws_subnets.was.ids)
   subnet_ids_random_index = random_id.index.dec % length(data.aws_subnets.was.ids)
@@ -13,7 +13,7 @@ terraform {
     key            = "global/terraform.tfstate"
     region         = "us-east-1"
     dynamodb_table = "terraform-state-locking-was2"
-    profile        = "default" 
+    profile        = "default"
     encrypt        = false
   }
 }
@@ -24,16 +24,16 @@ terraform {
 data "aws_availability_zones" "available" {
 }
 
-data aws_subnets "was" {
+data "aws_subnets" "was" {
   filter {
     name   = "vpc-id"
-    values = [ module.vpc.vpc_id ]
+    values = [module.vpc.vpc_id]
   }
 }
 data "aws_subnet" "private_subnet" {
   id = local.instance_subnet_id
 }
 
-resource random_id index {
+resource "random_id" "index" {
   byte_length = 2
 }

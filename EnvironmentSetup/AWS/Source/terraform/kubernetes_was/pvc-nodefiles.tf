@@ -2,7 +2,7 @@
 
 resource "kubernetes_persistent_volume_claim_v1" "awes-nodefiles" {
   metadata {
-    name = "awes-nodefiles"
+    name      = "awes-nodefiles"
     namespace = "was"
   }
   spec {
@@ -12,7 +12,7 @@ resource "kubernetes_persistent_volume_claim_v1" "awes-nodefiles" {
         storage = "10Gi"
       }
     }
-    volume_name = "${kubernetes_persistent_volume.awes-nodefiles.metadata.0.name}"
+    volume_name = kubernetes_persistent_volume.awes-nodefiles.metadata.0.name
   }
 }
 
