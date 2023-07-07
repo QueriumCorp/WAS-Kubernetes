@@ -3,7 +3,7 @@
 resource "kubernetes_persistent_volume_claim_v1" "resources-logs" {
   metadata {
     name      = "resources-logs"
-    namespace = "was"
+    namespace = var.namespace
   }
   spec {
     access_modes = ["ReadWriteMany"]
@@ -24,7 +24,7 @@ resource "kubernetes_persistent_volume" "resources-logs" {
       "topology.kubernetes.io/zone"   = "${aws_ebs_volume.resources-logs.availability_zone}"
       "ebs_volume_id"                 = "${aws_ebs_volume.resources-logs.id}"
       "name"                          = "resources-logs"
-      "namespace"                     = "was"
+      "namespace"                     = var.namespace
     }
     annotations = {
     }

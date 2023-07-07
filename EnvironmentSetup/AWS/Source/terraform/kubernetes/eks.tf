@@ -9,7 +9,7 @@ resource "aws_iam_policy" "worker_policy" {
 module "eks" {
   source                          = "terraform-aws-modules/eks/aws"
   version                         = "~> 19.4"
-  shared_resource_name            = var.shared_resource_name
+  cluster_name                    = var.shared_resource_name
   cluster_version                 = var.cluster_version
   subnet_ids                      = module.vpc.private_subnets
   vpc_id                          = module.vpc.vpc_id
@@ -85,7 +85,7 @@ module "eks" {
       instance_types    = var.instance_types
 
       labels = {
-        node-group = "was"
+        node-group = var.namespace
       }
 
     }

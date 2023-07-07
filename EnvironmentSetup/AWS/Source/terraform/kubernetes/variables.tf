@@ -31,6 +31,11 @@ variable "shared_resource_name" {
   type    = string
 }
 
+variable "namespace" {
+  default = "was"
+  type    = string
+}
+
 variable "cluster_version" {
   default = "1.27"
   type    = string

@@ -1,6 +1,6 @@
 resource "kubernetes_namespace" "was" {
   metadata {
-    name = "was"
+    name = var.namespace
   }
   depends_on = [module.eks]
 }

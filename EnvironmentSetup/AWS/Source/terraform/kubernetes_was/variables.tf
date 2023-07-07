@@ -1,20 +1,11 @@
 #------------------------------------------------------------------------------
-# written by: Lawrence McDaniel
-#             https://lawrencemcdaniel.com/
+# written by: Miguel Afonso
+#             https://www.linkedin.com/in/mmafonso/
 #
-# date: Mar-2022
+# date: Aug-2021
 #
-# usage: create an EKS cluster
+# usage: build an EKS cluster load balancer
 #------------------------------------------------------------------------------
-
-variable "services_subdomain" {
-  type = string
-
-}
-
-variable "stack_namespace" {
-  type = string
-}
 
 variable "namespace" {
   type = string

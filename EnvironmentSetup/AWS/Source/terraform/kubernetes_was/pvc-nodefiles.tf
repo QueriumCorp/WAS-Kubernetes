@@ -24,7 +24,7 @@ resource "kubernetes_persistent_volume" "awes-nodefiles" {
       "topology.kubernetes.io/zone"   = "${aws_ebs_volume.awes-nodefiles.availability_zone}"
       "ebs_volume_id"                 = "${aws_ebs_volume.awes-nodefiles.id}"
       "name"                          = "awes-nodefiles"
-      "namespace"                     = "was"
+      "namespace"                     = var.namespace
     }
     annotations = {
     }
