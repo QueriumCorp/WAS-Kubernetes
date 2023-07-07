@@ -1,10 +1,12 @@
 variable "account_id" {
   default = "01234567891"
+  type = string
 }
 variable "aws_region" {
   # mcdaniel: currently only works in us-east-1
   # have yet to invetigate why.
   default = "us-east-1"
+  type = string
 }
 
 variable "cidr" {
@@ -23,14 +25,17 @@ variable "public_subnets" {
 
 variable "cluster_name" {
   default = "WAS"
+  type = string
 }
 
 variable "cluster_version" {
   default = "1.27"
+  type = string
 }
 
 variable "disk_size" {
   default = "30"
+  type = number
 }
 
 variable "instance_types" {
@@ -40,18 +45,22 @@ variable "instance_types" {
 
 variable "desired_worker_node" {
   default = "2"
+  type = number
 }
 
 variable "min_worker_node" {
   default = "2"
+  type = number
 }
 
 variable "max_worker_node" {
   default = "10"
+  type = number
 }
 
 variable "capacity_type" {
   default = "ON_DEMAND"
+  type = string
 }
 
 variable "aws_auth_users" {
