@@ -6,6 +6,13 @@
 #
 # Create the Amazon EFS CSI driver IAM role for service accounts
 # https://docs.aws.amazon.com/eks/latest/userguide/efs-csi.html
+#
+#   helm repo add aws-efs-csi-driver https://kubernetes-sigs.github.io/aws-efs-csi-driver/
+#   helm repo update aws-efs-csi-driver
+#   helm repo update
+#   helm search repo aws-efs-csi-driver/aws-efs-csi-driver
+#   helm show values aws-efs-csi-driver/aws-efs-csi-driver
+#
 #------------------------------------------------------------------------------
 
 resource "aws_iam_policy" "AmazonEKS_EFS_CSI_Driver_Policy" {
@@ -102,28 +109,39 @@ resource "kubectl_manifest" "efs-service-account" {
   yaml_body  = data.template_file.efs-service-account.rendered
 }
 
+# 6. Install the Amazon EFS driver 
+data "template_file" "efs-csi-driver-values" {
+  template = file("${path.module}/yml/efs-csi-driver-values.yaml")
+}
 
+resource "helm_release" "efs-csi-driver" {
+  namespace        = "kube-system"
+  create_namespace = false
 
-# 6. Restart the ebs-csi-controller deployment for the annotation to take effect
-resource "null_resource" "annotate-ebs-csi-controller" {
+  name       = "aws-efs-csi-driver"
+  repository = "https://github.com/kubernetes-sigs/aws-efs-csi-driver"
+  chart      = "aws-efs-csi-driver"
+  version    = "~> 2.4"
 
-  provisioner "local-exec" {
-    command = <<-EOT
-      # 1. configure kubeconfig locally with the credentials data of the just-created
-      # kubernetes cluster.
-      # ---------------------------------------
-      aws eks --region ${var.aws_region} update-kubeconfig --name ${var.shared_resource_name} --alias ${var.shared_resource_name}
-      kubectl config use-context ${var.shared_resource_name}
-      kubectl config set-context --current --namespace=kube-system
-
-      # 2. final install steps for EBS CSI Driver
-      # ---------------------------------------
-      kubectl annotate serviceaccount ebs-csi-controller-sa -n kube-system eks.amazonaws.com/role-arn=arn:aws:iam::${var.account_id}:role/${aws_iam_role.AmazonEKS_EFS_CSI_DriverRoleWAS.name}
-      kubectl rollout restart deployment ebs-csi-controller -n kube-system
-    EOT
+  set {
+    name  = "image.repository"
+    value = "${var.account_id}.dkr.ecr.${var.aws_region}.amazonaws.com/eks/aws-efs-csi-driver"
+  }
+  set {
+    name = "controller.serviceAccount.create"
+    value = false
+  }
+  set {
+    name = "controller.serviceAccount.name"
+    value = "efs-csi-controller-sa"
   }
 
+  values = [
+    data.template_file.efs-csi-driver-values.rendered
+  ]
+
   depends_on = [
-    module.eks
+    kubernetes_namespace.minio
   ]
 }
+
