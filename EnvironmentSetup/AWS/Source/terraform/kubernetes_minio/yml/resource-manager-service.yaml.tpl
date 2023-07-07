@@ -4,7 +4,7 @@ metadata:
   labels:
     app: resource-manager
   name: resource-manager
-  namespace: was
+  namespace: ${namespace}
 spec:
   ports:
   - name: "9090"

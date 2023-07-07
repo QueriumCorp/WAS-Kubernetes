@@ -75,16 +75,3 @@ resource "kubernetes_secret_v1" "minio_admin" {
   ]
 }
 
-resource "kubectl_manifest" "ingress-minio" {
-  yaml_body = file("${path.module}/yml/ingress-minio.yml")
-
-  depends_on = [
-    helm_release.minio,
-    kubernetes_namespace.minio
-  ]
-}
-
-resource "kubectl_manifest" "hpa-autoscaler-resource-manager" {
-  yaml_body  = file("${path.module}/yml/hpa-autoscaler-resource-manager.yaml")
-  depends_on = [module.eks]
-}

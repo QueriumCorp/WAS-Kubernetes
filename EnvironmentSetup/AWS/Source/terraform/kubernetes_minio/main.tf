@@ -42,7 +42,7 @@ resource "helm_release" "minio" {
   name       = "minio"
   repository = "https://charts.bitnami.com/bitnami"
   chart      = "minio"
-  version    = "~> 12.2"
+  version    = "~> 12.6"
 
   # see https://docs.bitnami.com/kubernetes/infrastructure/minio/configuration/expose-service/
   set {
