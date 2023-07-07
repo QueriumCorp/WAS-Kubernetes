@@ -9,7 +9,7 @@ aws_region            = "us-east-1"
 aws_profile           = "default"
 shared_resource_name  = "was2"
 stack_namespace       = "was2"
-namespace             = "was"
+namespace             = "was2"
 root_domain           = "stepwisemath.ai"
 services_subdomain    = "live.stepwisemath.ai"
 
