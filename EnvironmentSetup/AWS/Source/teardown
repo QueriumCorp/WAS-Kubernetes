@@ -1,0 +1,55 @@
+#!/bin/bash
+# AWS Teardown Script
+# July-2023
+
+
+
+
+echo "Tearing down ...."
+cd terraform 
+
+cd kubernetes_was
+echo "Destroying WAS"
+terraform destroy -var-file=../queriumcorp.tfvars
+cd ..
+
+cd kubernetes_minio
+echo "Destroying Kubernetes Minio"
+terraform destroy -var-file=../queriumcorp.tfvars
+cd ..
+
+cd kubernetes_kafka
+echo "Destroying Kubernetes Kafka"
+terraform destroy -var-file=../queriumcorp.tfvars
+cd ..
+
+cd kubernetes_vpa
+echo "Destroying Kubernetes Vertical Pod Autoscaler"
+terraform destroy -var-file=../queriumcorp.tfvars
+cd ..
+
+cd kubernetes_ingress_controller
+echo "Destroying Kubernetes Ingress Controller"
+terraform destroy -var-file=../queriumcorp.tfvars
+cd ..
+
+cd kubernetes_metricsserver
+echo "Destroying Kubernetes Metrics Server"
+terraform destroy -var-file=../queriumcorp.tfvars
+cd ..
+
+cd kubernetes_prometheus
+echo "Destroying Kubernetes Prometheus"
+terraform destroy -var-file=../queriumcorp.tfvars
+cd ..
+
+cd kubernetes_cert_manager
+echo "Destroying Kubernetes Certificate Manager"
+terraform destroy -var-file=../queriumcorp.tfvars
+cd ..
+
+cd kubernetes
+echo "destroying AWS VPC and EKS Cluster. Takes around 15 minutes..."
+terraform destroy -var-file=../queriumcorp.tfvars
+cd ..
+
