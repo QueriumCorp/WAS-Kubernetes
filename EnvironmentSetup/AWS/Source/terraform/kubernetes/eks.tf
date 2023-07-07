@@ -10,7 +10,7 @@ module "eks" {
   source                          = "terraform-aws-modules/eks/aws"
   version                         = "~> 19.4"
   cluster_name                    = local.cluster_name
-  cluster_version                 = var.cluster_version
+  cluster_version                 = local.cluster_version
   subnet_ids                      = module.vpc.private_subnets
   vpc_id                          = module.vpc.vpc_id
   create_cloudwatch_log_group     = false
@@ -24,8 +24,8 @@ module "eks" {
 
   create_kms_key            = true
   manage_aws_auth_configmap = true
-  aws_auth_users            = var.aws_auth_users
-  kms_key_owners            = var.kms_key_owners
+  aws_auth_users            = local.aws_auth_users
+  kms_key_owners            = local.kms_key_owners
 
 
   cluster_addons = {
@@ -44,7 +44,7 @@ module "eks" {
       from_port   = 0
       to_port     = 0
       type        = "ingress"
-      cidr_blocks = var.private_subnets
+      cidr_blocks = local.private_subnets
     }
     port_8443 = {
       description                = "WAS: open port 8443 to vpc"
@@ -76,13 +76,13 @@ module "eks" {
   eks_managed_node_groups = {
     eks = {
       name              = "${local.cluster_name}-worker-nodes"
-      capacity_type     = var.capacity_type
+      capacity_type     = local.capacity_type
       enable_monitoring = false
-      desired_capacity  = var.desired-worker-node
-      max_capacity      = var.max-worker-node
-      min_capacity      = var.min-worker-node
-      disk_size         = var.disk-size
-      instance_types    = var.instance_types
+      desired_capacity  = local.desired-worker-node
+      max_capacity      = local.max-worker-node
+      min_capacity      = local.min-worker-node
+      disk_size         = local.disk-size
+      instance_types    = local.instance_types
 
       labels = {
         node-group = "was"

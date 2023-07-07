@@ -27,7 +27,7 @@ resource "aws_iam_role" "AmazonEKS_EBS_CSI_DriverRoleWAS" {
       {
         "Effect" : "Allow",
         "Principal" : {
-          "Federated" : "arn:aws:iam::${var.account_id}:oidc-provider/${module.eks.oidc_provider}"
+          "Federated" : "arn:aws:iam::${local.account_id}:oidc-provider/${module.eks.oidc_provider}"
         },
         "Action" : "sts:AssumeRoleWithWebIdentity",
         "Condition" : {
@@ -56,13 +56,13 @@ resource "null_resource" "annotate-ebs-csi-controller" {
       # 1. configure kubeconfig locally with the credentials data of the just-created
       # kubernetes cluster.
       # ---------------------------------------
-      aws eks --region ${var.aws_region} update-kubeconfig --name ${var.cluster_name} --alias ${var.cluster_name}
-      kubectl config use-context ${var.cluster_name}
+      aws eks --region ${local.aws_region} update-kubeconfig --name ${local.cluster_name} --alias ${local.cluster_name}
+      kubectl config use-context ${local.cluster_name}
       kubectl config set-context --current --namespace=kube-system
 
       # 2. final install steps for EBS CSI Driver
       # ---------------------------------------
-      kubectl annotate serviceaccount ebs-csi-controller-sa -n kube-system eks.amazonaws.com/role-arn=arn:aws:iam::${var.account_id}:role/${aws_iam_role.AmazonEKS_EBS_CSI_DriverRoleWAS.name}
+      kubectl annotate serviceaccount ebs-csi-controller-sa -n kube-system eks.amazonaws.com/role-arn=arn:aws:iam::${local.account_id}:role/${aws_iam_role.AmazonEKS_EBS_CSI_DriverRoleWAS.name}
       kubectl rollout restart deployment ebs-csi-controller -n kube-system
     EOT
   }
