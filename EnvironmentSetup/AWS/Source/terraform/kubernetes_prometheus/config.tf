@@ -6,7 +6,7 @@ module "common_config" {
 }
 
 locals {
-  cluster_name      = module.common_config.cluster_name
+  shared_resource_name      = module.common_config.shared_resource_name
   aws_region        = module.common_config.aws_region
   account_id        = module.common_config.account_id
   cidr              = module.common_config.cidr

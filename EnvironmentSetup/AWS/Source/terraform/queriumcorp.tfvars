@@ -1,15 +1,24 @@
 # -----------------------------------------------------------------------------
 # Querium custom configuration
 # -----------------------------------------------------------------------------
-account_id          = "320713933456"
-aws_region          = "us-east-1"
-cidr                = "10.168.0.0/16"
-private_subnets     = ["10.168.128.0/18", "10.168.192.0/18"]
-public_subnets      = ["10.168.0.0/18", "10.168.64.0/18"]
 
-cluster_version     = "1.27"
-cluster_name        = "was2"
-capacity_type       = "SPOT"
+# client identifying information
+# -------------------------------------
+account_id              = "320713933456"
+aws_region              = "us-east-1"
+
+
+# VPC
+# -------------------------------------
+cidr                    = "10.168.0.0/16"
+private_subnets         = ["10.168.128.0/18", "10.168.192.0/18"]
+public_subnets          = ["10.168.0.0/18", "10.168.64.0/18"]
+
+# EKS
+# -------------------------------------
+cluster_version         = "1.27"
+shared_resource_name    = "was2"
+capacity_type           = "SPOT"
 aws_auth_users            = [
     # cluster will irreparably break if you remove the bastion IAM user
     # -------------------------------------------------------------------------

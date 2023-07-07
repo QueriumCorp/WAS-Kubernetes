@@ -1,6 +1,6 @@
 
 resource "aws_iam_policy" "worker_policy" {
-  name        = "node-workers-policy-${var.cluster_name}"
+  name        = "node-workers-policy-${var.shared_resource_name}"
   description = "Node Workers IAM policies"
 
   policy = file("${path.module}/node-workers-policy.json")
@@ -9,7 +9,7 @@ resource "aws_iam_policy" "worker_policy" {
 module "eks" {
   source                          = "terraform-aws-modules/eks/aws"
   version                         = "~> 19.4"
-  cluster_name                    = var.cluster_name
+  shared_resource_name                    = var.shared_resource_name
   cluster_version                 = var.cluster_version
   subnet_ids                      = module.vpc.private_subnets
   vpc_id                          = module.vpc.vpc_id
@@ -75,7 +75,7 @@ module "eks" {
 
   eks_managed_node_groups = {
     eks = {
-      name              = "${var.cluster_name}-worker-nodes"
+      name              = "${var.shared_resource_name}-worker-nodes"
       capacity_type     = var.capacity_type
       enable_monitoring = false
       desired_capacity  = var.desired_worker_node
@@ -101,14 +101,14 @@ module "eks" {
 # force a refresh of local kubeconfig
 resource "null_resource" "kubectl-init" {
   provisioner "local-exec" {
-    command = "aws eks --region ${var.aws_region} update-kubeconfig --name ${var.cluster_name}"
+    command = "aws eks --region ${var.aws_region} update-kubeconfig --name ${var.shared_resource_name}"
   }
-  depends_on = [module.eks.cluster_name]
+  depends_on = [module.eks.shared_resource_name]
 }
 
 
 resource "aws_security_group" "worker_group_mgmt" {
-  name_prefix = "${var.cluster_name}-eks_hosting_group_mgmt"
+  name_prefix = "${var.shared_resource_name}-eks_hosting_group_mgmt"
   description = "WAS: Ingress CLB worker group management"
   vpc_id      = module.vpc.vpc_id
 
@@ -126,7 +126,7 @@ resource "aws_security_group" "worker_group_mgmt" {
 }
 
 resource "aws_security_group" "all_worker_mgmt" {
-  name_prefix = "${var.cluster_name}-eks_all_worker_management"
+  name_prefix = "${var.shared_resource_name}-eks_all_worker_management"
   description = "WAS: Ingress CLB worker management"
   vpc_id      = module.vpc.vpc_id
 

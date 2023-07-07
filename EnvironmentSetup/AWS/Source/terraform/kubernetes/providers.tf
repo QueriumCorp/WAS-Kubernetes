@@ -7,11 +7,11 @@ provider "aws" {
 data "aws_partition" "current" {}
 
 data "aws_eks_cluster" "eks" {
-  name = var.cluster_name
+  name = var.shared_resource_name
 }
 
 data "aws_eks_cluster_auth" "eks" {
-  name = var.cluster_name
+  name = var.shared_resource_name
 }
 
 provider "kubernetes" {

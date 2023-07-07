@@ -23,7 +23,7 @@ variable "public_subnets" {
   default = ["10.168.0.0/18", "10.168.64.0/18"]  
 }
 
-variable "cluster_name" {
+variable "shared_resource_name" {
   default = "WAS"
   type = string
 }

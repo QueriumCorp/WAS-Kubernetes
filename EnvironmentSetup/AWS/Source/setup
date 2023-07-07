@@ -420,7 +420,7 @@ install_msg
 export AWS_DEFAULT_OUTPUT="json"
 
 saveCredsFunction() {
-  echo "GET_CLUSTER_NAME:$GET_CLUSTER_NAME" >>creds
+  echo "GET_shared_resource_name:$GET_shared_resource_name" >>creds
   echo "GET_REGION:$GET_REGION" >>creds
   echo "TERRAFORM_BUCKET:$terraform_bucket_name" >>creds
   echo "MINIO_ACCESS_KEY:$MINIO_ACCESS_KEY" >>creds
@@ -438,7 +438,7 @@ saveCredsFunction() {
   echo "ENDPOINT_INFO_URL:http://$BASE_URL/.applicationserver/info"
   echo "RESTART_URL:http://$BASE_URL/.applicationserver/kernel/restart" >>creds
 
-  creds_bucket_suffix="$lower_cluster_name-creds-"
+  creds_bucket_suffix="$lower_shared_resource_name-creds-"
   creds_bucket_name="$creds_bucket_suffix$account_id"
 
   created_bucket=$(aws s3api create-bucket --bucket $creds_bucket_name --region $GET_REGION)
@@ -469,8 +469,8 @@ SetupFunction() {
   banner=true
   cd Source/terraform
 
-  GET_CLUSTER_NAME=$(grep -A1 -i cluster_name variables.tf | grep -i default | awk '{print $3}' | sed -e 's/"//g' | tr -d '\n')
-  GET_CLUSTER_NAME=$(echo $GET_CLUSTER_NAME | tr -d '\r')
+  GET_shared_resource_name=$(grep -A1 -i shared_resource_name variables.tf | grep -i default | awk '{print $3}' | sed -e 's/"//g' | tr -d '\n')
+  GET_shared_resource_name=$(echo $GET_shared_resource_name | tr -d '\r')
   GET_REGION=$(grep -A1 -i aws_region variables.tf | grep -i default | awk '{print $3}' | sed -e 's/"//g' | tr -d '\n')
   GET_REGION=$(echo $GET_REGION | tr -d '\r')
 
@@ -508,15 +508,15 @@ SetupFunction() {
   CURRENT_REGION_VAL=$(grep -A1 -i "region         =" main.tf | head -n 1 | awk '{print $3}')
   sed -i -e 's/'"$CURRENT_REGION_VAL"'/"'"$GET_REGION"'"/g' main.tf
   suffix="terraform-tfstate"
-  lower_cluster_name=$(echo $GET_CLUSTER_NAME | tr '[:upper:]' '[:lower:]')
-  lower_cluster_name=$(echo $lower_cluster_name | tr -d '\r')
+  lower_shared_resource_name=$(echo $GET_shared_resource_name | tr '[:upper:]' '[:lower:]')
+  lower_shared_resource_name=$(echo $lower_shared_resource_name | tr -d '\r')
   get_user_info=$(aws sts get-caller-identity)
   account_id=$(echo $get_user_info | grep -oP '(?<="Account": ")[^"]*')
-  terraform_bucket_name=$account_id-$suffix-${lower_cluster_name}-01
+  terraform_bucket_name=$account_id-$suffix-${lower_shared_resource_name}-01
   CURRENT_BUCKET_VAL=$(grep -i "bucket         =" main.tf | awk '{print $3}' | head -n 1)
   sed -i -e 's/'"$CURRENT_BUCKET_VAL"'/"'"$terraform_bucket_name"'"/g' main.tf
   CURRENT_DYNAMODB_VAL=$(grep -i "dynamodb_table =" main.tf | awk '{print $3}' | head -n 1)
-  sed -i -e 's/'"$CURRENT_DYNAMODB_VAL"'/"'"terraform-state-locking-$lower_cluster_name"'"/g' main.tf
+  sed -i -e 's/'"$CURRENT_DYNAMODB_VAL"'/"'"terraform-state-locking-$lower_shared_resource_name"'"/g' main.tf
   CURRENT_KEY_VAL=$(grep -i "key            =" main.tf | awk '{print $3}' | head -n 1)
   current_date=$(date +'%Y%m%d%H%M%S')
   s3_key="global/s3/terraform.tfstate.$current_date"
@@ -550,14 +550,14 @@ SetupFunction() {
 
   # Create dynamodb table for terraform
 
-  dynamodb_table="terraform-state-locking-$lower_cluster_name"
+  dynamodb_table="terraform-state-locking-$lower_shared_resource_name"
   dynamodb_check=$(aws dynamodb list-tables --output text | grep "$dynamodb_table" | awk '{print $2}')
 
   if [ -z $dynamodb_check ]; then
     run_ok "aws dynamodb create-table --region $GET_REGION --table-name $dynamodb_table --attribute-definitions AttributeName=LockID,AttributeType=S --key-schema AttributeName=LockID,KeyType=HASH --provisioned-throughput ReadCapacityUnits=1,WriteCapacityUnits=1" "Creating terraform dynamodb table"
   fi
 
-  workspace="$lower_cluster_name-$GET_REGION"
+  workspace="$lower_shared_resource_name-$GET_REGION"
 
   if [ X"$eks_Exists" = X"$val" ]; then
     echo
@@ -570,7 +570,7 @@ SetupFunction() {
 
     # Update kubeconfig
 
-  run_ok "aws eks --region $GET_REGION update-kubeconfig --name $GET_CLUSTER_NAME" "Generate kubeconfig configuration"
+  run_ok "aws eks --region $GET_REGION update-kubeconfig --name $GET_shared_resource_name" "Generate kubeconfig configuration"
   cd ..
 
   echo
@@ -578,18 +578,18 @@ SetupFunction() {
   printf "${GREEN}☑☑${YELLOW}☑${CYAN}□□${NORMAL} Phase ${YELLOW}3${NORMAL} of ${GREEN}5${NORMAL}: Deploy Dependencies\\n"
   run_ok "kubectl apply -f ingress-controller/" "Setup Ingress Controller"
   run_ok "kubectl apply -f metrics-server/" "Setup Metrics Server"
-  sed -i -e 's/- --node-group-auto-discovery=asg:tag=k8s.io\/cluster-autoscaler\/enabled,k8s.io\/cluster-autoscaler\/.*/- --node-group-auto-discovery=asg:tag=k8s.io\/cluster-autoscaler\/enabled,k8s.io\/cluster-autoscaler\/'"$GET_CLUSTER_NAME"'/g' cluster-autoscaler/cluster-autoscaler-autodiscover.yaml
+  sed -i -e 's/- --node-group-auto-discovery=asg:tag=k8s.io\/cluster-autoscaler\/enabled,k8s.io\/cluster-autoscaler\/.*/- --node-group-auto-discovery=asg:tag=k8s.io\/cluster-autoscaler\/enabled,k8s.io\/cluster-autoscaler\/'"$GET_shared_resource_name"'/g' cluster-autoscaler/cluster-autoscaler-autodiscover.yaml
   run_ok "kubectl apply -f cluster-autoscaler/" "Setup Cluster Autoscaler"
   cd efs
   kubectl patch storageclass gp2 -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"false"}}}' >>$LOG_PATH
   kubectl apply -f namespace.yaml >>$LOG_PATH
   kubectl config set-context --current --namespace=efs-sc >>$LOG_PATH
-  cluster_name=$GET_CLUSTER_NAME
-  group_name="efs-mount-eks-$cluster_name"
-  description="efs-mount-eks-$cluster_name"
-  token_name="eks-efs-$cluster_name"
+  shared_resource_name=$GET_shared_resource_name
+  group_name="efs-mount-eks-$shared_resource_name"
+  description="efs-mount-eks-$shared_resource_name"
+  token_name="eks-efs-$shared_resource_name"
   region=$GET_REGION
-  vpc_id=$(aws eks describe-cluster --name $cluster_name --query "cluster.resourcesVpcConfig.vpcId" --output text)
+  vpc_id=$(aws eks describe-cluster --name $shared_resource_name --query "cluster.resourcesVpcConfig.vpcId" --output text)
   cidr_block=$(aws ec2 describe-vpcs --vpc-ids $vpc_id --query "Vpcs[].CidrBlock" --output text)
   
   # Create security groups
@@ -786,8 +786,8 @@ EOF
   sed -i -e 's~'"$CURRENT_MINIOACCESSKEY"'~'"$MINIO_ACCESS_KEY"'~g' deployments/resource-manager-deployment.yaml
   CURRENT_MINIOSECRETKEY=$(grep -A1 -i MINIOSECRETKEY deployments/resource-manager-deployment.yaml | grep -i value: | awk '{print $2}')
   sed -i -e 's~'"$CURRENT_MINIOSECRETKEY"'~'"$MINIO_SECRET_KEY"'~g' deployments/resource-manager-deployment.yaml
-  resources_bucket_name="$lower_cluster_name-resources-$account_id"
-  nodefiles_bucket_name="$lower_cluster_name-nodefiles-$account_id"
+  resources_bucket_name="$lower_shared_resource_name-resources-$account_id"
+  nodefiles_bucket_name="$lower_shared_resource_name-nodefiles-$account_id"
   CURRENT_RESOURCEINFOBUCKET=$(grep -A1 -i RESOURCEINFO.BUCKET deployments/resource-manager-deployment.yaml | grep -i value: | awk '{print $2}')
   sed -i -e 's~'"$CURRENT_RESOURCEINFOBUCKET"'~'"$resources_bucket_name"'~g' deployments/resource-manager-deployment.yaml
   CURRENT_NODEFILESBUCKET=$(grep -A1 -i NODEFILES.BUCKET deployments/resource-manager-deployment.yaml | grep -i value: | awk '{print $2}' | cut -d ' ' -f 1)
@@ -1014,7 +1014,7 @@ kafkaShutdown() {
 }
 
 parseCredsFunction() {
-  GET_CLUSTER_NAME=$(cat creds | cut -d$';' -f1 | grep GET_CLUSTER_NAME | cut -d$':' -f2)
+  GET_shared_resource_name=$(cat creds | cut -d$';' -f1 | grep GET_shared_resource_name | cut -d$':' -f2)
   GET_REGION=$(cat creds | cut -d$';' -f1 | grep GET_REGION | cut -d$':' -f2)
   TERRAFORM_BUCKET=$(cat creds | cut -d$';' -f1 | grep TERRAFORM_BUCKET | cut -d$':' -f2)
   MINIO_ACCESS_KEY=$(cat creds | cut -d$';' -f1 | grep MINIO_ACCESS_KEY | cut -d$':' -f2)
@@ -1043,19 +1043,19 @@ DeleteFunction() {
   account_id=$(echo $get_user_info | grep -oP '(?<="Account": ")[^"]*')
   
 
-  GET_CLUSTER_NAME=$(grep -A1 -i cluster_name variables.tf | grep -i default | awk '{print $3}' | sed -e 's/"//g' | tr -d '\n')
-  GET_CLUSTER_NAME=$(echo $GET_CLUSTER_NAME | tr -d '\r')
+  GET_shared_resource_name=$(grep -A1 -i shared_resource_name variables.tf | grep -i default | awk '{print $3}' | sed -e 's/"//g' | tr -d '\n')
+  GET_shared_resource_name=$(echo $GET_shared_resource_name | tr -d '\r')
   GET_REGION=$(grep -A1 -i aws_region variables.tf | grep -i default | awk '{print $3}' | sed -e 's/"//g' | tr -d '\n')
   GET_REGION=$(echo $GET_REGION | tr -d '\r')
   region=$(echo $GET_REGION | tr -d '\r')
 
-  GET_CLUSTER_NAME=$(grep -A1 -i cluster_name variables.tf | grep -i default | awk '{print $3}' | sed -e 's/"//g' | tr -d '\n')
-  GET_CLUSTER_NAME=$(echo $GET_CLUSTER_NAME | tr -d '\r')
+  GET_shared_resource_name=$(grep -A1 -i shared_resource_name variables.tf | grep -i default | awk '{print $3}' | sed -e 's/"//g' | tr -d '\n')
+  GET_shared_resource_name=$(echo $GET_shared_resource_name | tr -d '\r')
 
-  lower_cluster_name=$(echo $GET_CLUSTER_NAME | tr '[:upper:]' '[:lower:]')
-  lower_cluster_name=$(echo $lower_cluster_name | tr -d '\r')
+  lower_shared_resource_name=$(echo $GET_shared_resource_name | tr '[:upper:]' '[:lower:]')
+  lower_shared_resource_name=$(echo $lower_shared_resource_name | tr -d '\r')
 
-  creds_bucket_suffix="$lower_cluster_name-creds-"
+  creds_bucket_suffix="$lower_shared_resource_name-creds-"
   creds_bucket_name=$creds_bucket_suffix$account_id
 
   # Download credentials from S3 bucket
@@ -1073,8 +1073,8 @@ DeleteFunction() {
 
   CURRENT_REGION_VAL=$(grep -A1 -i "region         =" main.tf | head -n 1 | awk '{print $3}')
   sed -i -e 's/'"$CURRENT_REGION_VAL"'/"'"$GET_REGION"'"/g' main.tf
-  lower_cluster_name=$(echo $GET_CLUSTER_NAME | tr '[:upper:]' '[:lower:]')
-  lower_cluster_name=$(echo $lower_cluster_name | tr -d '\r')
+  lower_shared_resource_name=$(echo $GET_shared_resource_name | tr '[:upper:]' '[:lower:]')
+  lower_shared_resource_name=$(echo $lower_shared_resource_name | tr -d '\r')
   CURRENT_BUCKET_VAL=$(grep -i "bucket         =" main.tf | awk '{print $3}' | head -n 1)
   sed -i -e 's/'"$CURRENT_BUCKET_VAL"'/"'"$TERRAFORM_BUCKET"'"/g' main.tf
   CURRENT_DYNAMODB_VAL=$(grep -i "dynamodb_table =" main.tf | awk '{print $3}' | head -n 1)
@@ -1117,10 +1117,10 @@ DeleteFunction() {
     cd Source
 
     # Update kubeconfig
-    run_ok "aws eks update-kubeconfig --region $GET_REGION --name $GET_CLUSTER_NAME" "Updating kubeconfig"
+    run_ok "aws eks update-kubeconfig --region $GET_REGION --name $GET_shared_resource_name" "Updating kubeconfig"
     
     # Switch context
-    run_ok "kubectl config use-context arn:aws:eks:$GET_REGION:$account_id:cluster/$GET_CLUSTER_NAME " "Switching Context"
+    run_ok "kubectl config use-context arn:aws:eks:$GET_REGION:$account_id:cluster/$GET_shared_resource_name " "Switching Context"
     
     BASE_URL=$(kubectl get svc -n ingress-nginx | awk '{print $4}' | sed -n '2p')
     sed -i -e "s/$BASE_URL/domain.com/g" deployments/active-web-elements-server-deployment.yaml
@@ -1162,7 +1162,7 @@ DeleteFunction() {
     rm -rf values*
     kubectl delete --ignore-not-found=true -f namespace.yaml >>$LOG_PATH
     suffix_efs_sc="efs-mount-eks-"
-    efs_sc_id=$(aws ec2 describe-security-groups --output text | grep $suffix_efs_sc$GET_CLUSTER_NAME | awk '{print $3}')
+    efs_sc_id=$(aws ec2 describe-security-groups --output text | grep $suffix_efs_sc$GET_shared_resource_name | awk '{print $3}')
     
     # Delete security groups
     aws ec2 delete-security-group --group-id $efs_sc_id >>$LOG_PATH
@@ -1172,7 +1172,7 @@ DeleteFunction() {
     log_debug "Phase 4 of 5: Delete Amazon Kubernetes Cluster (EKS)"
     printf "${GREEN}☑☑☑${YELLOW}☑${CYAN}□${NORMAL} Phase ${YELLOW}4${NORMAL} of ${GREEN}5${NORMAL}: Delete Amazon Kubernetes Cluster (EKS)\\n"
     cd terraform
-    sed -i -e 's~'"terraform-tfstate-"'$'"{var.cluster_name}"~$TERRAFORM_BUCKET~g main.tf
+    sed -i -e 's~'"terraform-tfstate-"'$'"{var.shared_resource_name}"~$TERRAFORM_BUCKET~g main.tf
     sed -i -e 's~'"$"'{var.aws-region}'~$GET_REGION~g main.tf
     run_ok "sleep 5 && terraform init && terraform workspace select $WORKSPACE && terraform refresh && terraform destroy -auto-approve || true" "Deleting EKS"
     set +e
@@ -1205,8 +1205,8 @@ cleanconfiguration() {
   echo
   log_debug "Phase 1 of 1: Clean Configuration"
 
-  sed -i -e 's/'"$GET_CLUSTER_NAME"'/${var.cluster_name}/g' main.tf
-  sed -i -e 's/'"$TERRAFORM_BUCKET"'/terraform-tfstate-${var.cluster_name}/g' main.tf
+  sed -i -e 's/'"$GET_shared_resource_name"'/${var.shared_resource_name}/g' main.tf
+  sed -i -e 's/'"$TERRAFORM_BUCKET"'/terraform-tfstate-${var.shared_resource_name}/g' main.tf
   GET_REGION=$(echo $GET_REGION | tr -d '\r')
   sed -i -e 's/'"$GET_REGION"'/us-east-1/g' variables.tf
   awk '!/terraform-s3-bucket-name/' variables.tf >tmpfile && mv tmpfile variables.tf >>$LOG_PATH
@@ -1248,7 +1248,7 @@ deleteAWSBucket() {
 }
 
 NEWEKSCHECK() {
-  clusterExists=$(aws eks describe-cluster --name $GET_CLUSTER_NAME --region $GET_REGION 2>/dev/null 2>&1)
+  clusterExists=$(aws eks describe-cluster --name $GET_shared_resource_name --region $GET_REGION 2>/dev/null 2>&1)
   if [[ $clusterExists =~ "{" ]]; then
     printf "cluster found"
     eks_Exists="yes"
@@ -1259,8 +1259,8 @@ NEWEKSCHECK() {
 }
 
 CURRENTEKSCHECK() {
-  GET_CLUSTER_NAME=$(echo $GET_CLUSTER_NAME | tr -d '\r')
-  clusterExists=$(aws eks describe-cluster --name $GET_CLUSTER_NAME --region $GET_REGION 2>/dev/null 2>&1)
+  GET_shared_resource_name=$(echo $GET_shared_resource_name | tr -d '\r')
+  clusterExists=$(aws eks describe-cluster --name $GET_shared_resource_name --region $GET_REGION 2>/dev/null 2>&1)
   if [[ $clusterExists =~ "ACTIVE" ]]; then
     printf "cluster found"
     eks_Exists="yes"
@@ -1305,13 +1305,13 @@ getCredsFunction() {
 
   cd /Source/terraform
 
-  GET_CLUSTER_NAME=$(grep -A1 -i cluster_name variables.tf | grep -i default | awk '{print $3}' | sed -e 's/"//g' | tr -d '\n')
-  GET_CLUSTER_NAME=$(echo $GET_CLUSTER_NAME | tr -d '\r')
+  GET_shared_resource_name=$(grep -A1 -i shared_resource_name variables.tf | grep -i default | awk '{print $3}' | sed -e 's/"//g' | tr -d '\n')
+  GET_shared_resource_name=$(echo $GET_shared_resource_name | tr -d '\r')
   region=$(grep -A1 -i aws_region variables.tf | grep -i default | awk '{print $3}' | sed -e 's/"//g' | tr -d '\n')
   region=$(echo $GET_REGION | tr -d '\r')
-  lower_cluster_name=$(echo $GET_CLUSTER_NAME | tr '[:upper:]' '[:lower:]')
-  lower_cluster_name=$(echo $lower_cluster_name | tr -d '\r')
-  creds_bucket_suffix="$lower_cluster_name-creds-"
+  lower_shared_resource_name=$(echo $GET_shared_resource_name | tr '[:upper:]' '[:lower:]')
+  lower_shared_resource_name=$(echo $lower_shared_resource_name | tr -d '\r')
+  creds_bucket_suffix="$lower_shared_resource_name-creds-"
   creds_bucket_name=$creds_bucket_suffix$account_id
 
   fetched_creds=$(aws s3api get-object --bucket $creds_bucket_name --region $region --key creds creds | grep ContentLength | awk '{print $2}' | sed -e 's/"//g')

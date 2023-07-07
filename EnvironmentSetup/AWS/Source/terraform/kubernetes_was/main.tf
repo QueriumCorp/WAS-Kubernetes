@@ -1,5 +1,5 @@
 locals {
-  cluster_name    = var.cluster_name
+  shared_resource_name    = var.shared_resource_name
   aws_region      = var.aws_region
   account_id      = var.account_id
 
