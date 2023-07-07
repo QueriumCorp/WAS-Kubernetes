@@ -27,15 +27,7 @@ locals {
   minio_account_name     = "minio-admin"
   minio_ingress_hostname = "${local.minio_namespace}.${var.services_subdomain}"
 
-  tags = merge(
-    var.tags,
-    module.cookiecutter_meta.tags,
-    {
-      "cookiecutter/module/source"    = "openedx_devops/terraform/stacks/modules/kubernetes_minio"
-      "cookiecutter/resource/source"  = "charts.bitnami.com/bitnami/minio"
-      "cookiecutter/resource/version" = "12.2"
-    }
-  )
+  tags = {}
 }
 
 

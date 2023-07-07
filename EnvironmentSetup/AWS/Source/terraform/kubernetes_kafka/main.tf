@@ -28,15 +28,7 @@
 locals {
   kafka_namespace = "kafka"
 
-  tags = merge(
-    var.tags,
-    module.cookiecutter_meta.tags,
-    {
-      "cookiecutter/module/source"    = "openedx_devops/terraform/stacks/modules/kubernetes_kafka"
-      "cookiecutter/resource/source"  = "charts.kafka.sh"
-      "cookiecutter/resource/version" = "0.16"
-    }
-  )
+  tags = {}
 }
 
 data "template_file" "kafka-values" {
@@ -105,13 +97,6 @@ module "kafka_controller_irsa_role" {
     }
   }
 
-  tags = merge(
-    local.tags,
-    {
-      "cookiecutter/resource/source"  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
-      "cookiecutter/resource/version" = "latest"
-    }
-  )
 
 }
 
@@ -182,13 +167,6 @@ resource "aws_iam_role" "ec2_spot_fleet_tagging_role" {
     ]
   })
 
-  tags = merge(
-    local.tags,
-    {
-      "cookiecutter/resource/source"  = "hashicorp/aws/aws_iam_role"
-      "cookiecutter/resource/version" = "4.48"
-    }
-  )
 }
 
 resource "aws_iam_role_policy_attachment" "ec2_spot_fleet_tagging" {

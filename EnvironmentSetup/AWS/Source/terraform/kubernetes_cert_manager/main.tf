@@ -17,15 +17,7 @@
 #------------------------------------------------------------------------------
 
 locals {
-  tags = merge(
-    var.tags,
-    module.cookiecutter_meta.tags,
-    {
-      "cookiecutter/module/source"    = "openedx_devops/terraform/stacks/modules/kubernetes_cert_manager"
-      "cookiecutter/resource/source"  = "jetstack/cert-manager"
-      "cookiecutter/resource/version" = "1.11"
-    }
-  )
+  tags = {}
 }
 
 resource "helm_release" "cert-manager" {
@@ -81,13 +73,7 @@ resource "aws_iam_policy" "cert_manager_policy" {
     ]
   })
 
-  tags = merge(
-    local.tags,
-    {
-      "cookiecutter/resource/source"  = "hashicorp/aws/aws_iam_policy"
-      "cookiecutter/resource/version" = "4.48"
-    }
-  )
+  tags = {} 
 }
 
 
@@ -101,21 +87,3 @@ module "cert_manager_irsa" {
   oidc_fully_qualified_subjects = ["system:serviceaccount:${var.cert_manager_namespace}:cert-manager"]
 }
 
-#------------------------------------------------------------------------------
-#                               COOKIECUTTER META
-#------------------------------------------------------------------------------
-module "cookiecutter_meta" {
-  source = "../../../../../../../common/cookiecutter_meta"
-}
-
-resource "kubernetes_secret" "cookiecutter" {
-  metadata {
-    name      = "cookiecutter-terraform"
-    namespace = var.cert_manager_namespace
-  }
-
-  # https://stackoverflow.com/questions/64134699/terraform-map-to-string-value
-  data = {
-    tags = jsonencode(local.tags)
-  }
-}

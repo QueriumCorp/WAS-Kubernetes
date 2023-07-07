@@ -26,15 +26,7 @@
 #   kubectl -n default port-forward $POD_NAME 8443:8443
 #-----------------------------------------------------------
 locals {
-  tags = merge(
-    var.tags,
-    module.cookiecutter_meta.tags,
-    {
-      "cookiecutter/module/source"    = "openedx_devops/terraform/stacks/modules/kubernetes_efs"
-      "cookiecutter/resource/source"  = "kubernetes.github.io/efs"
-      "cookiecutter/resource/version" = "6.0"
-    }
-  )
+  tags = {}
 }
 
 data "template_file" "efs-values" {

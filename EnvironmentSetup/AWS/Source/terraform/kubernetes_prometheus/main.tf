@@ -38,15 +38,7 @@ locals {
   cost_analyzer = "cost-analyzer"
   prometheus    = "prometheus"
 
-  tags = merge(
-    var.tags,
-    module.cookiecutter_meta.tags,
-    {
-      "cookiecutter/module/source"    = "openedx_devops/terraform/stacks/modules/kubernetes_prometheus"
-      "cookiecutter/resource/source"  = "prometheus-community.github.io/helm-charts/kube-prometheus-stack"
-      "cookiecutter/resource/version" = "39.6.0"
-    }
-  )
+  tags = {}
 }
 
 data "template_file" "prometheus-values" {
