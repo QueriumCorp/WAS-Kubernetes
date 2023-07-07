@@ -40,19 +40,13 @@ resource "helm_release" "kafka" {
   create_namespace = true
 
   name       = "kafka"
-  repository = "https://charts.kafka.sh"
+  repository = "https://charts.bitnami.com/bitnami"
   chart      = "kafka"
-
-  version = "~> 23.0"
+  version    = "~> 23.0"
 
   values = [
     data.template_file.kafka-values.rendered
   ]
-
-  # set {
-  #   name  = "clusterName"
-  #   value = var.cluster_name
-  # }
 
 }
 
