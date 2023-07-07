@@ -29,24 +29,24 @@ variable "cluster_version" {
   default = "1.27"
 }
 
-variable "disk-size" {
+variable "disk_size" {
   default = "30"
 }
 
 variable "instance_types" {
   type = list(string)
-  default = ["c5.2xlarge", "t3.2xlarge", "c5d.2xlarge", "t3a.2xlarge", "t2.2xlarge"]
+  default = ["c5.2xlarge"]
 }
 
-variable "desired-worker-node" {
+variable "desired_worker_node" {
   default = "2"
 }
 
-variable "min-worker-node" {
+variable "min_worker_node" {
   default = "2"
 }
 
-variable "max-worker-node" {
+variable "max_worker_node" {
   default = "10"
 }
 

@@ -78,10 +78,10 @@ module "eks" {
       name              = "${local.cluster_name}-worker-nodes"
       capacity_type     = local.capacity_type
       enable_monitoring = false
-      desired_capacity  = local.desired-worker-node
-      max_capacity      = local.max-worker-node
-      min_capacity      = local.min-worker-node
-      disk_size         = local.disk-size
+      desired_capacity  = local.desired_worker_node
+      max_capacity      = local.max_worker_node
+      min_capacity      = local.min_worker_node
+      disk_size         = local.disk_size
       instance_types    = local.instance_types
 
       labels = {

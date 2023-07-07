@@ -36,13 +36,13 @@ resource "azurerm_kubernetes_cluster" "default" {
 
   default_node_pool {
     name                = "workernodes"
-    node_count          = "${var.desired-worker-node}"
+    node_count          = "${var.desired_worker_node}"
     vm_size             = "${var.instance_type}"
-    os_disk_size_gb     = "${var.disk-size}"
+    os_disk_size_gb     = "${var.disk_size}"
 	  max_pods            = "${var.max_pods}"
 	  enable_auto_scaling = true
-    min_count           = "${var.min-worker-node}"
-    max_count           = "${var.max-worker-node}"
+    min_count           = "${var.min_worker_node}"
+    max_count           = "${var.max_worker_node}"
   }
 
   service_principal {

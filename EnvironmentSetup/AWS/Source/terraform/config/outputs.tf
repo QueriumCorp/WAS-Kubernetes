@@ -28,3 +28,19 @@ output "private_subnets" {
 output "public_subnets" {
   value = local.public_subnets
 }
+
+output "namdesired_worker_nodee" {
+  value = local.desired_worker_node
+}
+output "max_worker_node" {
+  value = local.max_worker_node  
+}
+output "min_worker_node" {
+  value = local.min_worker_node
+}
+output "disk_size" {
+  value = local.disk_size
+}
+output "instance_types" {
+  value = local.instance_types
+}

@@ -40,3 +40,11 @@ kms_key_owners = [
     "arn:aws:iam::320713933456:user/mcdaniel",
     "arn:aws:iam::320713933456:user/kent.fuka",
 ]
+
+# EKS managed node settings
+# ----------------------------------
+desired_worker_node = 2
+max_worker_node = 10
+min_worker_node = 2
+disk_size = 30
+instance_types = ["c5.2xlarge", "t3.2xlarge", "c5d.2xlarge", "t3a.2xlarge", "t2.2xlarge"]
