@@ -5,63 +5,17 @@
 AWS_ACCOUNT=320713933456
 AWS_REGION=us-east-1
 AWS_DYNAMODB_TABLE="terraform-state-locking-was2"
+AWS_S3_BUCKET="${AWS_ACCOUNT}-terraform-tfstate-was-01"
+
+# Create required Terraform state resources
 aws dynamodb create-table --region $AWS_REGION --table-name $AWS_DYNAMODB_TABLE --attribute-definitions AttributeName=LockID,AttributeType=S --key-schema AttributeName=LockID,KeyType=HASH --provisioned-throughput ReadCapacityUnits=1,WriteCapacityUnits=1
+aws s3api create-bucket --bucket $AWS_S3_BUCKET --region $AWS_REGION
 
-aws s3api create-bucket --bucket "${AWS_ACCOUNT}-terraform-tfstate-was-01" --region $AWS_REGION
+# Build and deploy
+echo "building AWS VPC and EKS Cluster and deploying WAS. Takes around 30 minutes..."
 
-cd ~/wolfram/WAS-Kubernetes/EnvironmentSetup/AWS/Source/terraform
-
-cd kubernetes
-echo "building AWS VPC and EKS Cluster. Takes around 15 minutes..."
+cd ~/wolfram/WAS-Kubernetes/EnvironmentSetup/AWS/Source/terraform/was
 terraform init
-terraform apply -var-file=../queriumcorp.tfvars
+terraform apply
 cd ..
 
-echo "Deploying WAS prerequisites ...."
-
-cd kubernetes_vpa
-echo "deploying Kubernetes Vertical Pod Autoscaler"
-terraform init
-terraform apply -var-file=../queriumcorp.tfvars
-
-cd kubernetes_metricsserver
-echo "deploying Kubernetes Metrics Server"
-terraform init
-terraform apply -var-file=../queriumcorp.tfvars
-cd ..
-
-cd kubernetes_prometheus
-echo "deploying Kubernetes Prometheus"
-terraform init
-terraform apply -var-file=../queriumcorp.tfvars
-cd ..
-
-cd kubernetes_cert_manager
-echo "deploying Kubernetes Certificate Manager"
-terraform init
-terraform apply -var-file=../queriumcorp.tfvars
-cd ..
-
-cd kubernetes_ingress_controller
-echo "deploying Kubernetes Ingress Controller"
-terraform init
-terraform apply -var-file=../queriumcorp.tfvars
-cd ..
-
-cd kubernetes_minio
-echo "deploying Kubernetes Minio"
-terraform init
-terraform apply -var-file=../queriumcorp.tfvars
-cd ..
-
-cd kubernetes_kafka
-echo "deploying Kubernetes Kafka"
-terraform init
-terraform apply -var-file=../queriumcorp.tfvars
-cd ..
-
-cd kubernetes_was
-echo "Deploying WAS"
-terraform init
-terraform apply -var-file=../queriumcorp.tfvars
-cd ..

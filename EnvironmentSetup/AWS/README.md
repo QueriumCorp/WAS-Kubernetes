@@ -38,6 +38,22 @@ ubuntu@home:~$ aws configure
 
 This will interactively prompt for your AWS IAM user access key, secret key and preferred region.
 
+Create Terraform required state management resources. Terraform uses a dediated AWS S3 bucket for storing its state data, and a DynamoDB table for managing a semphore lock during operations.
+
+```console
+ubuntu@home:~$ AWS_ACCOUNT=012345678912      # add your 12-digit AWS account number here
+ubuntu@home:~$ AWS_REGION=us-east-1
+ubuntu@home:~$ AWS_DYNAMODB_TABLE="terraform-state-lock-was"
+ubuntu@home:~$ AWS_S3_BUCKET="${AWS_ACCOUNT}-terraform-tfstate-was"
+
+# Create required Terraform state resources
+ubuntu@home:~$ aws s3api create-bucket --bucket $AWS_S3_BUCKET --region $AWS_REGION
+ubuntu@home:~$ aws dynamodb create-table --region $AWS_REGION --table-name $AWS_DYNAMODB_TABLE  \
+               --attribute-definitions AttributeName=LockID,AttributeType=S  \
+               --key-schema AttributeName=LockID,KeyType=HASH --provisioned-throughput  \
+               ReadCapacityUnits=1,WriteCapacityUnits=1
+```
+
 ## Setup
 
 **Step 1.** Checkout the repository:
@@ -88,8 +104,12 @@ instance_types       = ["c5.2xlarge"]
 
 **Step 4.** Run the following command to set up EKS and deploy WAS:
 
+This takes around 30 minutes to complete.
+
 ```console
-ubuntu@home:~$ setup
+ubuntu@home:~$ cd ~/WAS-Kubernetes/EnvironmentSetup/AWS/Source/terraform/was
+ubuntu@home:~$ terraform init
+ubuntu@home:~$ terraform apply
 ```
 
 **Note:** This can take approximately 45 minutes to complete.
@@ -139,53 +159,20 @@ To change these, see the [configuration documentation](../../Configuration.md).
 Your setup is now complete.
 
 
-## Remove the cluster
+## Remove the cluster and all associated AWS resources
+
+```console
+ubuntu@home:~$ cd ~/WAS-Kubernetes/EnvironmentSetup/AWS/Source/terraform/was
+ubuntu@home:~$ terraform init
+ubuntu@home:~$ terraform destroy
+```
+
+Delete Terraform state management resources
+
+```console
+ubuntu@home:~$ AWS_REGION=us-east-1
+ubuntu@home:~$ AWS_DYNAMODB_TABLE="terraform-state-lock-was"
+ubuntu@home:~$ aws dynamodb delete-table --region $AWS_REGION --table-name $AWS_DYNAMODB_TABLE
+```
 
 The following completely deletes everything including the kubernetes cluster, Wolfram Application Server and all resources:
-
-**Step 1.** Update the `terraform/variables.tf` file with your WAS cluster info(aws_region, cluster name etc.)
-
-**Step 2.** Change your directory to the directory containing `docker-compose.yml` directory and run the following command to destroy your EKS cluster and WAS:
-
-	docker-compose up --build -d && clear && docker exec -it aws-setup-manager bash setup --delete
-
-**Warning:** All data will be destroyed.
-
-**Step 2.** After completion, shutdown the aws-setup-manager by running the following command:
-
-	docker-compose down	-v
-
----
-
-## Troubleshooting
-
-**1.** Backend configuration is changed error.
-```
-Building EKS - (can take upto 30 minutes) [ERROR] Failed with error: 1
-[ ✘ ]
-
-[ERROR] Something went wrong. Exiting.
-[ERROR] The last few log entries were:
-╷
-│ Error: Backend configuration changed
-│
-│ A change in the backend configuration has been detected, which may require
-│ migrating existing state.
-│
-│ If you wish to attempt automatic migration of the state, use “terraform
-│ init -migrate-state”.
-│ If you wish to store the current configuration with no changes to the
-│ state, use “terraform init -reconfigure”.
-```
-
-You need to check these bullet-points.
-
-* Check S3/DynamoDb for previous WAS setup states. If any of them exists, remove it manually on AWS Console.
-
-  
-
-* Remove docker container cache.
-
-  * Stop the running `aws-setup-manager` container with `docker kill <CONTAINER_ID>`
-  * `docker container prune -f`
-  * `docker volume prune -a -f`
