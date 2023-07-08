@@ -78,7 +78,7 @@ $ git clone https://github.com/WolframResearch/WAS-Kubernetes.git
 $ cd ~/WAS-Kubernetes/EnvironmentSetup/AWS/Source
 ```
 
-**Step 3.** Configure your environment:
+**Step 3.** Configure your environment by setting Terraform global variable values:
 
 ```console
 $ vim terraform/was/terraform.tfvars
@@ -114,15 +114,14 @@ instance_types       = ["c5.2xlarge"]
 
 **Step 4.** Run the following command to set up EKS and deploy WAS:
 
-This takes around 30 minutes to complete.
+Terraform is an infrastructure-as-code command line tool that will create and configure all required AWS resources.
+This process will take around 30 minutes to complete and will generate copious amounts of console output.
 
 ```console
 $ cd ~/WAS-Kubernetes/EnvironmentSetup/AWS/Source/terraform/was
 $ terraform init
 $ terraform apply
 ```
-
-**Note:** This can take approximately 45 minutes to complete.
 
 **Step 5.** Interact with the AWS EKS Kubernetes cluster
 
