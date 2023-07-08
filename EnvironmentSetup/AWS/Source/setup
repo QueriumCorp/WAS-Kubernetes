@@ -4,7 +4,7 @@
 
 
 
-cd terraform 
+cd ~/wolfram/WAS-Kubernetes/EnvironmentSetup/AWS/Source/terraform
 
 cd kubernetes
 echo "building AWS VPC and EKS Cluster. Takes around 15 minutes..."

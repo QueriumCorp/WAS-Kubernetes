@@ -1,3 +1,9 @@
+data "aws_vpc" "was" {
+  filter {
+    name = "tag:Name"
+    values = [var.shared_resource_name]
+  }
+}
 
 resource "aws_iam_policy" "worker_policy" {
   name        = "node-workers-policy-${var.shared_resource_name}"
@@ -11,8 +17,8 @@ module "eks" {
   version                         = "~> 19.4"
   cluster_name                    = var.shared_resource_name
   cluster_version                 = var.cluster_version
-  subnet_ids                      = module.vpc.private_subnets
-  vpc_id                          = module.vpc.vpc_id
+  subnet_ids                      = data.aws_vpc.private_subnets
+  vpc_id                          = data.aws_vpc.was.id
   create_cloudwatch_log_group     = false
   cluster_endpoint_private_access = true
   cluster_endpoint_public_access  = true
