@@ -23,16 +23,16 @@ variable "services_subdomain" {
 }
 variable "cidr" {
   type    = string
-  default = "10.168.0.0/16"
+  default = "192.168.0.0/20"
 }
 
 variable "private_subnets" {
   type    = list(string)
-  default = ["10.168.128.0/18", "10.168.192.0/18"]
+  default = ["192.168.4.0/24", "192.168.5.0/24"]
 }
 variable "public_subnets" {
   type    = list(string)
-  default = ["10.168.0.0/18", "10.168.64.0/18"]
+  default = ["192.168.1.0/24", "192.168.2.0/24"]
 }
 
 variable "shared_resource_name" {
@@ -42,15 +42,6 @@ variable "shared_resource_name" {
 
 
 # eks
-variable "stack_namespace" {
-  type = string
-  dedefault = "was"  
-}
-variable "namespace" {
-  default = "was"
-  type    = string
-}
-
 variable "cluster_version" {
   default = "1.27"
   type    = string

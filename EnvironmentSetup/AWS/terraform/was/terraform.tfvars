@@ -49,8 +49,6 @@ kms_key_owners = [
 # stack identifiers
 # -------------------------------------
 shared_resource_name = "was2"
-stack_namespace      = "was2"
-namespace            = "was2"
 
 # VPC
 # -------------------------------------

@@ -23,7 +23,7 @@ module "eks" {
   aws_profile          = var.aws_profile
   vpc_id               = module.vpc.vpc_id
   subnet_ids           = module.vpc.private_subnets
-  namespace            = var.namespace
+  namespace            = var.shared_resource_name
   cluster_version      = var.cluster_version
   disk_size            = var.disk_size
   instance_types       = var.instance_types
@@ -61,7 +61,7 @@ module "cert_manager" {
   source     = "../modules/kubernetes_cert_manager"
 
   root_domain         = var.root_domain
-  namespace           = var.namespace
+  namespace           = var.shared_resource_name
   services_subdomain  = var.services_subdomain
 
   depends_on = [module.vpc, module.eks, module.vpa, module.module.ingress_controller]
@@ -69,7 +69,7 @@ module "cert_manager" {
 
 module "minio" {
   source     = "../modules/kubernetes_minio"
-  namespace   = var.namespace
+  namespace   = var.shared_resource_name
   ingress_hostname = "minio.${var.services_subdomain}"
   depends_on = [module.eks, module.metricsserver, module.vpa, module.ingress_controller]
 }
