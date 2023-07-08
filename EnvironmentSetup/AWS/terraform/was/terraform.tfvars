@@ -61,7 +61,10 @@ public_subnets  = ["192.168.1.0/24", "192.168.2.0/24"]
 # EKS
 # -------------------------------------
 cluster_version = "1.27"
+
+# valid choices: 'SPOT', 'ON_DEMAND'
 capacity_type   = "SPOT"
+
 # EKS managed node settings
 # ----------------------------------
 desired_worker_node = 2
