@@ -1,4 +1,4 @@
-variable "versino" {
+variable "registry_version" {
   type = string  
 }
 variable "account_id" {
