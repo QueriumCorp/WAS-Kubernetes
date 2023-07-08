@@ -114,7 +114,25 @@ $ terraform apply
 
 **Note:** This can take approximately 45 minutes to complete.
 
-**Step 5.** Interact with WAS
+**Step 5.** Interact with the AWS EKS Kubernetes cluster
+
+You can use k9s, a text-based gui to view and interact with Kubernetes resources. k9s relies on kubectl to
+communicate with the AWS EKS Kuberenetes cluster.
+
+```console
+$ k9s
+```
+
+If necessary, you can use the following command to refresh your kubectl authentication resources.
+
+```console
+$ aws eks --region us-east-1 update-kubeconfig --name was
+```
+
+
+**Step 6.** Interact with WAS
+
+
 
 URL endpoints will be as follows, where <was.example.com> matches your value of services_subdomain above:
 
@@ -125,9 +143,9 @@ URL endpoints will be as follows, where <was.example.com> matches your value of 
 * Endpoints Info: https://was.example.com/applicationserver/info
 * Restart AWES: https://was.example.com/applicationserver/kernel/restart
 
-**Step 6.** Get a license file from your Wolfram Research sales representative.
+**Step 7.** Get a license file from your Wolfram Research sales representative.
 
-**Step 7.** This file needs to be deployed to WAS as a node file in the conventional location `.Wolfram/Licensing/mathpass`. From a Wolfram Language client, this may be achieved using the following code: 
+**Step 8.** This file needs to be deployed to WAS as a node file in the conventional location `.Wolfram/Licensing/mathpass`. From a Wolfram Language client, this may be achieved using the following code: 
 
     was = ServiceConnect["WolframApplicationServer", "https://example.com/"];
     ServiceExecute[was, "DeployNodeFile",
@@ -141,7 +159,7 @@ Alternatively you may use the [node files REST API](../../Documentation/API/Node
     PacletInstall["WolframApplicationServer"];
     Needs["WolframApplicationServer`"]
 
-**Step 8.** Restart the application using the [restart API](../../Documentation/API/Utilities.md) to enable your Wolfram Engines.
+**Step 9.** Restart the application using the [restart API](../../Documentation/API/Utilities.md) to enable your Wolfram Engines.
 
 URL: `https://example.com/.applicationserver/kernel/restart`
 	
