@@ -92,13 +92,3 @@ variable "kms_key_owners" {
   type    = list(any)
   default = []
 }
-
-variable "private_subnets" {
-  type    = list(string)
-  default = ["10.168.128.0/18", "10.168.192.0/18"]
-}
-variable "public_subnets" {
-  type    = list(string)
-  default = ["10.168.0.0/18", "10.168.64.0/18"]
-}
-

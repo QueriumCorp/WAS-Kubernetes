@@ -1,12 +1,7 @@
-terraform {
-  backend "s3" {
-    bucket         = "320713933456-terraform-tfstate-was-01"
-    key            = "stack/terraform.tfstate"
-    region         = "us-east-1"
-    dynamodb_table = "terraform-state-locking-was2"
-    profile        = "default"
-    encrypt        = false
-  }
+# need this bc the default aws profile specifies us-east-2
+provider "aws" {
+  region  = var.aws_region
+  profile = var.aws_profile
 }
 
 

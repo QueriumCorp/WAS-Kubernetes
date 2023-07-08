@@ -2,12 +2,21 @@
 # written by: Lawrence McDaniel
 #             https://lawrencemcdaniel.com/
 #
-# date: Mar-2022
+# date:       July-2023
 #
-# usage: create an EKS cluster
+# usage:      Terraform configuration
 #------------------------------------------------------------------------------
+
 terraform {
   required_version = "~> 1.3"
+  backend "s3" {
+    bucket         = "320713933456-terraform-tfstate-was-01"
+    key            = "stack/terraform.tfstate"
+    region         = "us-east-1"
+    dynamodb_table = "terraform-state-locking-was2"
+    profile        = "default"
+    encrypt        = false
+  }
 
   required_providers {
     local = "~> 2.2"
