@@ -6,7 +6,7 @@ This document describes the setup of Amazon Kubernetes (EKS) and Wolfram Applica
 
 This is a Terraform based, fully automated build-deploy script. Terraform is an infrastructure-as-code command line tool that will create and configure all required AWS resources. This process will take around 30 minutes to complete and will generate copious amounts of console output. 
 
-**Be aware that Terraform is a memory intensive application. For best results you should run this on a computer with at least 4Gib of free memory.**
+**WARNING: Terraform is a memory intensive application. For best results you should run this on a computer with at least 4Gib of free memory.**
 
 ## I. Install prerequisites
 
@@ -79,7 +79,7 @@ $ git clone https://github.com/WolframResearch/WAS-Kubernetes.git
 **Step 2.** Change directory to AWS:
 
 ```console
-$ cd ~/WAS-Kubernetes/EnvironmentSetup/AWS/Source
+$ cd ~/WAS-Kubernetes/EnvironmentSetup/AWS/
 ```
 
 **Step 3.** Configure your environment by setting Terraform global variable values:
@@ -119,7 +119,7 @@ instance_types       = ["c5.2xlarge"]
 **Step 4.** Run the following command to set up EKS and deploy WAS:
 
 ```console
-$ cd ~/WAS-Kubernetes/EnvironmentSetup/AWS/Source/terraform/was
+$ cd ~/WAS-Kubernetes/EnvironmentSetup/AWS/terraform/was
 $ terraform init
 $ terraform apply
 ```
