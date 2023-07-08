@@ -109,7 +109,7 @@ resource "null_resource" "kubectl-init" {
 resource "aws_security_group" "worker_group_mgmt" {
   name_prefix = "${var.shared_resource_name}-eks_hosting_group_mgmt"
   description = "WAS: Ingress CLB worker group management"
-  vpc_id      = data.aws_vpc.was.id
+  vpc_id      = var.vpc_id
 
   ingress {
     description = "WAS: Ingress CLB"
@@ -127,7 +127,7 @@ resource "aws_security_group" "worker_group_mgmt" {
 resource "aws_security_group" "all_worker_mgmt" {
   name_prefix = "${var.shared_resource_name}-eks_all_worker_management"
   description = "WAS: Ingress CLB worker management"
-  vpc_id      = data.aws_vpc.was.id
+  vpc_id      = var.vpc_id
 
   ingress {
     description = "WAS: Ingress CLB"

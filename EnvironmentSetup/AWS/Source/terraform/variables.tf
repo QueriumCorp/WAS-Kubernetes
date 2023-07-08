@@ -34,9 +34,6 @@ variable "shared_resource_name" {
 
 
 # eks
-variable "subnet_ids" {
-  type = string  
-}
 
 variable "namespace" {
   default = "was"
