@@ -54,7 +54,7 @@ $ aws dynamodb create-table --region $AWS_REGION --table-name $AWS_DYNAMODB_TABL
                ReadCapacityUnits=1,WriteCapacityUnits=1
 ```
 
-## Setup
+## Build and deploy WAS
 
 **Step 1.** Checkout the repository:
 
@@ -146,7 +146,10 @@ vpa                  Active   106m
 was                  Active   100m
 ```
 
-**Step 6.** Interact with WAS
+## WAS Usage
+
+
+**Step 1.** Interact with WAS
 
 URL endpoints will be as follows, where <was.example.com> matches your value of services_subdomain above:
 
@@ -157,9 +160,9 @@ URL endpoints will be as follows, where <was.example.com> matches your value of 
 * Endpoints Info: https://was.example.com/applicationserver/info
 * Restart AWES: https://was.example.com/applicationserver/kernel/restart
 
-**Step 7.** Get a license file from your Wolfram Research sales representative.
+**Step 2.** Get a license file from your Wolfram Research sales representative.
 
-**Step 8.** This file needs to be deployed to WAS as a node file in the conventional location `.Wolfram/Licensing/mathpass`. From a Wolfram Language client, this may be achieved using the following code: 
+**Step 3.** This file needs to be deployed to WAS as a node file in the conventional location `.Wolfram/Licensing/mathpass`. From a Wolfram Language client, this may be achieved using the following code: 
 
     was = ServiceConnect["WolframApplicationServer", "https://example.com/"];
     ServiceExecute[was, "DeployNodeFile",
@@ -173,7 +176,7 @@ Alternatively you may use the [node files REST API](../../Documentation/API/Node
     PacletInstall["WolframApplicationServer"];
     Needs["WolframApplicationServer`"]
 
-**Step 9.** Restart the application using the [restart API](../../Documentation/API/Utilities.md) to enable your Wolfram Engines.
+**Step 4.** Restart the application using the [restart API](../../Documentation/API/Utilities.md) to enable your Wolfram Engines.
 
 URL: `https://example.com/.applicationserver/kernel/restart`
 	
@@ -191,7 +194,7 @@ To change these, see the [configuration documentation](../../Configuration.md).
 Your setup is now complete.
 
 
-## Remove the cluster and all associated AWS resources
+## Uninstall
 
 The following completely destroys everything including the kubernetes cluster, Wolfram Application Server and all resources:
 
