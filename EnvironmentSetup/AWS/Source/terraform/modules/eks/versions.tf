@@ -18,7 +18,6 @@ terraform {
 
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 5.0.0"
     }
     kubectl = {
       source  = "gavinbunney/kubectl"

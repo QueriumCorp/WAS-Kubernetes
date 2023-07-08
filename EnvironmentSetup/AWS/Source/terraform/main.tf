@@ -47,7 +47,7 @@ module "metricsserver" {
 
 module "prometheus" {
   source     = "./modules/kubernetes_prometheus"
-  depends_on = [module.eks, module.module.metricsserver, module.vpa]
+  depends_on = [module.eks, module.metricsserver, module.vpa]
 }
 
 module "ingress_controller" {
@@ -57,10 +57,10 @@ module "ingress_controller" {
 
 module "minio" {
   source     = "./modules/kubernetes_minio"
-  depends_on = [module.eks, module.module.metricsserver, module.vpa, module.ingress_controller]
+  depends_on = [module.eks, module.metricsserver, module.vpa, module.ingress_controller]
 }
 
 module "kafka" {
   source     = "./modules/kubernetes_kafka"
-  depends_on = [module.eks, module.module.metricsserver, module.vpa, module.ingress_controller]
+  depends_on = [module.eks, module.metricsserver, module.vpa, module.ingress_controller]
 }

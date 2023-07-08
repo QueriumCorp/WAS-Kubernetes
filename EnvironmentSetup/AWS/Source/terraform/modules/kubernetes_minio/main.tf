@@ -23,7 +23,6 @@
 #   kubectl get --namespace minio secret minio-admin -o go-template='{{.data.token | base64decode}}'
 #-----------------------------------------------------------
 locals {
-  minio_namespace        = "minio"
   minio_account_name     = "minio-admin"
   minio_ingress_hostname = "${local.minio_namespace}.${var.services_subdomain}"
 
@@ -36,7 +35,7 @@ data "template_file" "minio-values" {
 }
 
 resource "helm_release" "minio" {
-  namespace        = local.minio_namespace
+  namespace        = var.namespace
   create_namespace = false
 
   name       = "minio"

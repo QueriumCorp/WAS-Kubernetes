@@ -7,15 +7,6 @@
 # usage: create an EKS cluster
 #------------------------------------------------------------------------------
 
-variable "services_subdomain" {
-  type = string
-
-}
-
-variable "stack_namespace" {
-  type = string
-}
-
 variable "namespace" {
   type    = string
   default = "was"
@@ -27,10 +18,3 @@ variable "tags" {
   default     = {}
 }
 
-variable "aws_region" {
-  type = string
-}
-variable "aws_profile" {
-  type    = string
-  default = "default"
-}
