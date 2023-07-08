@@ -4,7 +4,9 @@
 
 This document describes the setup of Amazon Kubernetes (EKS) and Wolfram Application Server (WAS).
 
-## Linux & macOS Setup
+## I. Install prerequisites
+
+Quickstart for Linux & macOS operating systems.
 
 **Prerequisite:** Obtain an AWS IAM User with administrator priviledges, access key and secret key.
 
@@ -54,7 +56,7 @@ $ aws dynamodb create-table --region $AWS_REGION --table-name $AWS_DYNAMODB_TABL
                ReadCapacityUnits=1,WriteCapacityUnits=1
 ```
 
-## Build and deploy WAS
+## II. Build and deploy WAS
 
 **Step 1.** Checkout the repository:
 
@@ -146,7 +148,7 @@ vpa                  Active   106m
 was                  Active   100m
 ```
 
-## WAS Usage
+## III. WAS Usage
 
 
 **Step 1.** Interact with WAS
@@ -194,7 +196,7 @@ To change these, see the [configuration documentation](../../Configuration.md).
 Your setup is now complete.
 
 
-## Uninstall
+## IV. Uninstall
 
 The following completely destroys everything including the kubernetes cluster, Wolfram Application Server and all resources:
 
