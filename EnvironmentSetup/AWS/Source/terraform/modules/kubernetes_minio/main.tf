@@ -24,7 +24,7 @@
 #-----------------------------------------------------------
 locals {
   minio_account_name     = "minio-admin"
-  minio_ingress_hostname = "${local.minio_namespace}.${var.services_subdomain}"
+  minio_ingress_hostname = "${var.namespace}.${var.services_subdomain}"
 
   tags = {}
 }
@@ -48,6 +48,10 @@ resource "helm_release" "minio" {
     name  = "ingress.enabled"
     value = false
   }
+
+  values = [
+    data.template_file.minio-values.rendered
+  ]
 
   depends_on = [
     kubernetes_namespace.minio

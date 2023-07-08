@@ -13,14 +13,14 @@
 
 resource "kubernetes_namespace" "minio" {
   metadata {
-    name = local.minio_namespace
+    name = var.namespace
   }
 }
 
 resource "kubernetes_service_account" "minio_admin" {
   metadata {
     name      = local.minio_account_name
-    namespace = local.minio_namespace
+    namespace = var.namespace
   }
 
   depends_on = [
@@ -62,7 +62,7 @@ resource "kubernetes_secret_v1" "minio_admin" {
     namespace = kubernetes_namespace.minio.metadata.0.name
     annotations = {
       "kubernetes.io/service-account.name"      = local.minio_account_name
-      "kubernetes.io/service-account.namespace" = local.minio_namespace
+      "kubernetes.io/service-account.namespace" = var.namespace
     }
   }
 
