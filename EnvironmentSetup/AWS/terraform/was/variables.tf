@@ -13,6 +13,10 @@ variable "aws_profile" {
   type    = string
 }
 
+variable "root_domain" {
+  type = string
+}
+
 variable "services_subdomain" {
   description = "a hostname that you control where all ingreses will point: was.example.com"
   type = string  
@@ -38,7 +42,10 @@ variable "shared_resource_name" {
 
 
 # eks
-
+variable "stack_namespace" {
+  type = string
+  dedefault = "was"  
+}
 variable "namespace" {
   default = "was"
   type    = string

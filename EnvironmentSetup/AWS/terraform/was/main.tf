@@ -59,6 +59,11 @@ module "ingress_controller" {
 
 module "cert_manager" {
   source     = "../modules/kubernetes_cert_manager"
+
+  root_domain         = var.root_domain
+  namespace           = var.namespace
+  services_subdomain  = var.services_subdomain
+
   depends_on = [module.vpc, module.eks, module.vpa, module.module.ingress_controller]
 }
 

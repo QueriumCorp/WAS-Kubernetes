@@ -19,13 +19,6 @@ variable "cert_manager_namespace" {
   default = "cert-manager"
 }
 
-variable "aws_region" {
-  type = string
-}
-variable "aws_profile" {
-  type    = string
-  default = "default"
-}
 
 variable "services_subdomain" {
   type = string
