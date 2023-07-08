@@ -116,7 +116,7 @@ $ terraform apply
 
 **Step 5.** Interact with the AWS EKS Kubernetes cluster
 
-You can use k9s, a text-based gui to view and interact with Kubernetes resources. k9s relies on kubectl to
+You can use k9s, a text-based gui, to view and interact with Kubernetes resources. k9s relies on kubectl to
 communicate with the AWS EKS Kuberenetes cluster.
 
 ```console
@@ -129,10 +129,24 @@ If necessary, you can use the following command to refresh your kubectl authenti
 $ aws eks --region us-east-1 update-kubeconfig --name was
 ```
 
+Use this command to verify that kubectl can access Kubernetes cluster resources.
+
+```console
+$ kubectl get namespaces
+NAME                 STATUS   AGE
+default              Active   3h
+ingress-controller   Active   101m
+kafka                Active   100m
+kube-node-lease      Active   3h
+kube-public          Active   3h
+kube-system          Active   3h
+metrics-server       Active   106m
+prometheus           Active   105m
+vpa                  Active   106m
+was                  Active   100m
+```
 
 **Step 6.** Interact with WAS
-
-
 
 URL endpoints will be as follows, where <was.example.com> matches your value of services_subdomain above:
 
