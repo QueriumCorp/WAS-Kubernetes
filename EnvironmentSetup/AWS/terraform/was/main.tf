@@ -61,8 +61,9 @@ module "cert_manager" {
   root_domain         = var.root_domain
   namespace           = var.shared_resource_name
   services_subdomain  = var.services_subdomain
+  aws_region          = var.aws_region
 
-  depends_on = [module.vpc, module.eks, module.vpa, module.module.ingress_controller]
+  depends_on = [module.vpc, module.eks, module.vpa, module.ingress_controller]
 }
 
 module "minio" {
