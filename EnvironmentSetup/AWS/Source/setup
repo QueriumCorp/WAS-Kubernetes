@@ -3,6 +3,9 @@
 # July-2023
 
 
+AWS_REGION=us-east-1
+AWS_DYNAMODB_TABLE="terraform-state-locking-was2"
+aws dynamodb create-table --region $AWS_REGION --table-name $AWS_DYNAMODB_TABLE --attribute-definitions AttributeName=LockID,AttributeType=S --key-schema AttributeName=LockID,KeyType=HASH --provisioned-throughput ReadCapacityUnits=1,WriteCapacityUnits=1
 
 cd ~/wolfram/WAS-Kubernetes/EnvironmentSetup/AWS/Source/terraform
 

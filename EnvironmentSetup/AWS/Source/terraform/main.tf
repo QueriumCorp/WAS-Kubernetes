@@ -36,4 +36,6 @@ module "eks" {
     capacity_type = var.capacity_type
     aws_auth_users = var.aws_auth_users
     kms_key_owners = var.kms_key_owners
+
+    depends_on = [ module.vpc ]
 }

@@ -1,9 +1,3 @@
-resource "aws_iam_policy" "worker_policy" {
-  name        = "node-workers-policy-${var.shared_resource_name}"
-  description = "Node Workers IAM policies"
-
-  policy = file("${path.module}/node-workers-policy.json")
-}
 
 module "eks" {
   source                          = "terraform-aws-modules/eks/aws"
@@ -97,13 +91,25 @@ module "eks" {
 
 }
 
-# force a refresh of local kubeconfig
-resource "null_resource" "kubectl-init" {
-  provisioner "local-exec" {
-    command = "aws eks --region ${var.aws_region} update-kubeconfig --name ${var.shared_resource_name}"
-  }
-  depends_on = [module.eks.shared_resource_name]
+#------------------------------------------------------------------------------
+#                             SUPPORTING RESOURCES
+#------------------------------------------------------------------------------
+
+resource "aws_iam_policy" "worker_policy" {
+  name        = "node-workers-policy-${var.shared_resource_name}"
+  description = "Node Workers IAM policies"
+
+  policy = file("${path.module}/node-workers-policy.json")
 }
+
+
+# force a refresh of local kubeconfig
+# resource "null_resource" "kubectl-init" {
+#   provisioner "local-exec" {
+#     command = "aws eks --region ${var.aws_region} update-kubeconfig --name ${var.shared_resource_name}"
+#   }
+#   depends_on = [ module.eks ]
+# }
 
 
 resource "aws_security_group" "worker_group_mgmt" {
