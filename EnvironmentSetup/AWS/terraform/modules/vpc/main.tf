@@ -13,6 +13,7 @@ module "vpc" {
   enable_nat_gateway   = true
   single_nat_gateway   = true
   enable_dns_hostnames = true
+  enable_ipv6          = false
 
   public_subnet_tags = {
     "kubernetes.io/cluster/${var.shared_resource_name}" = "shared"

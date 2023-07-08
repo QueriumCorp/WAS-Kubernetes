@@ -90,19 +90,19 @@ $ aws dynamodb create-table --region $AWS_REGION --table-name $AWS_DYNAMODB_TABL
 
 ## II. Build and deploy WAS
 
-**Step 1.** Checkout the repository:
+### Step 1. Checkout the repository
 
 ```console
 $ git clone https://github.com/WolframResearch/WAS-Kubernetes.git
 ```
 
-**Step 2.** Change directory to AWS:
+### Step 2. Change directory to AWS
 
 ```console
 $ cd ~/WAS-Kubernetes/EnvironmentSetup/AWS/
 ```
 
-**Step 3.** Configure your environment by setting Terraform global variable values:
+### Step 3. Configure your environment by setting Terraform global variable values
 
 ```console
 $ vim terraform/was/terraform.tfvars
@@ -124,9 +124,9 @@ Additional optional inputs include the folowing:
 
 ```terraform
 shared_resource_name = "was"
-cidr                 = "10.168.0.0/16"
-private_subnets      = ["10.168.128.0/18", "10.168.192.0/18"]
-public_subnets       = ["10.168.0.0/18", "10.168.64.0/18"]
+cidr                 = "192.168.0.0/20"
+private_subnets      = ["192.168.4.0/24", "192.168.5.0/24"]
+public_subnets       = ["192.168.1.0/24", "192.168.2.0/24"]
 cluster_version      = "1.27"
 capacity_type        = "SPOT"
 min_worker_node      = 2
@@ -136,7 +136,7 @@ disk_size            = 30
 instance_types       = ["c5.2xlarge"]
 ```
 
-**Step 4.** Run the following command to set up EKS and deploy WAS:
+### Step 4. Run the following command to set up EKS and deploy WAS
 
 ```console
 $ cd ~/WAS-Kubernetes/EnvironmentSetup/AWS/terraform/was
@@ -144,7 +144,7 @@ $ terraform init
 $ terraform apply
 ```
 
-**Step 5.** Interact with the AWS EKS Kubernetes cluster
+### Step 5. Interact with the AWS EKS Kubernetes cluster
 
 You can use k9s, a text-based gui, to view and interact with Kubernetes resources. k9s relies on kubectl to
 communicate with the AWS EKS Kuberenetes cluster.
@@ -179,7 +179,7 @@ was                  Active   100m
 ## III. WAS Usage
 
 
-**Step 1.** Interact with WAS
+### Step 1. Interact with WAS
 
 URL endpoints will be as follows, where <was.example.com> matches your value of services_subdomain above:
 
@@ -190,9 +190,11 @@ URL endpoints will be as follows, where <was.example.com> matches your value of 
 * Endpoints Info: https://was.example.com/.applicationserver/info
 * Restart AWES: https://was.example.com/.applicationserver/kernel/restart
 
-**Step 2.** Get a license file from your Wolfram Research sales representative.
+### Step 2. Get a license file from your Wolfram Research sales representative.
 
-**Step 3.** This file needs to be deployed to WAS as a node file in the conventional location `.Wolfram/Licensing/mathpass`. From a Wolfram Language client, this may be achieved using the following code: 
+### Step 3. Install license
+
+This file needs to be deployed to WAS as a node file in the conventional location `.Wolfram/Licensing/mathpass`. From a Wolfram Language client, this may be achieved using the following code: 
 
     was = ServiceConnect["WolframApplicationServer", "https://example.com/"];
     ServiceExecute[was, "DeployNodeFile",
@@ -206,7 +208,9 @@ Alternatively you may use the [node files REST API](../../Documentation/API/Node
     PacletInstall["WolframApplicationServer"];
     Needs["WolframApplicationServer`"]
 
-**Step 4.** Restart the application using the [restart API](../../Documentation/API/Utilities.md) to enable your Wolfram Engines.
+### Step 4. Restart
+
+Restart the application using the [restart API](../../Documentation/API/Utilities.md) to enable your Wolfram Engines.
 
 URL: `https://example.com/.applicationserver/kernel/restart`
 	
