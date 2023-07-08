@@ -7,33 +7,13 @@
 # usage: build an EKS cluster load balancer
 #------------------------------------------------------------------------------
 
-variable "services_subdomain" {
-  type = string
-}
-
-variable "root_domain" {
-  description = "Root domain (route53 zone) for the default cluster ingress."
-  type        = string
-}
-
 variable "namespace" {
   type = string
-}
-
-variable "stack_namespace" {
-  type = string
+  default = "ingress-controller"
 }
 
 variable "tags" {
   description = "A map of tags to add to all resources. Tags added to launch configuration or templates override these values for ASG Tags only."
   type        = map(string)
   default     = {}
-}
-
-variable "aws_region" {
-  type = string
-}
-variable "aws_profile" {
-  type = string
-  default = "default"
 }

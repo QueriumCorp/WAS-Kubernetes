@@ -8,22 +8,8 @@
 #------------------------------------------------------------------------------
 
 # for providers.tf
-variable "stack_namespace" {
-  type = string
-}
-
 variable "tags" {
   description = "A map of tags to add to all resources. Tags added to launch configuration or templates override these values for ASG Tags only."
   type        = map(string)
   default     = {}
-}
-
-variable "aws_region" {
-  default = "us-east-1"
-  type    = string
-}
-
-variable "aws_profile" {
-  default = "default"
-  type    = string
 }

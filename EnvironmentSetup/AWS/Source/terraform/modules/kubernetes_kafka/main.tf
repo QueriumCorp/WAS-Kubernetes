@@ -26,7 +26,6 @@
 #
 # see: https://registry.terraform.io/modules/terraform-aws-modules/iam/aws/latest/submodules/iam-role-for-service-accounts-eks
 locals {
-  kafka_namespace = "kafka"
   tags = {}
 }
 
@@ -36,7 +35,7 @@ data "template_file" "kafka-values" {
 
 
 resource "helm_release" "kafka" {
-  namespace        = local.kafka_namespace
+  namespace        = var.namespace
   create_namespace = true
 
   name       = "kafka"

@@ -34,3 +34,33 @@ module "eks" {
 
     depends_on = [ module.vpc ]
 }
+
+module "vpa" {
+    source = "./modules/kubernetes_vpa"
+    depends_on = [ module.vpc, module.eks ]
+}
+
+module "metricsserver" {
+    source = "./modules/kubernetes_metricsserver"
+    depends_on = [ module.vpc, module.eks, module.vpa ]
+}
+
+module "prometheus" {
+    source = "./modules/kubernetes_prometheus"
+    depends_on = [ module.eks, module.module.metricsserver, module.vpa ]
+}
+
+module "ingress_controller" {
+    source = "./modules/kubernetes_ingress_controller"
+    depends_on = [ module.vpc, module.eks, module.vpa ]
+}
+
+module "minio" {
+    source = "./modules/kubernetes_minio"
+    depends_on = [ module.eks, module.module.metricsserver, module.vpa, module.ingress_controller ]
+}
+
+module "kafka" {
+    source = "./modules/kubernetes_kafka"
+    depends_on = [ module.eks, module.module.metricsserver, module.vpa, module.ingress_controller ]
+}
