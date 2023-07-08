@@ -21,7 +21,7 @@ The following CLI tools are required to be installed on your local machine to co
 ### Default Configuration
 The automated configuration tool will use the following default values when building EKS and configuring WAS.
 
-* Cluster Name: WAS
+* Cluster Name: was
 * Region: us-east-1
 * AMI Instance Type: c5.2xlarge
 * Disk Size: 30GB
@@ -37,7 +37,9 @@ To change any of the above defaults open `Source/terraform/variables.tf`, modify
 
 To configure the AWS CLI run the following command:
 
-	aws configure
+```console
+ubuntu@user:~$ aws configure
+```
 
 This will interactively prompt for your AWS IAM user access key, secret key and preferred region. 
 
@@ -47,22 +49,48 @@ This will interactively prompt for your AWS IAM user access key, secret key and 
 
 **Step 1.** Checkout the repository:
 
-	git clone https://github.com/WolframResearch/WAS-Kubernetes.git
+```console
+ubuntu@user:~$ git clone https://github.com/WolframResearch/WAS-Kubernetes.git
+```
 
 **Step 2.** Change directory to AWS:
 
-	cd WAS-Kubernetes/EnvironmentSetup/AWS/
+```console
+ubuntu@user:~$ cd ~/WAS-Kubernetes/EnvironmentSetup/AWS/Source
+```
 
-**Step 3.** Run the following command to set up EKS and deploy WAS:
+**Step 3.** Configure your environment:
 
-	mkdir -p ~/.kube && docker-compose up --build -d && clear && docker exec -it aws-setup-manager bash setup --create && sudo chown -R $USER ~/.kube
+```console
+ubuntu@user:~$ vim terraform/was/terraform.tfvars
+```
+
+Rows 1 thru 12 of this file contain required inputs as follows
+
+```terraform
+account_id           = "012345678912"
+aws_region           = "us-east-1"
+aws_profile          = "default"
+root_domain          = "example.com"
+services_subdomain   = "was.example.com"
+aws_auth_users       = []
+kms_key_owners       = []
+```
+
+
+**Step 4.** Run the following command to set up EKS and deploy WAS:
+
+```console
+ubuntu@user:~$ setup
+```
 
 **Note:** This can take approximately 45 minutes to complete.
 
 
-**Step 4.** Run the following command to retrieve your base URL and application URLs:
+**Step 5.** Run the following command to retrieve your base URL and application URLs:
 
-	docker-compose up --build -d && clear && docker exec -it aws-setup-manager bash setup --endpoint-info
+
+ADD ME PLEASE.
 
 
 The output of this command will follow this pattern:

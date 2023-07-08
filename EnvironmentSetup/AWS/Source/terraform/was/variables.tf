@@ -14,6 +14,7 @@ variable "aws_profile" {
 }
 
 variable "services_subdomain" {
+  description = "a hostname that you control where all ingreses will point: was.example.com"
   type = string  
 }
 variable "cidr" {
@@ -31,7 +32,7 @@ variable "public_subnets" {
 }
 
 variable "shared_resource_name" {
-  default = "WAS"
+  default = "was"
   type    = string
 }
 
