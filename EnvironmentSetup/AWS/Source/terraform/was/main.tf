@@ -1,7 +1,7 @@
 # need this bc the default aws profile specifies us-east-2
 
 module "vpc" {
-  source = "./modules/vpc"
+  source = "../modules/vpc"
   version = "~> 5.0"
 
   shared_resource_name = var.shared_resource_name
@@ -14,7 +14,7 @@ module "vpc" {
 }
 
 module "eks" {
-  source = "./modules/eks"
+  source = "../modules/eks"
   version = "~> 19.4"
   
   shared_resource_name = var.shared_resource_name
@@ -38,33 +38,33 @@ module "eks" {
 }
 
 module "vpa" {
-  source     = "./modules/kubernetes_vpa"
+  source     = "../modules/kubernetes_vpa"
   depends_on = [module.vpc, module.eks]
 }
 
 module "metricsserver" {
-  source     = "./modules/kubernetes_metricsserver"
+  source     = "../modules/kubernetes_metricsserver"
   depends_on = [module.vpc, module.eks, module.vpa]
 }
 
 module "prometheus" {
-  source     = "./modules/kubernetes_prometheus"
+  source     = "../modules/kubernetes_prometheus"
   depends_on = [module.eks, module.metricsserver, module.vpa]
 }
 
 module "ingress_controller" {
-  source     = "./modules/kubernetes_ingress_controller"
+  source     = "../modules/kubernetes_ingress_controller"
   depends_on = [module.vpc, module.eks, module.vpa]
 }
 
 module "minio" {
-  source     = "./modules/kubernetes_minio"
+  source     = "../modules/kubernetes_minio"
   namespace   = var.namespace
   ingress_hostname = "minio.${var.services_subdomain}"
   depends_on = [module.eks, module.metricsserver, module.vpa, module.ingress_controller]
 }
 
 module "kafka" {
-  source     = "./modules/kubernetes_kafka"
+  source     = "../modules/kubernetes_kafka"
   depends_on = [module.eks, module.metricsserver, module.vpa, module.ingress_controller]
 }
