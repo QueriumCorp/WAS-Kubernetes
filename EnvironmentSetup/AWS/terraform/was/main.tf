@@ -2,7 +2,6 @@
 
 module "vpc" {
   source = "../modules/vpc"
-  registry_version = "~> 5.0"
 
   shared_resource_name = var.shared_resource_name
   account_id           = var.account_id
@@ -15,7 +14,6 @@ module "vpc" {
 
 module "eks" {
   source = "../modules/eks"
-  registry_version = "~> 19.4"
   
   shared_resource_name = var.shared_resource_name
   account_id           = var.account_id
