@@ -4,21 +4,6 @@
 
 This document describes the setup of Amazon Kubernetes (EKS) and Wolfram Application Server (WAS).
 
-
-## Default Configuration
-
-The automated configuration tool will use the following default values when building EKS and configuring WAS.
-
-* Cluster Name: was
-* Region: us-east-1
-* AMI Instance Type: c5.2xlarge
-* Disk Size: 30GB
-* Node Group scaling configuration: [Minimum size: 2, Maximum size: 10, Desired size: 2]
-* Kubernetes Version: 1.27
-
-To change any of the above defaults open `Source/terraform/variables.tf`, modify accordingly and save file.
-
-
 ## Linux & macOS Setup
 
 **Prerequisite:** Obtain an AWS IAM User with administrator priviledges, access key and secret key.
@@ -31,11 +16,15 @@ Ensure that your environment includes the following software packages:
 * helm
 * k9s
 
+If necessary, install homebrew
+
 ```console
 ubuntu@user:~$ /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ubuntu@user:~$ echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> /home/ubuntu/.profile
 ubuntu@user:~$ eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 ```
+
+Use homebrew to install all required packages.
 
 ```console
 ubuntu@user:~$ brew install awscli kubernetes-cli terraform helm k9s
@@ -81,6 +70,21 @@ aws_auth_users       = []
 kms_key_owners       = []
 ```
 
+Additional optional inputs include the folowing:
+
+```terraform
+shared_resource_name = "was"
+cidr                 = "10.168.0.0/16"
+private_subnets      = ["10.168.128.0/18", "10.168.192.0/18"]
+public_subnets       = ["10.168.0.0/18", "10.168.64.0/18"]
+cluster_version      = "1.27"
+capacity_type        = "SPOT"
+min_worker_node      = 2
+desired_worker_node  = 2
+max_worker_node      = 10
+disk_size            = 30
+instance_types       = ["c5.2xlarge"]
+```
 
 **Step 4.** Run the following command to set up EKS and deploy WAS:
 
@@ -90,34 +94,22 @@ ubuntu@user:~$ setup
 
 **Note:** This can take approximately 45 minutes to complete.
 
+**Step 5.** Interact with WAS
 
-**Step 5.** Run the following command to retrieve your base URL and application URLs:
+URL endpoints will be as follows, where <was.example.com> matches your value of services_subdomain above:
 
-
-ADD ME PLEASE.
-
-
-The output of this command will follow this pattern:
-	
-	Base URL - Active Web Elements Server: http://<your-base-url>/
-	
-	Resource Manager: http://<your-base-url>/resources/
-	
-	Endpoints Manager: http://<your-base-url>/endpoints/
-	
-	Nodefiles: http://<your-base-url>/nodefiles/
-	
-	Endpoints Info: http://<your-base-url>/.applicationserver/info
-	
-	Restart AWES: http://<your-base-url>/.applicationserver/kernel/restart
-
+* Active Web Elements Server: https://was.example.com/
+* Resource Manager: https://was.example.com/resources/
+* Endpoints Manager: https://was.example.com/endpoints/
+* Nodefiles: https://was.example.com/nodefiles/
+* Endpoints Info: https://was.example.com/applicationserver/info
+* Restart AWES: https://was.example.com/applicationserver/kernel/restart
 
 **Step 6.** Get a license file from your Wolfram Research sales representative.
 
-
 **Step 7.** This file needs to be deployed to WAS as a node file in the conventional location `.Wolfram/Licensing/mathpass`. From a Wolfram Language client, this may be achieved using the following code: 
 
-    was = ServiceConnect["WolframApplicationServer", "http://<your-base-url>"];
+    was = ServiceConnect["WolframApplicationServer", "https://example.com/"];
     ServiceExecute[was, "DeployNodeFile",
     {"Contents"-> File["/path/to/mathpass"], "NodeFile" -> ".Wolfram/Licensing/mathpass"}]
 
@@ -131,7 +123,7 @@ Alternatively you may use the [node files REST API](../../Documentation/API/Node
 
 **Step 8.** Restart the application using the [restart API](../../Documentation/API/Utilities.md) to enable your Wolfram Engines.
 
-URL: `http://<your-base-url>/.applicationserver/kernel/restart`
+URL: `https://example.com/.applicationserver/kernel/restart`
 	
 The default credentials for this API are: 
 	
