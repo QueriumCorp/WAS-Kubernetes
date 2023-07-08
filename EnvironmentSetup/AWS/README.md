@@ -19,21 +19,21 @@ Ensure that your environment includes the following software packages:
 If necessary, install homebrew
 
 ```console
-ubuntu@home:~$ /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-ubuntu@home:~$ echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> /home/ubuntu/.profile
-ubuntu@home:~$ eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+$ /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+$ echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> /home/ubuntu/.profile
+$ eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 ```
 
 Use homebrew to install all required packages.
 
 ```console
-ubuntu@home:~$ brew install awscli kubernetes-cli terraform helm k9s
+$ brew install awscli kubernetes-cli terraform helm k9s
 ```
 
 To configure the AWS CLI run the following command:
 
 ```console
-ubuntu@home:~$ aws configure
+$ aws configure
 ```
 
 This will interactively prompt for your AWS IAM user access key, secret key and preferred region.
@@ -41,14 +41,14 @@ This will interactively prompt for your AWS IAM user access key, secret key and 
 Create Terraform required state management resources. Terraform uses a dediated AWS S3 bucket for storing its state data, and a DynamoDB table for managing a semphore lock during operations.
 
 ```console
-ubuntu@home:~$ AWS_ACCOUNT=012345678912      # add your 12-digit AWS account number here
-ubuntu@home:~$ AWS_REGION=us-east-1
-ubuntu@home:~$ AWS_DYNAMODB_TABLE="terraform-state-lock-was"
-ubuntu@home:~$ AWS_S3_BUCKET="${AWS_ACCOUNT}-terraform-tfstate-was"
+$ AWS_ACCOUNT=012345678912      # add your 12-digit AWS account number here
+$ AWS_REGION=us-east-1
+$ AWS_DYNAMODB_TABLE="terraform-state-lock-was"
+$ AWS_S3_BUCKET="${AWS_ACCOUNT}-terraform-tfstate-was"
 
 # Create required Terraform state resources
-ubuntu@home:~$ aws s3api create-bucket --bucket $AWS_S3_BUCKET --region $AWS_REGION
-ubuntu@home:~$ aws dynamodb create-table --region $AWS_REGION --table-name $AWS_DYNAMODB_TABLE  \
+$ aws s3api create-bucket --bucket $AWS_S3_BUCKET --region $AWS_REGION
+$ aws dynamodb create-table --region $AWS_REGION --table-name $AWS_DYNAMODB_TABLE  \
                --attribute-definitions AttributeName=LockID,AttributeType=S  \
                --key-schema AttributeName=LockID,KeyType=HASH --provisioned-throughput  \
                ReadCapacityUnits=1,WriteCapacityUnits=1
@@ -59,19 +59,19 @@ ubuntu@home:~$ aws dynamodb create-table --region $AWS_REGION --table-name $AWS_
 **Step 1.** Checkout the repository:
 
 ```console
-ubuntu@home:~$ git clone https://github.com/WolframResearch/WAS-Kubernetes.git
+$ git clone https://github.com/WolframResearch/WAS-Kubernetes.git
 ```
 
 **Step 2.** Change directory to AWS:
 
 ```console
-ubuntu@home:~$ cd ~/WAS-Kubernetes/EnvironmentSetup/AWS/Source
+$ cd ~/WAS-Kubernetes/EnvironmentSetup/AWS/Source
 ```
 
 **Step 3.** Configure your environment:
 
 ```console
-ubuntu@home:~$ vim terraform/was/terraform.tfvars
+$ vim terraform/was/terraform.tfvars
 ```
 
 Rows 1 thru 12 of this file contain required inputs as follows
@@ -107,9 +107,9 @@ instance_types       = ["c5.2xlarge"]
 This takes around 30 minutes to complete.
 
 ```console
-ubuntu@home:~$ cd ~/WAS-Kubernetes/EnvironmentSetup/AWS/Source/terraform/was
-ubuntu@home:~$ terraform init
-ubuntu@home:~$ terraform apply
+$ cd ~/WAS-Kubernetes/EnvironmentSetup/AWS/Source/terraform/was
+$ terraform init
+$ terraform apply
 ```
 
 **Note:** This can take approximately 45 minutes to complete.
@@ -162,17 +162,28 @@ Your setup is now complete.
 ## Remove the cluster and all associated AWS resources
 
 ```console
-ubuntu@home:~$ cd ~/WAS-Kubernetes/EnvironmentSetup/AWS/Source/terraform/was
-ubuntu@home:~$ terraform init
-ubuntu@home:~$ terraform destroy
+$ cd ~/WAS-Kubernetes/EnvironmentSetup/AWS/Source/terraform/was
+$ terraform init
+$ terraform destroy
 ```
 
 Delete Terraform state management resources
 
 ```console
-ubuntu@home:~$ AWS_REGION=us-east-1
-ubuntu@home:~$ AWS_DYNAMODB_TABLE="terraform-state-lock-was"
-ubuntu@home:~$ aws dynamodb delete-table --region $AWS_REGION --table-name $AWS_DYNAMODB_TABLE
+$ AWS_ACCOUNT=012345678912      # add your 12-digit AWS account number here
+$ AWS_REGION=us-east-1
+$ AWS_DYNAMODB_TABLE="terraform-state-lock-was"
+$ AWS_S3_BUCKET="${AWS_ACCOUNT}-terraform-tfstate-was"
 ```
+
+```console
+$ aws dynamodb delete-table --region $AWS_REGION --table-name $AWS_DYNAMODB_TABLE
+```
+
+```console
+$ aws s3 rm s3://$AWS_S3_BUCKET --recursive
+$ aws s3 rb s3://$AWS_S3_BUCKET --force 
+```
+
 
 The following completely deletes everything including the kubernetes cluster, Wolfram Application Server and all resources:
