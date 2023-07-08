@@ -1,3 +1,6 @@
+variable "version" {
+  type = string  
+}
 variable "account_id" {
   default = "01234567891"
   type    = string

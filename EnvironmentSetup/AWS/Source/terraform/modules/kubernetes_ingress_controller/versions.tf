@@ -1,10 +1,10 @@
 #------------------------------------------------------------------------------
-# written by: Miguel Afonso
-#             https://www.linkedin.com/in/mmafonso/
+# written by: Lawrence McDaniel
+#             https://lawrencemcdaniel.com/
 #
-# date: Aug-2021
+# date: Mar-2022
 #
-# usage: build an EKS cluster load balancer
+# usage: create an EKS cluster
 #------------------------------------------------------------------------------
 terraform {
   required_version = "~> 1.3"
@@ -13,7 +13,6 @@ terraform {
     local = "~> 2.2"
     random = {
       source  = "hashicorp/random"
-      version = "~> 3.4"
     }
 
     aws = {
@@ -21,15 +20,12 @@ terraform {
     }
     kubectl = {
       source  = "gavinbunney/kubectl"
-      version = "~> 1.14"
     }
     helm = {
       source  = "hashicorp/helm"
-      version = "~> 2.8"
     }
     kubernetes = {
       source  = "hashicorp/kubernetes"
-      version = "~> 2.16"
     }
   }
 }

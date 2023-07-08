@@ -13,6 +13,9 @@ variable "aws_profile" {
   type    = string
 }
 
+variable "services_subdomain" {
+  type = string  
+}
 variable "cidr" {
   type    = string
   default = "10.168.0.0/16"

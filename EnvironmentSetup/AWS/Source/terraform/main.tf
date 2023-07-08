@@ -2,6 +2,7 @@
 
 module "vpc" {
   source = "./modules/vpc"
+  version = "~> 5.0"
 
   shared_resource_name = var.shared_resource_name
   account_id           = var.account_id
@@ -14,7 +15,8 @@ module "vpc" {
 
 module "eks" {
   source = "./modules/eks"
-
+  version = "~> 19.4"
+  
   shared_resource_name = var.shared_resource_name
   account_id           = var.account_id
   aws_region           = var.aws_region
@@ -57,6 +59,7 @@ module "ingress_controller" {
 
 module "minio" {
   source     = "./modules/kubernetes_minio"
+  namespace   = var.namespace
   ingress_hostname = "minio.${var.services_subdomain}"
   depends_on = [module.eks, module.metricsserver, module.vpa, module.ingress_controller]
 }

@@ -9,7 +9,7 @@
 
 variable "namespace" {
   type    = string
-  default = "was"
+  default = "minio"
 }
 
 variable "tags" {
