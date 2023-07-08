@@ -31,9 +31,27 @@ The automated configuration tool will use the following default values when buil
 To change any of the above defaults open `Source/terraform/variables.tf`, modify accordingly and save file.
 
 
-## First Time Setup
+## First Time Setup (Ubuntu)
 
 **Prerequisite:** Obtain an AWS IAM User with administrator priviledges, access key and secret key.
+
+Ensure that your environment includes the following software packages:
+
+* awscli
+* kubectl (Kubernetes cli)
+* terraform
+* helm
+* k9s
+
+```console
+ubuntu@user:~$ /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+ubuntu@user:~$ echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> /home/ubuntu/.profile
+ubuntu@user:~$ eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+```
+
+```console
+ubuntu@user:~$ brew install awscli kubernetes-cli terraform helm k9s
+```
 
 To configure the AWS CLI run the following command:
 
@@ -41,7 +59,7 @@ To configure the AWS CLI run the following command:
 ubuntu@user:~$ aws configure
 ```
 
-This will interactively prompt for your AWS IAM user access key, secret key and preferred region. 
+This will interactively prompt for your AWS IAM user access key, secret key and preferred region.
 
 **Note:** Your region needs to match the above default configuration else the setup will fail.
 
