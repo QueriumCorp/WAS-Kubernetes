@@ -57,6 +57,11 @@ module "ingress_controller" {
   depends_on = [module.vpc, module.eks, module.vpa]
 }
 
+module "cert_manager" {
+  source     = "../modules/kubernetes_cert_manager"
+  depends_on = [module.vpc, module.eks, module.vpa, module.module.ingress_controller]
+}
+
 module "minio" {
   source     = "../modules/kubernetes_minio"
   namespace   = var.namespace
