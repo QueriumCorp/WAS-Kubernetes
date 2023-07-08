@@ -8,7 +8,7 @@
 #------------------------------------------------------------------------------
 
 variable "namespace" {
-  type = string
+  type    = string
   default = "ingress-controller"
 }
 

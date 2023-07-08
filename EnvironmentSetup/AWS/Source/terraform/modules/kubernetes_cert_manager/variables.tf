@@ -15,7 +15,7 @@ variable "namespace" {
 }
 
 variable "cert_manager_namespace" {
-  type = string
+  type    = string
   default = "cert-manager"
 }
 
@@ -23,7 +23,7 @@ variable "aws_region" {
   type = string
 }
 variable "aws_profile" {
-  type = string
+  type    = string
   default = "default"
 }
 

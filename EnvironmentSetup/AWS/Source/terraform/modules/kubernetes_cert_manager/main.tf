@@ -73,7 +73,7 @@ resource "aws_iam_policy" "cert_manager_policy" {
     ]
   })
 
-  tags = {} 
+  tags = {}
 }
 
 

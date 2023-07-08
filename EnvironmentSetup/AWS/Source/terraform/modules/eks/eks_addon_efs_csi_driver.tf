@@ -20,80 +20,80 @@
 #------------------------------------------------------------------------------
 
 resource "aws_iam_policy" "AmazonEKS_EFS_CSI_Driver_Policy" {
-  name = "AmazonEKS_EFS_CSI_Driver_Policy"
+  name        = "AmazonEKS_EFS_CSI_Driver_Policy"
   description = "WAS EFS Policy"
 
   policy = jsonencode({
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": [
-        "elasticfilesystem:DescribeAccessPoints",
-        "elasticfilesystem:DescribeFileSystems",
-        "elasticfilesystem:DescribeMountTargets",
-        "ec2:DescribeAvailabilityZones"
-      ],
-      "Resource": "*"
-    },
-    {
-      "Effect": "Allow",
-      "Action": [
-        "elasticfilesystem:CreateAccessPoint"
-      ],
-      "Resource": "*",
-      "Condition": {
-        "StringLike": {
-          "aws:RequestTag/efs.csi.aws.com/cluster": "true"
+    "Version" : "2012-10-17",
+    "Statement" : [
+      {
+        "Effect" : "Allow",
+        "Action" : [
+          "elasticfilesystem:DescribeAccessPoints",
+          "elasticfilesystem:DescribeFileSystems",
+          "elasticfilesystem:DescribeMountTargets",
+          "ec2:DescribeAvailabilityZones"
+        ],
+        "Resource" : "*"
+      },
+      {
+        "Effect" : "Allow",
+        "Action" : [
+          "elasticfilesystem:CreateAccessPoint"
+        ],
+        "Resource" : "*",
+        "Condition" : {
+          "StringLike" : {
+            "aws:RequestTag/efs.csi.aws.com/cluster" : "true"
+          }
+        }
+      },
+      {
+        "Effect" : "Allow",
+        "Action" : [
+          "elasticfilesystem:TagResource"
+        ],
+        "Resource" : "*",
+        "Condition" : {
+          "StringLike" : {
+            "aws:ResourceTag/efs.csi.aws.com/cluster" : "true"
+          }
+        }
+      },
+      {
+        "Effect" : "Allow",
+        "Action" : "elasticfilesystem:DeleteAccessPoint",
+        "Resource" : "*",
+        "Condition" : {
+          "StringEquals" : {
+            "aws:ResourceTag/efs.csi.aws.com/cluster" : "true"
+          }
         }
       }
-    },
-    {
-      "Effect": "Allow",
-      "Action": [
-        "elasticfilesystem:TagResource"
-      ],
-      "Resource": "*",
-      "Condition": {
-        "StringLike": {
-          "aws:ResourceTag/efs.csi.aws.com/cluster": "true"
-        }
-      }
-    },
-    {
-      "Effect": "Allow",
-      "Action": "elasticfilesystem:DeleteAccessPoint",
-      "Resource": "*",
-      "Condition": {
-        "StringEquals": {
-          "aws:ResourceTag/efs.csi.aws.com/cluster": "true"
-        }
-      }
-    }
-  ]
-})
+    ]
+  })
 }
 
 # 2. Create the IAM role.
 resource "aws_iam_role" "AmazonEKS_EFS_CSI_DriverRoleWAS" {
   name = "AmazonEKS_EFS_CSI_DriverRoleWAS"
   assume_role_policy = jsonencode({
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Principal": {
-        "Federated": "arn:aws:iam::${var.account_id}:oidc-provider/oidc.eks.${var.aws_region}.amazonaws.com/id/D166659358A4D92DFF5FD0B97C0E2899"
-      },
-      "Action": "sts:AssumeRoleWithWebIdentity",
-      "Condition": {
-        "StringEquals": {
-          "oidc.eks.${var.aws_region}.amazonaws.com/id/D166659358A4D92DFF5FD0B97C0E2899:sub": "system:serviceaccount:kube-system:efs-csi-controller-sa"
+    "Version" : "2012-10-17",
+    "Statement" : [
+      {
+        "Effect" : "Allow",
+        "Principal" : {
+          "Federated" : "arn:aws:iam::${var.account_id}:oidc-provider/oidc.eks.${var.aws_region}.amazonaws.com/id/D166659358A4D92DFF5FD0B97C0E2899"
+        },
+        "Action" : "sts:AssumeRoleWithWebIdentity",
+        "Condition" : {
+          "StringEquals" : {
+            "oidc.eks.${var.aws_region}.amazonaws.com/id/D166659358A4D92DFF5FD0B97C0E2899:sub" : "system:serviceaccount:kube-system:efs-csi-controller-sa"
+          }
         }
       }
-    }
-  ]
-})
+    ]
+  })
 }
 
 # 3. Attach the required AWS managed policy to the role
@@ -106,11 +106,11 @@ resource "aws_iam_role_policy_attachment" "aws_efs_csi_driver" {
 data "template_file" "efs-service-account" {
   template = file("${path.module}/yml/efs-service-account.yaml.tpl")
   vars = {
-    account_id          = var.account_id
+    account_id = var.account_id
   }
 }
 resource "kubectl_manifest" "efs-service-account" {
-  yaml_body  = data.template_file.efs-service-account.rendered
+  yaml_body = data.template_file.efs-service-account.rendered
 }
 
 # 6. Install the Amazon EFS driver 
@@ -132,23 +132,23 @@ resource "helm_release" "efs-csi-driver" {
     value = "602401143452.dkr.ecr.${var.aws_region}.amazonaws.com/eks/aws-efs-csi-driver"
   }
   set {
-    name = "controller.serviceAccount.create"
+    name  = "controller.serviceAccount.create"
     value = false
   }
   set {
-    name = "controller.serviceAccount.name"
+    name  = "controller.serviceAccount.name"
     value = "efs-csi-controller-sa"
   }
   set {
-    name = "sidecars.livenessProbe.image.repository"
+    name  = "sidecars.livenessProbe.image.repository"
     value = "602401143452.dkr.ecr.${var.aws_region}.amazonaws.com/eks/livenessprobe"
   }
   set {
-    name = "sidecars.nodeDriverRegistrar.image.repository"
+    name  = "sidecars.nodeDriverRegistrar.image.repository"
     value = "602401143452.dkr.ecr.${var.aws_region}.amazonaws.com/eks/csi-node-driver-registrar"
   }
   set {
-    name = "sidecars.csiProvisioner.image.repository"
+    name  = "sidecars.csiProvisioner.image.repository"
     value = "602401143452.dkr.ecr.${var.aws_region}.amazonaws.com/eks/csi-provisioner"
   }
 

@@ -15,27 +15,27 @@
 data "template_file" "hpa-autoscaler-minio" {
   template = file("${path.module}/yml/hpa-autoscaler-minio.yaml.tpl")
   vars = {
-    namespace          = var.namespace
+    namespace = var.namespace
   }
 }
 
 data "template_file" "hpa-autoscaler-resource-manager" {
   template = file("${path.module}/yml/hpa-autoscaler-resource-manager.yaml.tpl")
-    vars = {
-      namespace = var.namespace
-    }
-} 
+  vars = {
+    namespace = var.namespace
+  }
+}
 
 data "template_file" "ingress-minio" {
   template = file("${path.module}/yml/ingress-minio.yaml.tpl")
-    vars = {}
-} 
+  vars     = {}
+}
 
 data "template_file" "resource-manager-service" {
   template = file("${path.module}/yml/resource-manager-service.yaml.tpl")
-    vars = {
-      namespace = var.namespace
-    }
+  vars = {
+    namespace = var.namespace
+  }
 }
 
 
@@ -51,7 +51,7 @@ data "template_file" "resource-manager-service" {
 # }
 
 resource "kubectl_manifest" "hpa-autoscaler-minio" {
-  yaml_body  = data.template_file.hpa-autoscaler-minio.rendered
+  yaml_body = data.template_file.hpa-autoscaler-minio.rendered
 }
 
 # resource "kubectl_manifest" "hpa-autoscaler-resource-manager" {

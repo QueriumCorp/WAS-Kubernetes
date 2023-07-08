@@ -17,7 +17,7 @@ variable "stack_namespace" {
 }
 
 variable "namespace" {
-  type = string
+  type    = string
   default = "was"
 }
 
@@ -31,6 +31,6 @@ variable "aws_region" {
   type = string
 }
 variable "aws_profile" {
-  type = string
+  type    = string
   default = "default"
 }

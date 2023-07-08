@@ -13,6 +13,6 @@ variable "tags" {
 }
 
 variable "namespace" {
-  type = string
+  type    = string
   default = "kafka"
 }

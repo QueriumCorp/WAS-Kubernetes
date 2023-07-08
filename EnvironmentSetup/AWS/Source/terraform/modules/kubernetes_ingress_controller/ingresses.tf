@@ -1,25 +1,25 @@
 data "template_file" "was-ingress-awes-service" {
   template = file("${path.module}/yml/was-ingress-awes-service.yml.tpl")
   vars = {
-    namespace          = var.namespace
+    namespace = var.namespace
   }
 }
 data "template_file" "was-ingress-endpoint-manager-service" {
   template = file("${path.module}/yml/was-ingress-endpoint-manager-service.yml.tpl")
   vars = {
-    namespace          = var.namespace
+    namespace = var.namespace
   }
 }
 data "template_file" "was-ingress-nodefiles-service" {
   template = file("${path.module}/yml/was-ingress-nodefiles-service.yml.tpl")
   vars = {
-    namespace          = var.namespace
+    namespace = var.namespace
   }
 }
 data "template_file" "was-ingress-resources-manager-service" {
   template = file("${path.module}/yml/was-ingress-resources-manager-service.yml.tpl")
   vars = {
-    namespace          = var.namespace
+    namespace = var.namespace
   }
 }
 
