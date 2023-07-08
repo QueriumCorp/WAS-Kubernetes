@@ -161,6 +161,8 @@ Your setup is now complete.
 
 ## Remove the cluster and all associated AWS resources
 
+The following completely destroys everything including the kubernetes cluster, Wolfram Application Server and all resources:
+
 ```console
 $ cd ~/WAS-Kubernetes/EnvironmentSetup/AWS/Source/terraform/was
 $ terraform init
@@ -176,14 +178,15 @@ $ AWS_DYNAMODB_TABLE="terraform-state-lock-was"
 $ AWS_S3_BUCKET="${AWS_ACCOUNT}-terraform-tfstate-was"
 ```
 
+To delete the DynamoDB table
+
 ```console
 $ aws dynamodb delete-table --region $AWS_REGION --table-name $AWS_DYNAMODB_TABLE
 ```
+
+To delete the AWS S3 bucket
 
 ```console
 $ aws s3 rm s3://$AWS_S3_BUCKET --recursive
 $ aws s3 rb s3://$AWS_S3_BUCKET --force 
 ```
-
-
-The following completely deletes everything including the kubernetes cluster, Wolfram Application Server and all resources:
