@@ -11,6 +11,7 @@ The Amazon EKS stack consists of the following:
 * a AWS S3 bucket and DynamoDB table for managing Terraform state
 * a dedicated [AWS VPC](https://aws.amazon.com/vpc/)
 * a dedicated [AWS EKS Kubernetes cluster](https://aws.amazon.com/eks/)
+  * a configurable [Managed Node Group](https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html) with on-demand and spot-priced tier options
   * AWS EKS Add-on [EFS CSI Driver](https://docs.aws.amazon.com/eks/latest/userguide/ebs-csi.html)
   * AWS EKS Add-on [EBS CSI Driver](https://docs.aws.amazon.com/eks/latest/userguide/ebs-csi.html)
   * AWS EKS Add-on [VPC CNI](https://docs.aws.amazon.com/eks/latest/userguide/managing-vpc-cni.html)
