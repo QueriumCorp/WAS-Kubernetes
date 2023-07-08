@@ -18,3 +18,6 @@ variable "tags" {
   default     = {}
 }
 
+variable "ingress_hostname" {
+  type = string  
+}

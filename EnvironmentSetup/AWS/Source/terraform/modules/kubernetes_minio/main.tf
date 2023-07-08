@@ -24,8 +24,7 @@
 #-----------------------------------------------------------
 locals {
   minio_account_name     = "minio-admin"
-  minio_ingress_hostname = "${var.namespace}.${var.services_subdomain}"
-
+  minio_ingress_hostname = var.ingress_hostname
   tags = {}
 }
 

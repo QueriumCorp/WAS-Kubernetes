@@ -57,6 +57,7 @@ module "ingress_controller" {
 
 module "minio" {
   source     = "./modules/kubernetes_minio"
+  ingress_hostname = "minio.${var.services_subdomain}"
   depends_on = [module.eks, module.metricsserver, module.vpa, module.ingress_controller]
 }
 
