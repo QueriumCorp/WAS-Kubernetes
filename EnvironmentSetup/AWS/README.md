@@ -1,4 +1,4 @@
-# Amazon EKS WAS Setup
+# Amazon EKS Setup
 
 ## Introduction
 
@@ -8,17 +8,17 @@ This document describes the setup of Amazon Kubernetes (EKS) and Wolfram Applica
 
 Quickstart for Linux & macOS operating systems.
 
-**Prerequisite:** Obtain an AWS IAM User with administrator priviledges, access key and secret key.
+**Prerequisite:** Obtain an [AWS IAM User](https://aws.amazon.com/iam/) with administrator priviledges, access key and secret key.
 
-Ensure that your environment includes the following software packages:
+Ensure that your environment includes the latest stable releases of the following software packages:
 
-* awscli
-* kubectl (Kubernetes cli)
-* terraform
-* helm
-* k9s
+* [awscli](https://aws.amazon.com/cli/)
+* [kubectl (Kubernetes cli)](https://kubernetes.io/docs/tasks/tools/)
+* [terraform](https://www.terraform.io/)
+* [helm](https://helm.sh/)
+* [k9s](https://k9scli.io/)
 
-If necessary, install homebrew
+If necessary, install [homebrew](https://brew.sh/)
 
 ```console
 $ /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
@@ -159,8 +159,8 @@ URL endpoints will be as follows, where <was.example.com> matches your value of 
 * Resource Manager: https://was.example.com/resources/
 * Endpoints Manager: https://was.example.com/endpoints/
 * Nodefiles: https://was.example.com/nodefiles/
-* Endpoints Info: https://was.example.com/applicationserver/info
-* Restart AWES: https://was.example.com/applicationserver/kernel/restart
+* Endpoints Info: https://was.example.com/.applicationserver/info
+* Restart AWES: https://was.example.com/.applicationserver/kernel/restart
 
 **Step 2.** Get a license file from your Wolfram Research sales representative.
 
