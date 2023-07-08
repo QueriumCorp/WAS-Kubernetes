@@ -4,7 +4,25 @@
 
 This document describes the setup of Amazon Kubernetes (EKS) and Wolfram Application Server (WAS). 
 
-This is a Terraform based, fully automated build-deploy script. Terraform is an infrastructure-as-code command line tool that will create and configure all required AWS resources. This process will take around 30 minutes to complete and will generate copious amounts of console output. 
+This is a Terraform based, fully automated build-deploy script. Terraform is an infrastructure-as-code command line tool that will create and configure all required AWS resources, and install and configure all system software on which WAS depends. This process will take around 30 minutes to complete and will generate copious amounts of console output. Where possible Terraform uses Helm to install Kuberetes system softare packages.
+
+The Amazon EKS stack consists of the following:
+
+* a AWS S3 bucket and DynamoDB table for managing Terraform state
+* a dedicated [AWS VPC](https://aws.amazon.com/vpc/)
+* a dedicated [AWS EKS Kubernetes cluster](https://aws.amazon.com/eks/)
+* [AWS EKS EBS CSI Driver](https://docs.aws.amazon.com/eks/latest/userguide/ebs-csi.html)
+* [AWS EKS VPC CNI](https://docs.aws.amazon.com/eks/latest/userguide/managing-vpc-cni.html)
+* [AWS EKS kube-proxy](https://docs.aws.amazon.com/eks/latest/userguide/eks-add-ons.html)
+* [AWS EKS CoreDNS](https://docs.aws.amazon.com/eks/latest/userguide/managing-coredns.html)
+* Kubernetes [Vertical Pod Autoscaler](https://docs.aws.amazon.com/eks/latest/userguide/vertical-pod-autoscaler.html)
+* Kubernetes [Metrics Server](https://github.com/kubernetes-sigs/metrics-server)
+* Kubernetes [Prometheus](https://prometheus.io/)
+* Kubernetes [cert-manager](https://cert-manager.io/)
+* Kubernetes [Nginx Ingress Controller](https://docs.nginx.com/nginx-ingress-controller/)
+* Kubernetes [Minio](https://bitnami.com/stack/minio/helm)
+* Kubernetes [Kakfa](https://bitnami.com/stack/kafka/helm)
+* [Wolfram Application Server](https://www.wolfram.com/application-server/)
 
 **WARNING: Terraform is a memory intensive application. For best results you should run this on a computer with at least 4Gib of free memory.**
 
