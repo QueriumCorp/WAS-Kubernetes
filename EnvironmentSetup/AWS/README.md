@@ -19,21 +19,21 @@ Ensure that your environment includes the following software packages:
 If necessary, install homebrew
 
 ```console
-ubuntu@user:~$ /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-ubuntu@user:~$ echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> /home/ubuntu/.profile
-ubuntu@user:~$ eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+ubuntu@home:~$ /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+ubuntu@home:~$ echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> /home/ubuntu/.profile
+ubuntu@home:~$ eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 ```
 
 Use homebrew to install all required packages.
 
 ```console
-ubuntu@user:~$ brew install awscli kubernetes-cli terraform helm k9s
+ubuntu@home:~$ brew install awscli kubernetes-cli terraform helm k9s
 ```
 
 To configure the AWS CLI run the following command:
 
 ```console
-ubuntu@user:~$ aws configure
+ubuntu@home:~$ aws configure
 ```
 
 This will interactively prompt for your AWS IAM user access key, secret key and preferred region.
@@ -43,19 +43,19 @@ This will interactively prompt for your AWS IAM user access key, secret key and 
 **Step 1.** Checkout the repository:
 
 ```console
-ubuntu@user:~$ git clone https://github.com/WolframResearch/WAS-Kubernetes.git
+ubuntu@home:~$ git clone https://github.com/WolframResearch/WAS-Kubernetes.git
 ```
 
 **Step 2.** Change directory to AWS:
 
 ```console
-ubuntu@user:~$ cd ~/WAS-Kubernetes/EnvironmentSetup/AWS/Source
+ubuntu@home:~$ cd ~/WAS-Kubernetes/EnvironmentSetup/AWS/Source
 ```
 
 **Step 3.** Configure your environment:
 
 ```console
-ubuntu@user:~$ vim terraform/was/terraform.tfvars
+ubuntu@home:~$ vim terraform/was/terraform.tfvars
 ```
 
 Rows 1 thru 12 of this file contain required inputs as follows
@@ -89,7 +89,7 @@ instance_types       = ["c5.2xlarge"]
 **Step 4.** Run the following command to set up EKS and deploy WAS:
 
 ```console
-ubuntu@user:~$ setup
+ubuntu@home:~$ setup
 ```
 
 **Note:** This can take approximately 45 minutes to complete.
