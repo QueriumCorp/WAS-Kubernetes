@@ -12,13 +12,13 @@ Quickstart for Linux & macOS operating systems.
 
 Ensure that your environment includes the latest stable releases of the following software packages:
 
-* [awscli](https://aws.amazon.com/cli/)
+* [aws cli](https://aws.amazon.com/cli/)
 * [kubectl (Kubernetes cli)](https://kubernetes.io/docs/tasks/tools/)
 * [terraform](https://www.terraform.io/)
 * [helm](https://helm.sh/)
 * [k9s](https://k9scli.io/)
 
-If necessary, install [homebrew](https://brew.sh/)
+If necessary, install [Homebrew](https://brew.sh/)
 
 ```console
 $ /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
@@ -47,9 +47,17 @@ $ AWS_ACCOUNT=012345678912      # add your 12-digit AWS account number here
 $ AWS_REGION=us-east-1
 $ AWS_DYNAMODB_TABLE="terraform-state-lock-was"
 $ AWS_S3_BUCKET="${AWS_ACCOUNT}-terraform-tfstate-was"
+```
 
-# Create required Terraform state resources
+Create an AWS S3 Bucket
+
+```console
 $ aws s3api create-bucket --bucket $AWS_S3_BUCKET --region $AWS_REGION
+```
+
+Create a DynamoDB table
+
+```console
 $ aws dynamodb create-table --region $AWS_REGION --table-name $AWS_DYNAMODB_TABLE  \
                --attribute-definitions AttributeName=LockID,AttributeType=S  \
                --key-schema AttributeName=LockID,KeyType=HASH --provisioned-throughput  \
