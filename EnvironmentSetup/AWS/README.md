@@ -5,20 +5,8 @@
 This document describes the setup of Amazon Kubernetes (EKS) and Wolfram Application Server (WAS).
 
 
-## Prerequisite Tools
+## Default Configuration
 
-The following CLI tools are required to be installed on your local machine to complete the setup and installation:
-
-* **AWS CLIv2** - https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html#getting-started-install-instructions
-
-* **Kubectl >= 1.27** - https://kubernetes.io/docs/tasks/tools/install-kubectl/
-
-* **Docker v20.10 or newer** - https://docs.docker.com/get-docker/
-
-* **Docker Compose  v1.28.6 or newer** - https://docs.docker.com/compose/install/
-
-
-### Default Configuration
 The automated configuration tool will use the following default values when building EKS and configuring WAS.
 
 * Cluster Name: was
@@ -31,7 +19,7 @@ The automated configuration tool will use the following default values when buil
 To change any of the above defaults open `Source/terraform/variables.tf`, modify accordingly and save file.
 
 
-## First Time Setup (Ubuntu)
+## Linux & macOS Setup
 
 **Prerequisite:** Obtain an AWS IAM User with administrator priviledges, access key and secret key.
 
@@ -60,8 +48,6 @@ ubuntu@user:~$ aws configure
 ```
 
 This will interactively prompt for your AWS IAM user access key, secret key and preferred region.
-
-**Note:** Your region needs to match the above default configuration else the setup will fail.
 
 ## Setup
 
@@ -124,12 +110,6 @@ The output of this command will follow this pattern:
 	Endpoints Info: http://<your-base-url>/.applicationserver/info
 	
 	Restart AWES: http://<your-base-url>/.applicationserver/kernel/restart
-
-
-
-**Step 5.** After completion, run this command to shutdown the aws-setup-manager:
-
-	docker-compose down
 
 
 **Step 6.** Get a license file from your Wolfram Research sales representative.
