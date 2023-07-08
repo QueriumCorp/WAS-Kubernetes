@@ -1,10 +1,3 @@
-data "aws_vpc" "was" {
-  filter {
-    name = "tag:Name"
-    values = [var.shared_resource_name]
-  }
-}
-
 resource "aws_iam_policy" "worker_policy" {
   name        = "node-workers-policy-${var.shared_resource_name}"
   description = "Node Workers IAM policies"
@@ -17,8 +10,8 @@ module "eks" {
   version                         = "~> 19.4"
   cluster_name                    = var.shared_resource_name
   cluster_version                 = var.cluster_version
-  subnet_ids                      = data.aws_vpc.private_subnets
-  vpc_id                          = data.aws_vpc.was.id
+  subnet_ids                      = var.subnet_ids
+  vpc_id                          = var.vpc_id
   create_cloudwatch_log_group     = false
   cluster_endpoint_private_access = true
   cluster_endpoint_public_access  = true
@@ -116,7 +109,7 @@ resource "null_resource" "kubectl-init" {
 resource "aws_security_group" "worker_group_mgmt" {
   name_prefix = "${var.shared_resource_name}-eks_hosting_group_mgmt"
   description = "WAS: Ingress CLB worker group management"
-  vpc_id      = module.vpc.vpc_id
+  vpc_id      = data.aws_vpc.was.id
 
   ingress {
     description = "WAS: Ingress CLB"
@@ -134,7 +127,7 @@ resource "aws_security_group" "worker_group_mgmt" {
 resource "aws_security_group" "all_worker_mgmt" {
   name_prefix = "${var.shared_resource_name}-eks_all_worker_management"
   description = "WAS: Ingress CLB worker management"
-  vpc_id      = module.vpc.vpc_id
+  vpc_id      = data.aws_vpc.was.id
 
   ingress {
     description = "WAS: Ingress CLB"

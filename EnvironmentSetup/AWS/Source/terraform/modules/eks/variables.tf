@@ -12,18 +12,13 @@ variable "aws_profile" {
   type    = string
 }
 
-variable "cidr" {
-  type    = string
-  default = "10.168.0.0/16"
+
+variable "vpc_id" {
+  type = string  
 }
 
-variable "private_subnets" {
-  type    = list(string)
-  default = ["10.168.128.0/18", "10.168.192.0/18"]
-}
-variable "public_subnets" {
-  type    = list(string)
-  default = ["10.168.0.0/18", "10.168.64.0/18"]
+variable "subnet_ids" {
+  type = string  
 }
 
 variable "shared_resource_name" {
