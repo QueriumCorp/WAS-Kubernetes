@@ -18,10 +18,6 @@ variable "tags" {
   default     = {}
 }
 
-variable "aws_region" {
-  type = string
-}
-variable "aws_profile" {
-  type    = string
-  default = "default"
+variable "account_id" {
+  type = "string"  
 }

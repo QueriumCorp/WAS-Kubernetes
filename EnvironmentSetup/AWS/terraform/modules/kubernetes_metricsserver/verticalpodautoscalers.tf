@@ -1,8 +1,7 @@
 
-resource "kubectl_manifest" "vpa-metrics-server" {
-  yaml_body = file("${path.module}/yml/verticalpodautoscalers/vpa-metrics-server.yaml")
-
+resource "kubectl_manifest" "vpa-metricsserver" {
+  yaml_body = file("${path.module}/yml/verticalpodautoscalers/vpa-metricsserver.yaml")
   depends_on = [
-    helm_release.vpa
+    helm_release.metrics_server
   ]
 }

@@ -77,3 +77,10 @@ module "kafka" {
   source     = "../modules/kubernetes_kafka"
   #depends_on = [module.eks]
 }
+
+module "was" {
+  source          = "../modules/kubernetes_was"
+  account_id      = var.account_id
+  namespace           = var.shared_resource_name
+  #depends_on = [module.eks]
+}

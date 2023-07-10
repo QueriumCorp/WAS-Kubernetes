@@ -10,7 +10,7 @@ data "template_file" "service-resource-manager" {
 data "template_file" "deployment-resource-manager" {
   template = file("${path.module}/yml/deployment-resource-manager.yaml.tpl")
   vars = {
-    namespace               = local.namespace
+    namespace               = var.namespace
     response                = ""
     minio_access_key        = "set-me-please"
     minio_secret_key        = ""
@@ -27,23 +27,14 @@ data "template_file" "deployment-resource-manager" {
 #------------------------------------------------------------------------------
 resource "kubectl_manifest" "service-active-web-elements-server" {
   yaml_body = file("${path.module}/yml/service-active-web-elements-server.yaml")
-  depends_on = [
-    kubernetes_namespace.was
-  ]
 }
 
 resource "kubectl_manifest" "service-endpoint-manager" {
   yaml_body = file("${path.module}/yml/service-endpoint-manager.yaml")
-  depends_on = [
-    kubernetes_namespace.was
-  ]
 }
 
 resource "kubectl_manifest" "service-resource-manager" {
   yaml_body = data.template_file.service-resource-manager.rendered
-  depends_on = [
-    kubernetes_namespace.was
-  ]
 }
 
 #------------------------------------------------------------------------------
@@ -52,16 +43,16 @@ resource "kubectl_manifest" "service-resource-manager" {
 
 resource "kubectl_manifest" "deployment-active-web-elements-server" {
   yaml_body  = file("${path.module}/yml/deployment-active-web-elements-server.yaml")
-  depends_on = [kubernetes_namespace.was, kubectl_manifest.service-active-web-elements-server]
+  depends_on = [kubectl_manifest.service-active-web-elements-server]
 }
 resource "kubectl_manifest" "deployment-endpoint-manager" {
   yaml_body  = file("${path.module}/yml/deployment-endpoint-manager.yaml")
-  depends_on = [kubernetes_namespace.was, kubectl_manifest.service-endpoint-manager]
+  depends_on = [kubectl_manifest.service-endpoint-manager]
 }
 
-resource "kubectl_manifest" "deployment-endpoint-manager" {
+resource "kubectl_manifest" "deployment-resource-manager" {
   yaml_body  = data.template_file.deployment-resource-manager.rendered
-  depends_on = [kubernetes_namespace.was, kubectl_manifest.service-endpoint-manager]
+  depends_on = [kubectl_manifest.service-endpoint-manager]
 }
 
 #------------------------------------------------------------------------------
