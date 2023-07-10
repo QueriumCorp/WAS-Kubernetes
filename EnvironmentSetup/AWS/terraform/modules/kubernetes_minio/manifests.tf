@@ -1,7 +1,7 @@
 # data "template_file" "deployment-resource-manager" {
 #   template = file("${path.module}/yml/deployment-resource-manager.yaml.tpl")
 #   vars = {
-#     namespace               = var.namespace
+#     namespace               = local.namespace
 #     response                = ""
 #     minio_access_key        = "set-me-please"
 #     minio_secret_key        = ""
@@ -15,14 +15,14 @@
 data "template_file" "hpa-autoscaler-minio" {
   template = file("${path.module}/yml/hpa-autoscaler-minio.yaml.tpl")
   vars = {
-    namespace = var.namespace
+    namespace = local.namespace
   }
 }
 
 data "template_file" "hpa-autoscaler-resource-manager" {
   template = file("${path.module}/yml/hpa-autoscaler-resource-manager.yaml.tpl")
   vars = {
-    namespace = var.namespace
+    namespace = local.namespace
   }
 }
 
@@ -34,7 +34,7 @@ data "template_file" "ingress-minio" {
 data "template_file" "resource-manager-service" {
   template = file("${path.module}/yml/resource-manager-service.yaml.tpl")
   vars = {
-    namespace = var.namespace
+    namespace = local.namespace
   }
 }
 
