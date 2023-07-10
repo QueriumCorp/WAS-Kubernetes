@@ -4,7 +4,7 @@ metadata:
   labels:
     app: endpoint-manager
   name: endpoint-manager
-  namespace: was
+  namespace: ${namespace}
 spec:
   ports:
   - name: "8085"

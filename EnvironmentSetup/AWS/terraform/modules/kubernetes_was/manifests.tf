@@ -6,6 +6,34 @@ data "template_file" "service-resource-manager" {
   }
 }
 
+data "template_file" "service-active-web-elements-server" {
+  template = file("${path.module}/yml/service-active-web-elements-server.yaml.tpl")
+  vars = {
+    namespace = var.namespace
+  }
+}
+
+data "template_file" "service-endpoint-manager" {
+  template = file("${path.module}/yml/service-endpoint-manager.yaml.tpl")
+  vars = {
+    namespace = var.namespace
+  }
+}
+
+
+data "template_file" "deployment-active-web-elements-server" {
+  template = file("${path.module}/yml/deployment-active-web-elements-server.yaml.tpl")
+  vars = {
+    namespace = var.namespace
+  }
+}
+data "template_file" "deployment-endpoint-manager" {
+  template = file("${path.module}/yml/deployment-endpoint-manager.yaml.tpl")
+  vars = {
+    namespace = var.namespace
+  }
+}
+
 
 data "template_file" "deployment-resource-manager" {
   template = file("${path.module}/yml/deployment-resource-manager.yaml.tpl")
@@ -39,11 +67,11 @@ data "template_file" "hpa-autoscaler-endpoint-manager" {
 #                             services
 #------------------------------------------------------------------------------
 resource "kubectl_manifest" "service-active-web-elements-server" {
-  yaml_body = file("${path.module}/yml/service-active-web-elements-server.yaml")
+  yaml_body = data.template_file.service-active-web-elements-server.rendered
 }
 
 resource "kubectl_manifest" "service-endpoint-manager" {
-  yaml_body = file("${path.module}/yml/service-endpoint-manager.yaml")
+  yaml_body = data.template_file.service-endpoint-manager.rendered
 }
 
 resource "kubectl_manifest" "service-resource-manager" {
@@ -55,11 +83,11 @@ resource "kubectl_manifest" "service-resource-manager" {
 #------------------------------------------------------------------------------
 
 resource "kubectl_manifest" "deployment-active-web-elements-server" {
-  yaml_body  = file("${path.module}/yml/deployment-active-web-elements-server.yaml")
+  yaml_body  = data.template_file.deployment-active-web-elements-server.rendered
   depends_on = [kubectl_manifest.service-active-web-elements-server]
 }
 resource "kubectl_manifest" "deployment-endpoint-manager" {
-  yaml_body  = file("${path.module}/yml/deployment-endpoint-manager.yaml")
+  yaml_body  = data.template_file.deployment-endpoint-manager.rendered
   depends_on = [kubectl_manifest.service-endpoint-manager]
 }
 

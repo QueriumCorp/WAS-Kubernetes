@@ -4,7 +4,7 @@ metadata:
   labels:
     app: active-web-elements-server
   name: active-web-elements-server
-  namespace: was
+  namespace: ${namespace}
   annotations:
       prometheus.io/scrape: 'true'
       prometheus.io/path:   /metrics

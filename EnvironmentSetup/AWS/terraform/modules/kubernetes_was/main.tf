@@ -4,6 +4,14 @@ locals {
   subnet_ids_random_index = random_id.index.dec % length(data.aws_subnets.was.ids)
   instance_subnet_id      = local.subnet_ids_list[local.subnet_ids_random_index]
 }
+
+resource "kubernetes_namespace" "was" {
+  metadata {
+    name = var.namespace
+  }
+}
+
+
 #------------------------------------------------------------------------------
 #                        SUPPORTING RESOURCES
 #------------------------------------------------------------------------------

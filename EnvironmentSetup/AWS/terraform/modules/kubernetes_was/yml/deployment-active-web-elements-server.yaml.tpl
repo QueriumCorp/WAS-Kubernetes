@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: active-web-elements-server-deployment
-  namespace: was
+  namespace: ${namespace}
   labels:
     app: active-web-elements-server
 spec:

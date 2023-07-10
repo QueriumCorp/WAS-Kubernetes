@@ -6,7 +6,7 @@ metadata:
 subjects:
 - kind: ServiceAccount
   name: awesrestartpods
-  namespace: was
+  namespace: ${namespace}
 roleRef:
   kind: Role
   name: awesrestartpods
@@ -16,7 +16,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   name: awesrestartpods
-  namespace: was
+  namespace: ${namespace}
   labels:
     k8s-app: was-awes
 rules:
@@ -31,7 +31,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: awesrestartpods
-  namespace: was
+  namespace: ${namespace}
   labels:
     k8s-app: was-awes
 ---
@@ -39,7 +39,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: endpoint-manager-deployment
-  namespace: was
+  namespace: ${namespace}
   labels:
     app: endpoint-manager
 spec:
