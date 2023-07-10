@@ -2,7 +2,7 @@
 data "template_file" "service-resource-manager" {
   template = file("${path.module}/yml/service-resource-manager.yaml.tpl")
   vars = {
-    account_id = var.account_id
+    namespace = var.namespace
   }
 }
 
@@ -21,6 +21,19 @@ data "template_file" "deployment-resource-manager" {
   }
 }
 
+data "template_file" "hpa-autoscaler-active-web-elements-server" {
+  template = file("${path.module}/yml/hpa-autoscaler-active-web-elements-server.yaml.tpl")
+  vars = {
+    namespace = var.namespace
+  }
+}
+
+data "template_file" "hpa-autoscaler-endpoint-manager" {
+  template = file("${path.module}/yml/hpa-autoscaler-endpoint-manager.yaml.tpl")
+  vars = {
+    namespace = var.namespace
+  }
+}
 
 #------------------------------------------------------------------------------
 #                             services
@@ -59,8 +72,8 @@ resource "kubectl_manifest" "deployment-resource-manager" {
 #                             hpa
 #------------------------------------------------------------------------------
 resource "kubectl_manifest" "hpa-autoscaler-active-web-elements-server" {
-  yaml_body  = file("${path.module}/yml/hpa-autoscaler-active-web-elements-server.yaml")
+  yaml_body  = data.template_file.hpa-autoscaler-active-web-elements-server.rendered
 }
 resource "kubectl_manifest" "hpa-autoscaler-endpoint-manager" {
-  yaml_body  = file("${path.module}/yml/hpa-autoscaler-endpoint-manager.yaml")
+  yaml_body  = data.template_file.hpa-autoscaler-endpoint-manager.rendered
 }

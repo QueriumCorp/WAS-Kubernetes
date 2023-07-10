@@ -3,7 +3,7 @@
 resource "kubernetes_persistent_volume_claim_v1" "awes-nodefiles" {
   metadata {
     name      = "awes-nodefiles"
-    namespace = "was"
+    namespace = var.namespace
   }
   spec {
     access_modes = ["ReadWriteMany"]

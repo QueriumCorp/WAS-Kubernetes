@@ -21,7 +21,7 @@ variable "subnet_ids" {
 }
 
 variable "shared_resource_name" {
-  default = "WAS"
+  default = "was"
   type    = string
 }
 
