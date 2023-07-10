@@ -1,6 +1,6 @@
 data "kubernetes_secret" "minio-admin" {
   metadata {
-    name      = "minio-admin"
+    name      = "minio"
     namespace = "minio"
   }
 }
@@ -49,8 +49,8 @@ data "template_file" "deployment-resource-manager" {
   vars = {
     namespace               = var.namespace
     response                = ""
-    minio_access_key        = base64decode(data.kubernetes_secret.minio-admin.data["ADMIN_USER"])
-    minio_secret_key        = base64decode(data.kubernetes_secret.minio-admin.data["ADMIN_PASSWORD"])
+    minio_access_key        = base64decode(data.kubernetes_secret.minio-admin.data["root-user"])
+    minio_secret_key        = base64decode(data.kubernetes_secret.minio-admin.data["root-password"])
     resource_info_bucket    = var.s3_bucket
     nodefiles_bucket        = var.s3_bucket
     resource_bucket_region  = var.aws_region

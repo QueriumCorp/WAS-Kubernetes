@@ -83,7 +83,7 @@ module "was" {
   account_id      = var.account_id
   namespace       = var.shared_resource_name
   aws_region      = var.aws_region
-  domain          = "was.${root_domain}"
+  domain          = "was.${var.root_domain}"
   s3_bucket       = "320713933456-terraform-tfstate-was-01"
   #depends_on = [module.eks]
 }
