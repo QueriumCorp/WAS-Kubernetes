@@ -19,5 +19,9 @@ variable "tags" {
 }
 
 variable "account_id" {
-  type = "string"  
+  type = string
+}
+
+variable "aws_region" {
+  type = string  
 }
