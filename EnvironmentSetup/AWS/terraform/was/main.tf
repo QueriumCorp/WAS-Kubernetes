@@ -37,22 +37,22 @@ module "eks" {
 
 module "vpa" {
   source     = "../modules/kubernetes_vpa"
-  depends_on = [module.vpc, module.eks]
+  #depends_on = [module.vpc, module.eks]
 }
 
 module "metricsserver" {
   source     = "../modules/kubernetes_metricsserver"
-  depends_on = [module.vpc, module.eks, module.vpa]
+  #depends_on = [module.vpc, module.eks]
 }
 
 module "prometheus" {
   source     = "../modules/kubernetes_prometheus"
-  depends_on = [module.eks, module.metricsserver, module.vpa]
+  #depends_on = [module.eks, module.metricsserver]
 }
 
 module "ingress_controller" {
   source     = "../modules/kubernetes_ingress_controller"
-  depends_on = [module.vpc, module.eks, module.vpa]
+  #depends_on = [module.vpc, module.eks]
 }
 
 module "cert_manager" {
@@ -63,17 +63,17 @@ module "cert_manager" {
   services_subdomain  = var.services_subdomain
   aws_region          = var.aws_region
 
-  depends_on = [module.vpc, module.eks, module.vpa, module.ingress_controller]
+  #depends_on = [module.vpc, module.eks]
 }
 
 module "minio" {
   source     = "../modules/kubernetes_minio"
   namespace   = var.shared_resource_name
   ingress_hostname = "minio.${var.services_subdomain}"
-  depends_on = [module.eks, module.metricsserver, module.vpa, module.ingress_controller]
+  #depends_on = [module.eks, module.metricsserver]
 }
 
 module "kafka" {
   source     = "../modules/kubernetes_kafka"
-  depends_on = [module.eks, module.metricsserver, module.vpa, module.ingress_controller]
+  #depends_on = [module.eks]
 }

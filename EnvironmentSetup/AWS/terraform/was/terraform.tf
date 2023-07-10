@@ -13,7 +13,7 @@ terraform {
     bucket         = "320713933456-terraform-tfstate-was-01"
     key            = "was/terraform.tfstate"
     region         = "us-east-1"
-    dynamodb_table = "terraform-state-locking-was2"
+    dynamodb_table = "terraform-state-lock-was2"
     profile        = "default"
     encrypt        = false
   }
