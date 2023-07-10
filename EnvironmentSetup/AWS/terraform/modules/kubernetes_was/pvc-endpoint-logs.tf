@@ -1,8 +1,8 @@
 
 
-resource "kubernetes_persistent_volume_claim_v1" "awes-nodefiles" {
+resource "kubernetes_persistent_volume_claim_v1" "endpoint-logs" {
   metadata {
-    name      = "awes-nodefiles"
+    name      = "endpoint-logs"
     namespace = var.namespace
   }
   spec {
@@ -12,18 +12,18 @@ resource "kubernetes_persistent_volume_claim_v1" "awes-nodefiles" {
         storage = "10Gi"
       }
     }
-    volume_name = kubernetes_persistent_volume.awes-nodefiles.metadata.0.name
+    volume_name = kubernetes_persistent_volume.endpoint-logs.metadata.0.name
   }
 }
 
-resource "kubernetes_persistent_volume" "awes-nodefiles" {
+resource "kubernetes_persistent_volume" "endpoint-logs" {
   metadata {
-    name = "awes-nodefiles"
+    name = "endpoint-logs"
     labels = {
       "topology.kubernetes.io/region" = "${var.aws_region}"
-      "topology.kubernetes.io/zone"   = "${aws_ebs_volume.awes-nodefiles.availability_zone}"
-      "ebs_volume_id"                 = "${aws_ebs_volume.awes-nodefiles.id}"
-      "name"                          = "awes-nodefiles"
+      "topology.kubernetes.io/zone"   = "${aws_ebs_volume.endpoint-logs.availability_zone}"
+      "ebs_volume_id"                 = "${aws_ebs_volume.endpoint-logs.id}"
+      "name"                          = "endpoint-logs"
       "namespace"                     = var.namespace
     }
     annotations = {
@@ -38,7 +38,7 @@ resource "kubernetes_persistent_volume" "awes-nodefiles" {
     storage_class_name = "gp2"
     persistent_volume_source {
       aws_elastic_block_store {
-        volume_id = aws_ebs_volume.awes-nodefiles.id
+        volume_id = aws_ebs_volume.endpoint-logs.id
         fs_type   = "ext4"
       }
     }
@@ -48,7 +48,7 @@ resource "kubernetes_persistent_volume" "awes-nodefiles" {
           match_expressions {
             key      = "topology.kubernetes.io/zone"
             operator = "In"
-            values   = ["${aws_ebs_volume.awes-nodefiles.availability_zone}"]
+            values   = ["${aws_ebs_volume.endpoint-logs.availability_zone}"]
           }
           match_expressions {
             key      = "topology.kubernetes.io/region"
@@ -61,15 +61,15 @@ resource "kubernetes_persistent_volume" "awes-nodefiles" {
   }
 
   depends_on = [
-    aws_ebs_volume.awes-nodefiles
+    aws_ebs_volume.endpoint-logs
   ]
 }
 
-# create a detachable EBS volume for awes-nodefiles
+# create a detachable EBS volume for endpoint-logs
 #------------------------------------------------------------------------------
 #                     AWS ELASTIC BLOCK STORE RESOURCES
 #------------------------------------------------------------------------------
-resource "aws_ebs_volume" "awes-nodefiles" {
+resource "aws_ebs_volume" "endpoint-logs" {
   availability_zone = data.aws_subnet.private_subnet.availability_zone
   size              = 10
 

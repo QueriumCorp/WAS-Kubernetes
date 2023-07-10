@@ -34,7 +34,7 @@ resource "kubernetes_persistent_volume" "awes-logs" {
     capacity = {
       storage = "10Gi"
     }
-    access_modes       = ["ReadWriteOnce"]
+    access_modes       = ["ReadWriteMany"]
     storage_class_name = "gp2"
     persistent_volume_source {
       aws_elastic_block_store {

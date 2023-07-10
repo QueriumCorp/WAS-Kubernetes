@@ -34,6 +34,26 @@ data "template_file" "minio-values" {
   template = file("${path.module}/yml/minio-values.yaml")
 }
 
+resource "random_password" "minio_admin" {
+  length  = 16
+  special = false
+  keepers = {
+    version = "1"
+  }
+}
+
+resource "kubernetes_secret" "minio_admin" {
+  metadata {
+    name      = local.minio_account_name
+    namespace = local.namespace
+  }
+
+  data = {
+    ADMIN_USER     = local.minio_account_name
+    ADMIN_PASSWORD = random_password.minio_admin.result
+  }
+}
+
 resource "helm_release" "minio" {
   namespace        = local.namespace
   create_namespace = false
@@ -47,6 +67,14 @@ resource "helm_release" "minio" {
   set {
     name  = "ingress.enabled"
     value = false
+  }
+  set {
+    name  = "auth.rootUser"
+    value = local.minio_account_name
+  }
+  set {
+    name  = "auth.rootPassword"
+    value = random_password.admin.result
   }
 
   values = [

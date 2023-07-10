@@ -1,20 +1,27 @@
+data "kubernetes_secret" "minio-admin" {
+  metadata {
+    name      = "minio-admin"
+    namespace = "minio"
+  }
+}
+
 
 data "template_file" "service-resource-manager" {
-  template = file("${path.module}/yml/service-resource-manager.yaml.tpl")
+  template = file("${path.module}/yml/service/service-resource-manager.yaml.tpl")
   vars = {
     namespace = var.namespace
   }
 }
 
 data "template_file" "service-active-web-elements-server" {
-  template = file("${path.module}/yml/service-active-web-elements-server.yaml.tpl")
+  template = file("${path.module}/yml/service/service-active-web-elements-server.yaml.tpl")
   vars = {
     namespace = var.namespace
   }
 }
 
 data "template_file" "service-endpoint-manager" {
-  template = file("${path.module}/yml/service-endpoint-manager.yaml.tpl")
+  template = file("${path.module}/yml/service/service-endpoint-manager.yaml.tpl")
   vars = {
     namespace = var.namespace
   }
@@ -22,42 +29,44 @@ data "template_file" "service-endpoint-manager" {
 
 
 data "template_file" "deployment-active-web-elements-server" {
-  template = file("${path.module}/yml/deployment-active-web-elements-server.yaml.tpl")
+  template = file("${path.module}/yml/deployment/deployment-active-web-elements-server.yaml.tpl")
   vars = {
     namespace = var.namespace
+    domain    = var.domain
   }
 }
 data "template_file" "deployment-endpoint-manager" {
-  template = file("${path.module}/yml/deployment-endpoint-manager.yaml.tpl")
+  template = file("${path.module}/yml/deployment/deployment-endpoint-manager.yaml.tpl")
   vars = {
     namespace = var.namespace
+    response  = ""
   }
 }
 
 
 data "template_file" "deployment-resource-manager" {
-  template = file("${path.module}/yml/deployment-resource-manager.yaml.tpl")
+  template = file("${path.module}/yml/deployment/deployment-resource-manager.yaml.tpl")
   vars = {
     namespace               = var.namespace
     response                = ""
-    minio_access_key        = "set-me-please"
-    minio_secret_key        = ""
-    resource_info_bucket    = ""
-    nodefiles_bucket        = ""
-    resource_bucket_region  = ""
-    nodefiles_bucket_region = ""
+    minio_access_key        = base64decode(data.kubernetes_secret.minio-admin.data["ADMIN_USER"])
+    minio_secret_key        = base64decode(data.kubernetes_secret.minio-admin.data["ADMIN_PASSWORD"])
+    resource_info_bucket    = var.s3_bucket
+    nodefiles_bucket        = var.s3_bucket
+    resource_bucket_region  = var.aws_region
+    nodefiles_bucket_region = var.aws_region
   }
 }
 
 data "template_file" "hpa-autoscaler-active-web-elements-server" {
-  template = file("${path.module}/yml/hpa-autoscaler-active-web-elements-server.yaml.tpl")
+  template = file("${path.module}/yml/hpa/hpa-autoscaler-active-web-elements-server.yaml.tpl")
   vars = {
     namespace = var.namespace
   }
 }
 
 data "template_file" "hpa-autoscaler-endpoint-manager" {
-  template = file("${path.module}/yml/hpa-autoscaler-endpoint-manager.yaml.tpl")
+  template = file("${path.module}/yml/hpa/hpa-autoscaler-endpoint-manager.yaml.tpl")
   vars = {
     namespace = var.namespace
   }

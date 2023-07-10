@@ -81,7 +81,9 @@ module "kafka" {
 module "was" {
   source          = "../modules/kubernetes_was"
   account_id      = var.account_id
-  namespace           = var.shared_resource_name
-  aws_region          = var.aws_region
+  namespace       = var.shared_resource_name
+  aws_region      = var.aws_region
+  domain          = "was.${root_domain}"
+  s3_bucket       = "320713933456-terraform-tfstate-was-01"
   #depends_on = [module.eks]
 }

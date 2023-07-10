@@ -52,15 +52,15 @@ spec:
         - name: poolconfiguration_kernelpool_1__JLinkEnabled
           value: "false"
         - name: applicationserver.servername
-          value: "http://domain.com/"
+          value: "http://${domain}/"
         - name: applicationserver.resourcemanager.url
-          value: "http://domain.com/resources/"
+          value: "http://${domain}/resources/"
         - name: applicationserver.nodefilesmanager.url
-          value: "http://domain.com/nodefiles/"
+          value: "http://${domain}/nodefiles/"
         - name: applicationserver.endpointmanager.url
-          value: "http://domain.com/endpoints/"
+          value: "http://${domain}/endpoints/"
         - name: applicationserver.restart.url
-          value: "http://domain.com/.applicationserver/kernel/restart"
+          value: "http://${domain}/.applicationserver/kernel/restart"
         image: wolframapplicationserver/active-web-elements-server:3.3.1
         name: active-web-elements-server
         ports:

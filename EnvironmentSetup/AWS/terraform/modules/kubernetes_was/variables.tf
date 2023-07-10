@@ -25,3 +25,11 @@ variable "account_id" {
 variable "aws_region" {
   type = string  
 }
+
+variable "domain" {
+  type = string
+}
+
+variable "s3_bucket" {
+  type = string  
+}
