@@ -12,10 +12,8 @@ module "vpc" {
   public_subnets       = var.public_subnets
   enable_nat_gateway   = true
   single_nat_gateway   = true
-  one_nat_gateway_per_az  = false
   enable_dns_hostnames = true
   enable_ipv6          = false
-  map_public_ip_on_launch = true
   enable_dns_support   = true
 
   private_subnet_tags = {
@@ -43,13 +41,10 @@ module "eks" {
   cluster_version                 = var.cluster_version
   vpc_id                          = module.vpc.vpc_id
   subnet_ids                      = module.vpc.private_subnets
-  create_eks                = true
   create_cloudwatch_log_group     = false
   cluster_endpoint_private_access = true
   cluster_endpoint_public_access  = true
   enable_irsa                     = true
-  write_kubeconfig          = false
-  kubeconfig_output_path    = "/home/ubuntu/.kube/config"
 
   tags = {
     Environment = "Wolfram Application Server"
@@ -155,7 +150,7 @@ resource "aws_iam_policy" "worker_policy" {
 resource "aws_security_group" "worker_group_mgmt" {
   name_prefix = "${var.shared_resource_name}-eks_hosting_group_mgmt"
   description = "WAS: Ingress CLB worker group management"
-  vpc_id      = var.vpc_id
+  vpc_id      = module.vpc.vpc_id
 
   ingress {
     description = "WAS: Ingress CLB"
@@ -173,7 +168,7 @@ resource "aws_security_group" "worker_group_mgmt" {
 resource "aws_security_group" "all_worker_mgmt" {
   name_prefix = "${var.shared_resource_name}-eks_all_worker_management"
   description = "WAS: Ingress CLB worker management"
-  vpc_id      = var.vpc_id
+  vpc_id      = module.vpc.vpc_id
 
   ingress {
     description = "WAS: Ingress CLB"

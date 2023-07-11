@@ -1,10 +1,5 @@
 # need this bc the default aws profile specifies us-east-2
 
-module "vpc" {
-  source = "../modules/vpc"
-
-}
-
 module "eks" {
   source = "../modules/eks"
   
@@ -28,7 +23,6 @@ module "eks" {
   aws_auth_users       = var.aws_auth_users
   kms_key_owners       = var.kms_key_owners
 
-  depends_on = [module.vpc]
 }
 
 module "vpa" {
