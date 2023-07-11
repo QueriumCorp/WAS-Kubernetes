@@ -16,11 +16,11 @@ spec:
         type: internal
         tls: true
     config:
-      offsets.topic.replication.factor: 1
-      transaction.state.log.replication.factor: 1
-      transaction.state.log.min.isr: 1
-      default.replication.factor: 1
-      min.insync.replicas: 1
+      offsets.topic.replication.factor: 3
+      transaction.state.log.replication.factor: 4
+      transaction.state.log.min.isr: 2
+      default.replication.factor: 4
+      min.insync.replicas: 4
       inter.broker.protocol.version: "3.4"
     storage:
       type: jbod
