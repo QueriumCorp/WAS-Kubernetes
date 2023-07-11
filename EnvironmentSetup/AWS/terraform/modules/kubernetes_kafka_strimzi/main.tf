@@ -24,12 +24,12 @@ locals {
   tags = {}
 }
 
-data "template_file" "kafka-values" {
-  template = file("${path.module}/yml/kafka-values.yaml")
+data "template_file" "strimzi-values" {
+  template = file("${path.module}/yml/strimzi-values.yaml")
 }
 
 data "template_file" "kafka" {
-  template = file("${path.module}/yml/kafka.yaml")
+  template = file("${path.module}/yml/kafka-persistent.yaml.tpl")
   vars = {
     name = var.shared_resource_name
   }
@@ -46,7 +46,7 @@ resource "helm_release" "strimzi" {
   version    = "~> 0.35"
 
   values = [
-    data.template_file.kafka-values.rendered
+    data.template_file.strimzi-values.rendered
   ]
 
 }
