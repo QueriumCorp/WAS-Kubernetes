@@ -1,15 +1,55 @@
+data "aws_availability_zones" "available" {
+}
+
+
+module "vpc" {
+  source               = "terraform-aws-modules/vpc/aws"
+
+  name                 = var.shared_resource_name
+  cidr                 = var.cidr
+  azs                  = data.aws_availability_zones.available.names
+  private_subnets      = var.private_subnets
+  public_subnets       = var.public_subnets
+  enable_nat_gateway   = true
+  single_nat_gateway   = true
+  one_nat_gateway_per_az  = false
+  enable_dns_hostnames = true
+  enable_ipv6          = false
+  map_public_ip_on_launch = true
+  enable_dns_support   = true
+
+  private_subnet_tags = {
+    "kubernetes.io/cluster/${var.shared_resource_name}" = "owned"
+    "karpenter.sh/discovery"                            = var.shared_resource_name
+    "kubernetes.io/role/internal-elb"                   = "1"
+  }
+  public_subnet_tags = {
+    "kubernetes.io/cluster/${var.shared_resource_name}" = "shared"
+    "kubernetes.io/role/elb"                            = "1"
+  }
+
+  tags = {
+    Terraform   = "true"
+    Environment = "${var.shared_resource_name}"
+  }
+
+}
+
 
 module "eks" {
   source                          = "terraform-aws-modules/eks/aws"
 
   cluster_name                    = var.shared_resource_name
   cluster_version                 = var.cluster_version
-  subnet_ids                      = var.subnet_ids
-  vpc_id                          = var.vpc_id
+  vpc_id                          = module.vpc.vpc_id
+  subnet_ids                      = module.vpc.private_subnets
+  create_eks                = true
   create_cloudwatch_log_group     = false
   cluster_endpoint_private_access = true
   cluster_endpoint_public_access  = true
   enable_irsa                     = true
+  write_kubeconfig          = false
+  kubeconfig_output_path    = "/home/ubuntu/.kube/config"
 
   tags = {
     Environment = "Wolfram Application Server"

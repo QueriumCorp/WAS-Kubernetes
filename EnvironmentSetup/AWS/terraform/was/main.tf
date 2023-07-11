@@ -3,24 +3,20 @@
 module "vpc" {
   source = "../modules/vpc"
 
-  shared_resource_name = var.shared_resource_name
-  account_id           = var.account_id
-  aws_region           = var.aws_region
-  aws_profile          = var.aws_profile
-  cidr                 = var.cidr
-  private_subnets      = var.private_subnets
-  public_subnets       = var.public_subnets
 }
 
 module "eks" {
   source = "../modules/eks"
   
   shared_resource_name = var.shared_resource_name
+
   account_id           = var.account_id
   aws_region           = var.aws_region
   aws_profile          = var.aws_profile
-  vpc_id               = module.vpc.vpc_id
-  subnet_ids           = module.vpc.private_subnets
+
+  cidr                 = var.cidr
+  private_subnets      = var.private_subnets
+  public_subnets       = var.public_subnets
   namespace            = var.shared_resource_name
   cluster_version      = var.cluster_version
   disk_size            = var.disk_size
