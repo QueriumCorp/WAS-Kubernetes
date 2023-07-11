@@ -30,7 +30,6 @@ module "vpc" {
     Terraform   = "true"
     Environment = "${var.shared_resource_name}"
   }
-
 }
 
 
@@ -124,6 +123,7 @@ module "eks" {
     AmazonEBSCSIDriverPolicy  = data.aws_iam_policy.AmazonEBSCSIDriverPolicy.arn
   }
 
+  depends_on = [ module.vpc ]
 }
 
 #------------------------------------------------------------------------------
