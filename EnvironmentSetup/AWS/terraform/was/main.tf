@@ -25,24 +25,38 @@ module "eks" {
 
 }
 
+module "kafka" {
+  source     = "../modules/kubernetes_kafka_strimzi"
+  name       = var.shared_resource_name
+
+  depends_on = [module.eks]
+}
+
+module "minio" {
+  source     = "../modules/kubernetes_minio"
+  namespace   = var.shared_resource_name
+  ingress_hostname = "minio.${var.services_subdomain}"
+  depends_on = [module.eks, module.metricsserver]
+}
+
 module "vpa" {
   source     = "../modules/kubernetes_vpa"
-  #depends_on = [module.vpc, module.eks]
+  depends_on = [module.eks]
 }
 
 module "metricsserver" {
   source     = "../modules/kubernetes_metricsserver"
-  #depends_on = [module.vpc, module.eks]
+  depends_on = [module.eks]
 }
 
 module "prometheus" {
   source     = "../modules/kubernetes_prometheus"
-  #depends_on = [module.eks, module.metricsserver]
+  depends_on = [module.eks, module.metricsserver]
 }
 
 module "ingress_controller" {
   source     = "../modules/kubernetes_ingress_controller"
-  #depends_on = [module.vpc, module.eks]
+  depends_on = [module.eks]
 }
 
 module "cert_manager" {
@@ -53,21 +67,7 @@ module "cert_manager" {
   services_subdomain  = var.services_subdomain
   aws_region          = var.aws_region
 
-  #depends_on = [module.vpc, module.eks]
-}
-
-module "minio" {
-  source     = "../modules/kubernetes_minio"
-  namespace   = var.shared_resource_name
-  ingress_hostname = "minio.${var.services_subdomain}"
-  #depends_on = [module.eks, module.metricsserver]
-}
-
-module "kafka" {
-  source     = "../modules/kubernetes_kafka_strimzi"
-  name       = var.shared_resource_name
-
-  #depends_on = [module.eks]
+  depends_on = [module.eks]
 }
 
 module "was" {
@@ -77,5 +77,5 @@ module "was" {
   aws_region      = var.aws_region
   domain          = "was.${var.root_domain}"
   s3_bucket       = "320713933456-terraform-tfstate-was-01"
-  #depends_on = [module.eks]
+  depends_on = [module.eks]
 }

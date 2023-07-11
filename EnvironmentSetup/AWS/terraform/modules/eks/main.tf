@@ -71,35 +71,25 @@ module "eks" {
       from_port   = 0
       to_port     = 0
       type        = "ingress"
-      cidr_blocks = var.private_subnets
+      cidr_blocks = ["192.168.0.0/16"]
     }
 
-    # FIX NOTE: this is a sledge hammer approach to getting Kafka running
-    #           we need to understand whether this has any unintended consequences.
-    port_all = {
-      description                = "WAS: open all ports vpc"
-      protocol                   = "-1"
-      from_port                  = 0
-      to_port                    = 0
-      type                       = "ingress"
-      source_node_security_group = true
-    }
-
+    # kubectl
     port_8443 = {
-      description                = "WAS: open port 8443 to vpc"
+      description                = "kubectl: open port 8443 to vpc"
       protocol                   = "-1"
       from_port                  = 8443
       to_port                    = 8443
       type                       = "ingress"
-      source_node_security_group = true
+      cidr_blocks                = ["192.168.0.0/16"]
     }
     port_443 = {
-      description                = "WAS: open port 443 to vpc"
+      description                = "kubectl: open port 443 to vpc"
       protocol                   = "-1"
       from_port                  = 443
       to_port                    = 443
       type                       = "ingress"
-      source_node_security_group = true
+      cidr_blocks                = ["192.168.0.0/16"]
     }
     egress_all = {
       description      = "WAS: Node all egress"
