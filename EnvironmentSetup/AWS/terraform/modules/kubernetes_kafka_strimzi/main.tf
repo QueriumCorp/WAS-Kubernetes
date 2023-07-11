@@ -31,7 +31,8 @@ data "template_file" "strimzi-values" {
 data "template_file" "kafka" {
   template = file("${path.module}/yml/kafka-persistent.yaml.tpl")
   vars = {
-    name = var.name
+    name            = var.name
+    kafka_namespace = local.kafka_namespace
   }
 }
 
