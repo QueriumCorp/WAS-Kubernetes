@@ -73,6 +73,18 @@ module "eks" {
       type        = "ingress"
       cidr_blocks = var.private_subnets
     }
+
+    # FIX NOTE: this is a sledge hammer approach to getting Kafka running
+    #           we need to understand whether this has any unintended consequences.
+    port_all = {
+      description                = "WAS: open all ports vpc"
+      protocol                   = "-1"
+      from_port                  = 0
+      to_port                    = 0
+      type                       = "ingress"
+      source_node_security_group = true
+    }
+
     port_8443 = {
       description                = "WAS: open port 8443 to vpc"
       protocol                   = "-1"
