@@ -12,7 +12,7 @@ variable "tags" {
   default     = {}
 }
 
-variable "namespace" {
+variable "shared_resource_name" {
   type    = string
-  default = "kafka"
+  default = "was"
 }

@@ -4,8 +4,8 @@
 #
 # date: Aug-2022
 #
-# usage: installs kafka service.
-# see: https://artifacthub.io/packages/helm/bitnami/kafka
+# usage: installs strimzi operator for kafka.
+# see: https://artifacthub.io/packages/helm/strimzi/strimzi-kafka-operator
 #
 # requirements: you must initialize a local helm repo in order to run
 # this mdoule.
@@ -19,13 +19,8 @@
 # NOTE: run `helm repo update` prior to running this
 #       Terraform module.
 #-----------------------------------------------------------
-# FIX NOTE: the policy lacks some permissions for creating/terminating instances
-#  as well as pricing:GetProducts.
-#
-# FIXED. but see note below about version.
-#
-# see: https://registry.terraform.io/modules/terraform-aws-modules/iam/aws/latest/submodules/iam-role-for-service-accounts-eks
 locals {
+  kafka_namespace = "kafka"
   tags = {}
 }
 
@@ -33,14 +28,21 @@ data "template_file" "kafka-values" {
   template = file("${path.module}/yml/kafka-values.yaml")
 }
 
+data "template_file" "kafka" {
+  template = file("${path.module}/yml/kafka.yaml")
+  vars = {
+    name = var.shared_resource_name
+  }
+}
 
-resource "helm_release" "kafka" {
-  namespace        = var.namespace
+
+resource "helm_release" "strimzi" {
+  namespace        = local.kafka_namespace
   create_namespace = true
 
-  name       = "kafka"
+  name       = "strimzi"
   repository = "https://strimzi.io/charts/"
-  chart      = "kafka"
+  chart      = "strimzi-kafka-operator"
   version    = "~> 0.35"
 
   values = [
@@ -49,3 +51,7 @@ resource "helm_release" "kafka" {
 
 }
 
+resource "kubectl_manifest" "kafka" {
+  yaml_body  = data.template_file.kafka.rendered
+  depends_on = [helm_release.strimzi]
+}
