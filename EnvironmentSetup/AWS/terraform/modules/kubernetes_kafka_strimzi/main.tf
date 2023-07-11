@@ -45,24 +45,39 @@ data "template_file" "kafka" {
     name            = var.name
   }
 }
+resource "kubernetes_namespace" "kafka" {
+  metadata {
+    name = local.kafka_namespace
+  }
+}
 
 resource "helm_release" "zookeeper" {
   namespace        = local.kafka_namespace
-  create_namespace = true
+  create_namespace = false
 
   name       = "zookeeper"
   repository = "https://charts.bitnami.com/bitnami"
   chart      = "zookeeper"
   version    = "~> 11.4"
 
+  set {
+   name = "replicaCount"
+   value = 3
+  }
+  set {
+    name = "volumePermissions.enabled"
+    value = true
+  }
+
   values = [
     data.template_file.zookeeper-values.rendered
   ]
 
+  depends_on = [ kubernetes_namespace.kafka ]
 }
 resource "helm_release" "strimzi" {
   namespace        = local.kafka_namespace
-  create_namespace = true
+  create_namespace = false
 
   name       = "strimzi"
   repository = "https://strimzi.io/charts/"
@@ -72,7 +87,7 @@ resource "helm_release" "strimzi" {
   values = [
     data.template_file.strimzi-values.rendered
   ]
-
+  depends_on = [ kubernetes_namespace.kafka, helm_release.zookeeper ]
 }
 
 resource "kubectl_manifest" "kafka" {
