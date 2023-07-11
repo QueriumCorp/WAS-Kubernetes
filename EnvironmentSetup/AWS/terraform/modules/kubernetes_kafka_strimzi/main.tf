@@ -16,6 +16,12 @@ data "http" "strimzi" {
   url = "https://strimzi.io/install/latest?namespace=kafka"
 }
 
+data "template_file" "strimzi" {
+  template = file("${path.module}/yml/strimzi.yaml")
+  vars = {
+    name = var.name
+  }
+}
 data "template_file" "kafka" {
   template = file("${path.module}/yml/kafka-persistent.yaml.tpl")
   vars = {
@@ -29,7 +35,7 @@ resource "kubernetes_namespace" "kafka" {
 }
 
 resource "kubectl_manifest" "strimzi" {
-  yaml_body  = data.http.strimzi.body
+  yaml_body  = data.template_file.strimzi.rendered
   depends_on = [ kubernetes_namespace.kafka ]
 }
 
