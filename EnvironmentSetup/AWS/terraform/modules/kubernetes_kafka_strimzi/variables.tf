@@ -12,7 +12,7 @@ variable "tags" {
   default     = {}
 }
 
-variable "shared_resource_name" {
+variable "name" {
   type    = string
   default = "was"
 }

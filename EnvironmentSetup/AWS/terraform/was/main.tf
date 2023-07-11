@@ -75,6 +75,8 @@ module "minio" {
 
 module "kafka" {
   source     = "../modules/kubernetes_kafka_strimzi"
+  name       = var.shared_resource_name
+
   #depends_on = [module.eks]
 }
 
