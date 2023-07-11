@@ -28,6 +28,7 @@
 #-----------------------------------------------------------
 locals {
   kafka_namespace = "kafka"
+  zookeeper_name = "${var.name}-zookeeper"
   tags = {}
 }
 
@@ -55,7 +56,7 @@ resource "helm_release" "zookeeper" {
   namespace        = local.kafka_namespace
   create_namespace = false
 
-  name       = "zookeeper"
+  name       = local.zookeeper_name
   repository = "https://charts.bitnami.com/bitnami"
   chart      = "zookeeper"
   version    = "~> 11.4"
