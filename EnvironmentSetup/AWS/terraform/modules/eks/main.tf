@@ -123,7 +123,6 @@ module "eks" {
     AmazonEBSCSIDriverPolicy  = data.aws_iam_policy.AmazonEBSCSIDriverPolicy.arn
   }
 
-  depends_on = [ module.vpc ]
 }
 
 #------------------------------------------------------------------------------

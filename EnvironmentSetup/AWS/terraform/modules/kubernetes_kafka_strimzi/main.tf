@@ -17,12 +17,6 @@
 #   helm search repo strimzi
 #   helm show values strimzi
 #
-# Zookeeper
-#   helm repo add bitnami https://charts.bitnami.com/bitnami
-#   helm repo update
-#   helm search repo bitnami/zookeeper
-#   helm show values bitnami/zookeeper
-
 # NOTE: run `helm repo update` prior to running this
 #       Terraform module.
 #-----------------------------------------------------------
@@ -52,30 +46,6 @@ resource "kubernetes_namespace" "kafka" {
   }
 }
 
-resource "helm_release" "zookeeper" {
-  namespace        = local.kafka_namespace
-  create_namespace = false
-
-  name       = local.zookeeper_name
-  repository = "https://charts.bitnami.com/bitnami"
-  chart      = "zookeeper"
-  version    = "~> 11.4"
-
-  set {
-   name = "replicaCount"
-   value = 3
-  }
-  set {
-    name = "volumePermissions.enabled"
-    value = true
-  }
-
-  values = [
-    data.template_file.zookeeper-values.rendered
-  ]
-
-  depends_on = [ kubernetes_namespace.kafka ]
-}
 resource "helm_release" "strimzi" {
   namespace        = local.kafka_namespace
   create_namespace = false
@@ -88,7 +58,7 @@ resource "helm_release" "strimzi" {
   values = [
     data.template_file.strimzi-values.rendered
   ]
-  depends_on = [ kubernetes_namespace.kafka, helm_release.zookeeper ]
+  depends_on = [ kubernetes_namespace.kafka ]
 }
 
 resource "kubectl_manifest" "kafka" {
