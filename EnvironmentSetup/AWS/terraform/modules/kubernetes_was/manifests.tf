@@ -76,7 +76,8 @@ data "template_file" "hpa-autoscaler-endpoint-manager" {
 data "template_file" "was-topics" {
   template = file("${path.module}/yml/was-topics.yaml.tpl")
   vars = {
-    name = var.shared_resource_name
+    name            = var.shared_resource_name
+    kafka_namespace = "kafka"
   }
 }
 
