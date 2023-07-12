@@ -25,8 +25,10 @@ module "eks" {
 
 }
 
-module "kafka" {
-  source     = "../modules/kubernetes_kafka_strimzi"
+# Strimzi is an operator that installs, configures and 
+# manages all Kafka resources on a near real-time basis
+module "strimzi" {
+  source     = "../modules/kubernetes_strimzi"
   name       = var.shared_resource_name
 
   depends_on = [module.eks]
@@ -52,6 +54,7 @@ module "metricsserver" {
 module "prometheus" {
   source     = "../modules/kubernetes_prometheus"
   depends_on = [module.eks, module.metricsserver]
+  domain     = "${var.shared_resource_name}.${var.root_domain}"
 }
 
 module "ingress_controller" {
@@ -75,7 +78,7 @@ module "was" {
   account_id      = var.account_id
   namespace       = var.shared_resource_name
   aws_region      = var.aws_region
-  domain          = "was.${var.root_domain}"
-  s3_bucket       = "320713933456-terraform-tfstate-was-01"
+  domain          = "${var.shared_resource_name}.${var.root_domain}"
+  s3_bucket       = "320713933456-${var.shared_resource_name}"
   depends_on = [module.eks]
 }
