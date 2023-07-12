@@ -15,14 +15,14 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/proxy-body-size: "0"
     kubernetes.io/ingress.class: "nginx"
-    cert-manager.io/cluster-issuer: live.stepwisemath.ai
+    cert-manager.io/cluster-issuer: ${domain}
 spec:
   tls:
   - hosts:
-    - "grafana.live.stepwisemath.ai"
-    secretName: live.stepwisemath.ai-tls
+    - "grafana.${domain}"
+    secretName: ${domain}-tls
   rules:
-  - host: grafana.live.stepwisemath.ai
+  - host: grafana.${domain}
     http:
       paths:
       - path: /
