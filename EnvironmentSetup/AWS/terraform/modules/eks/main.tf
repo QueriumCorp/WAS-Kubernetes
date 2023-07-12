@@ -73,24 +73,6 @@ module "eks" {
       type        = "ingress"
       cidr_blocks = ["192.168.0.0/16"]
     }
-
-    # kubectl
-    port_8443 = {
-      description                = "kubectl: open port 8443 to vpc"
-      protocol                   = "-1"
-      from_port                  = 8443
-      to_port                    = 8443
-      type                       = "ingress"
-      cidr_blocks                = ["192.168.0.0/16"]
-    }
-    port_443 = {
-      description                = "kubectl: open port 443 to vpc"
-      protocol                   = "-1"
-      from_port                  = 443
-      to_port                    = 443
-      type                       = "ingress"
-      cidr_blocks                = ["192.168.0.0/16"]
-    }
     egress_all = {
       description      = "WAS: Node all egress"
       protocol         = "-1"
@@ -139,48 +121,3 @@ resource "aws_iam_policy" "worker_policy" {
 }
 
 
-# force a refresh of local kubeconfig
-# resource "null_resource" "kubectl-init" {
-#   provisioner "local-exec" {
-#     command = "aws eks --region ${var.aws_region} update-kubeconfig --name ${var.shared_resource_name}"
-#   }
-#   depends_on = [ module.eks ]
-# }
-
-
-resource "aws_security_group" "worker_group_mgmt" {
-  name_prefix = "${var.shared_resource_name}-eks_hosting_group_mgmt"
-  description = "WAS: Ingress CLB worker group management"
-  vpc_id      = module.vpc.vpc_id
-
-  ingress {
-    description = "WAS: Ingress CLB"
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-
-    cidr_blocks = [
-      "10.0.0.0/8",
-    ]
-  }
-
-}
-
-resource "aws_security_group" "all_worker_mgmt" {
-  name_prefix = "${var.shared_resource_name}-eks_all_worker_management"
-  description = "WAS: Ingress CLB worker management"
-  vpc_id      = module.vpc.vpc_id
-
-  ingress {
-    description = "WAS: Ingress CLB"
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-
-    cidr_blocks = [
-      "10.0.0.0/8",
-      "172.16.0.0/12",
-      "192.168.0.0/16",
-    ]
-  }
-}
