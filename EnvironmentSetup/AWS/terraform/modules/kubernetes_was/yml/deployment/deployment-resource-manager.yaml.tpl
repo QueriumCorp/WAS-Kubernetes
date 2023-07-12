@@ -63,7 +63,7 @@ spec:
           tcpSocket:
             port: 9090
           initialDelaySeconds: 15
-          periodSeconds: 20   
+          periodSeconds: 20
         volumeMounts:
         - mountPath: "/opt/app/logs"
           name: resources-logs-storage

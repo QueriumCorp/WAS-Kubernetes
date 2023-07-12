@@ -35,8 +35,7 @@
 #   kubectl delete crd thanosrulers.monitoring.coreos.com
 #-----------------------------------------------------------
 locals {
-  cost_analyzer = "cost-analyzer"
-  prometheus    = "prometheus"
+  prometheus = "prometheus"
 }
 
 data "template_file" "prometheus-values" {
@@ -76,4 +75,3 @@ resource "random_password" "grafana" {
     version = "1"
   }
 }
-

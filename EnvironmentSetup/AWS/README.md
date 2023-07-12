@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This document describes the setup of Amazon Kubernetes (EKS) and Wolfram Application Server (WAS). 
+This document describes the setup of Amazon Kubernetes (EKS) and Wolfram Application Server (WAS).
 
 This is a Terraform based, fully automated build-deploy script. Terraform is an infrastructure-as-code command line tool that will create and configure all required AWS resources, and install and configure all system software on which WAS depends. This process will take around 30 minutes to complete and will generate copious amounts of console output. Where possible Terraform uses Helm to install Kuberetes system softare packages.
 
@@ -194,7 +194,7 @@ URL endpoints will be as follows, where <was.example.com> matches your value of 
 
 ### Step 3. Install license
 
-This file needs to be deployed to WAS as a node file in the conventional location `.Wolfram/Licensing/mathpass`. From a Wolfram Language client, this may be achieved using the following code: 
+This file needs to be deployed to WAS as a node file in the conventional location `.Wolfram/Licensing/mathpass`. From a Wolfram Language client, this may be achieved using the following code:
 
     was = ServiceConnect["WolframApplicationServer", "https://example.com/"];
     ServiceExecute[was, "DeployNodeFile",
@@ -213,17 +213,17 @@ Alternatively you may use the [node files REST API](../../Documentation/API/Node
 Restart the application using the [restart API](../../Documentation/API/Utilities.md) to enable your Wolfram Engines.
 
 URL: `https://example.com/.applicationserver/kernel/restart`
-	
-The default credentials for this API are: 
-	
+
+The default credentials for this API are:
+
 	Username: applicationserver
-	
+
 	Password: P7g[/Y8v?KR}#YvN
 
 
 To change these, see the [configuration documentation](../../Configuration.md).
 
-**Note:** Active Web Elements Server will restart and activate using the mathpass. Upon successful activation, the application shall start. 
+**Note:** Active Web Elements Server will restart and activate using the mathpass. Upon successful activation, the application shall start.
 
 Your setup is now complete.
 
@@ -257,5 +257,5 @@ To delete the AWS S3 bucket
 
 ```console
 $ aws s3 rm s3://$AWS_S3_BUCKET --recursive
-$ aws s3 rb s3://$AWS_S3_BUCKET --force 
+$ aws s3 rb s3://$AWS_S3_BUCKET --force
 ```

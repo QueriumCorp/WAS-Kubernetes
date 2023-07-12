@@ -3,11 +3,11 @@
 # -----------------------------------------------------------------------------
 # Required inputs
 # -----------------------------------------------------------------------------
-account_id           = "320713933456"
-aws_region           = "us-east-1"
-aws_profile          = "default"
-root_domain          = "stepwisemath.ai"
-services_subdomain   = "live.stepwisemath.ai"
+account_id         = "320713933456"
+aws_region         = "us-east-1"
+aws_profile        = "default"
+root_domain        = "stepwisemath.ai"
+services_subdomain = "live.stepwisemath.ai"
 aws_auth_users = [
   {
     userarn  = "arn:aws:iam::320713933456:user/system/bastion-user/stepwisemath-global-live-bastion"
@@ -40,12 +40,5 @@ kms_key_owners = [
 shared_resource_name = "was2"
 
 # valid choices: 'SPOT', 'ON_DEMAND'
-capacity_type   = "SPOT"
-instance_types      = ["c5.2xlarge", "t3.2xlarge", "c5d.2xlarge", "t3a.2xlarge", "t2.2xlarge"]
-
-tags = merge(
-  var.tags,
-  {
-    Repository      = "https://github.com/QueriumCorp/WAS-Kubernetes"
-  }
-)
+capacity_type  = "SPOT"
+instance_types = ["c5.2xlarge", "t3.2xlarge", "c5d.2xlarge", "t3a.2xlarge", "t2.2xlarge"]

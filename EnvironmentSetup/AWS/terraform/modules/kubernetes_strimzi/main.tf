@@ -9,7 +9,7 @@
 #
 # requirements: you must initialize a local helm repo in order to run
 # this mdoule.
-# 
+#
 # Strimzi
 #   brew install helm
 #   helm repo add strimzi https://strimzi.io/charts/
@@ -22,11 +22,6 @@
 #-----------------------------------------------------------
 locals {
   kafka_namespace = "kafka"
-  zookeeper_name = "${var.name}-zookeeper"
-}
-
-data "template_file" "zookeeper-values" {
-  template = file("${path.module}/yml/zookeeper-values.yaml")
 }
 
 data "template_file" "strimzi-values" {
@@ -34,9 +29,9 @@ data "template_file" "strimzi-values" {
 }
 
 data "template_file" "kafka" {
-  template = file("${path.module}/yml/kafka-persistent.yaml.tpl")
+  template = file("${path.module}/yml/kafka.yaml.tpl")
   vars = {
-    name            = var.name
+    name = var.name
   }
 }
 resource "kubernetes_namespace" "kafka" {
@@ -57,11 +52,11 @@ resource "helm_release" "strimzi" {
   values = [
     data.template_file.strimzi-values.rendered
   ]
-  depends_on = [ kubernetes_namespace.kafka ]
+  depends_on = [kubernetes_namespace.kafka]
 }
 
 resource "kubectl_manifest" "kafka" {
-  yaml_body  = data.template_file.kafka.rendered
-  override_namespace  = local.kafka_namespace
-  depends_on = [helm_release.strimzi]
+  yaml_body          = data.template_file.kafka.rendered
+  override_namespace = local.kafka_namespace
+  depends_on         = [helm_release.strimzi]
 }

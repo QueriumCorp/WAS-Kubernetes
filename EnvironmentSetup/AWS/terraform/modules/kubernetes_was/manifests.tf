@@ -109,8 +109,8 @@ resource "kubectl_manifest" "deployment-resource-manager" {
 #                             hpa
 #------------------------------------------------------------------------------
 resource "kubectl_manifest" "hpa-autoscaler-active-web-elements-server" {
-  yaml_body  = data.template_file.hpa-autoscaler-active-web-elements-server.rendered
+  yaml_body = data.template_file.hpa-autoscaler-active-web-elements-server.rendered
 }
 resource "kubectl_manifest" "hpa-autoscaler-endpoint-manager" {
-  yaml_body  = data.template_file.hpa-autoscaler-endpoint-manager.rendered
+  yaml_body = data.template_file.hpa-autoscaler-endpoint-manager.rendered
 }

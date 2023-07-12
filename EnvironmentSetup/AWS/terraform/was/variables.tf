@@ -19,7 +19,7 @@ variable "root_domain" {
 
 variable "services_subdomain" {
   description = "a hostname that you control where all ingreses will point: was.example.com"
-  type = string  
+  type        = string
 }
 variable "cidr" {
   type    = string
@@ -95,9 +95,9 @@ variable "kms_key_owners" {
 variable "tags" {
   description = "A map of tags to add to all resources. Tags added to launch configuration or templates override these values for ASG Tags only."
   type        = map(string)
-  default     = {
+  default = {
     Terraform   = "true"
     Platform    = "Wolfram Application Server"
-    Environment = "${var.shared_resource_name}"
+    Environment = "was"
   }
 }

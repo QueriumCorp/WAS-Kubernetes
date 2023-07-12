@@ -9,7 +9,7 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/use-regex: "true"
-    nginx.ingress.kubernetes.io/rewrite-target: /endpoints/$1   
+    nginx.ingress.kubernetes.io/rewrite-target: /endpoints/$1
 spec:
   rules:
   - http:

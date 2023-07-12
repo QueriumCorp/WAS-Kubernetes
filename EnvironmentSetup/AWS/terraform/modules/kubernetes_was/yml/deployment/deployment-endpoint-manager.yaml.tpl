@@ -22,7 +22,7 @@ metadata:
 rules:
 - apiGroups: ["apps"]
   resources:
-  - deployments 
+  - deployments
   verbs:
   - patch
   - get

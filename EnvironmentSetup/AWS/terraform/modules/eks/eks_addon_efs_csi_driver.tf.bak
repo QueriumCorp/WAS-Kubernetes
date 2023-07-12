@@ -113,7 +113,7 @@ resource "kubectl_manifest" "efs-service-account" {
   yaml_body = data.template_file.efs-service-account.rendered
 }
 
-# 6. Install the Amazon EFS driver 
+# 6. Install the Amazon EFS driver
 data "template_file" "efs-csi-driver-values" {
   template = file("${path.module}/yml/efs-csi-driver-values.yaml")
 }
@@ -160,4 +160,3 @@ resource "helm_release" "efs-csi-driver" {
     module.eks
   ]
 }
-

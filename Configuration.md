@@ -1,6 +1,6 @@
 # Configuration
 
-After setting up the Wolfram Application Server, there are various modifications that may be applied to customize your deployment. This file documents the commonly used configurations for mofifying the applicaiton server. 
+After setting up the Wolfram Application Server, there are various modifications that may be applied to customize your deployment. This file documents the commonly used configurations for mofifying the applicaiton server.
 
 ## Passwords
 
@@ -15,12 +15,12 @@ You will be prompted for a new password. The `htpasswd` command may additionally
 
 To deploy the modified `auth` password file to the cluster  run the following command:
 
-`kubectl create secret generic basic-auth --from-file=auth -n was --ignore-not-found=true` 
+`kubectl create secret generic basic-auth --from-file=auth -n was --ignore-not-found=true`
 
 to apply the changes.
 
 
-##  Kernel Initialization 
+##  Kernel Initialization
 
 Developers may wish to run Wolfram Language code when Wolfram Engine kenels are initialized prior to handling user requests. By convention this code should be deployed as a node file named `init.wl` to one of the following paths
 
@@ -29,13 +29,13 @@ Developers may wish to run Wolfram Language code when Wolfram Engine kenels are 
 
 Configuration files deployed to the first location will be run for all kernels in all pools. Configurations deployed to the second will be run only for the pool specified by `[pool name]` to permit customizing initialization code for each pool.
 
-##  Pod Scaling 
+##  Pod Scaling
 ### List of Pods
 * Active Web Elements Server
 * Endpoint Manager
-* Resource Manager 
+* Resource Manager
 * Node Files Manager
-* Minio 
+* Minio
 * Kafka
 
 ### Default Algorithm
@@ -47,11 +47,11 @@ In addition to the default above, the scaling of Active Web Elements Server is b
 **Note:** "Average" here means average across active pods of that particular type.
 
 ### Options
-By default, there are 2 replicas and they scale up to a maximum of 10. 
+By default, there are 2 replicas and they scale up to a maximum of 10.
 
 **How does one change these?**
 
-For each service you can find the appropriate configruation file in `Source/hpa/[service name]-hpa-autoscaler.yaml`. You may alter these configuration values, ensuring a minimum of 2 replicas for each pod. 
+For each service you can find the appropriate configruation file in `Source/hpa/[service name]-hpa-autoscaler.yaml`. You may alter these configuration values, ensuring a minimum of 2 replicas for each pod.
 
 From the configuration file directory run the following command:
 
@@ -93,7 +93,7 @@ These variables may be changed to modify the internal behavior of the Active Web
 
 
 ### Kernel Pool Environment Variables
-These variables are used to configure pools of Wolfram Engines in the Active Web Elements Server. These kernel pool configurations are stored in a zero offset array where values for each pool follow the naming convention `poolconfiguration_kernelpool_<n>__` with `<n>` being the indext of pool being configured. A minimum of one pool must be configured and it is recommended that at least one pool be named **Public** as this is the pool which will be selected by default when deployed resources do not explicitly declare a pool to use.  
+These variables are used to configure pools of Wolfram Engines in the Active Web Elements Server. These kernel pool configurations are stored in a zero offset array where values for each pool follow the naming convention `poolconfiguration_kernelpool_<n>__` with `<n>` being the indext of pool being configured. A minimum of one pool must be configured and it is recommended that at least one pool be named **Public** as this is the pool which will be selected by default when deployed resources do not explicitly declare a pool to use.
 
 The following variables configure a default **Public** pool suitable for serving active web element resources:
 
@@ -112,4 +112,3 @@ This second set of variables configure a pool named **MSP** to serve MSP pages. 
 `poolconfiguration_kernelpool_1__JLinkEnabled: "true"` - Required for serving MSP resources
 
 Additional pools may be configured if desired using sequentially increasing index values.
-

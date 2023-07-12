@@ -3,13 +3,13 @@ module "was_s3_storage" {
   source  = "terraform-aws-modules/s3-bucket/aws"
   version = "~> 3.14"
 
-  bucket                    = var.s3_bucket
-  acl                       = "private"
-  tags                      = var.tags
-  control_object_ownership  = true
-  object_ownership          = "BucketOwnerPreferred"
-  attach_policy             = true
-  policy                    = data.aws_iam_policy_document.bucket_policy.json
+  bucket                   = var.s3_bucket
+  acl                      = "private"
+  tags                     = var.tags
+  control_object_ownership = true
+  object_ownership         = "BucketOwnerPreferred"
+  attach_policy            = true
+  policy                   = data.aws_iam_policy_document.bucket_policy.json
 
   cors_rule = [
     {

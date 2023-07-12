@@ -7,7 +7,7 @@
 # usage: build an EKS cluster load balancer
 #------------------------------------------------------------------------------
 variable "aws_region" {
-  type = string  
+  type = string
 }
 variable "root_domain" {
   type = string

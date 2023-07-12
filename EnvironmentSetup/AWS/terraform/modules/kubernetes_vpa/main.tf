@@ -23,10 +23,8 @@
 #       Terraform module.
 #-----------------------------------------------------------
 locals {
-
-  tags = {}
-
 }
+
 data "template_file" "vertical-pod-autoscaler-values" {
   template = file("${path.module}/yml/vertical-pod-autoscaler-values.yaml")
   vars     = {}
@@ -46,4 +44,3 @@ resource "helm_release" "vpa" {
   ]
 
 }
-

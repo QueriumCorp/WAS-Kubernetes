@@ -8,7 +8,7 @@
 #------------------------------------------------------------------------------
 
 variable "shared_resource_name" {
-  type = string  
+  type = string
 }
 
 variable "namespace" {
@@ -22,12 +22,8 @@ variable "tags" {
   default     = {}
 }
 
-variable "account_id" {
-  type = string
-}
-
 variable "aws_region" {
-  type = string  
+  type = string
 }
 
 variable "domain" {
@@ -35,5 +31,5 @@ variable "domain" {
 }
 
 variable "s3_bucket" {
-  type = string  
+  type = string
 }

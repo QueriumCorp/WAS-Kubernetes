@@ -52,4 +52,3 @@ spec:
               name: endpoint-manager
               port:
                 number: 8085
-            

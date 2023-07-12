@@ -3,7 +3,8 @@ data "aws_availability_zones" "available" {
 
 
 module "vpc" {
-  source               = "terraform-aws-modules/vpc/aws"
+  source  = "terraform-aws-modules/vpc/aws"
+  version = "~> 5.0"
 
   name                 = var.shared_resource_name
   cidr                 = var.cidr
@@ -31,7 +32,8 @@ module "vpc" {
 
 
 module "eks" {
-  source                          = "terraform-aws-modules/eks/aws"
+  source  = "terraform-aws-modules/eks/aws"
+  version = "~> 19.15"
 
   cluster_name                    = var.shared_resource_name
   cluster_version                 = var.cluster_version
@@ -113,5 +115,3 @@ resource "aws_iam_policy" "worker_policy" {
 
   policy = file("${path.module}/node-workers-policy.json")
 }
-
-

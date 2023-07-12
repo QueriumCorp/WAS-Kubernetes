@@ -31,7 +31,7 @@ resource "kubernetes_service_account" "minio_admin" {
 
 resource "kubernetes_cluster_role_binding" "minio_admin" {
   metadata {
-    name = kubernetes_namespace.minio.metadata.0.name
+    name = kubernetes_namespace.minio.metadata[0].name
   }
   role_ref {
     api_group = "rbac.authorization.k8s.io"
@@ -40,8 +40,8 @@ resource "kubernetes_cluster_role_binding" "minio_admin" {
   }
   subject {
     kind      = "ServiceAccount"
-    name      = kubernetes_service_account.minio_admin.metadata.0.name
-    namespace = kubernetes_namespace.minio.metadata.0.name
+    name      = kubernetes_service_account.minio_admin.metadata[0].name
+    namespace = kubernetes_namespace.minio.metadata[0].name
   }
   subject {
     kind      = "Group"
@@ -59,7 +59,7 @@ resource "kubernetes_cluster_role_binding" "minio_admin" {
 resource "kubernetes_secret_v1" "minio_admin" {
   metadata {
     name      = local.minio_account_name
-    namespace = kubernetes_namespace.minio.metadata.0.name
+    namespace = kubernetes_namespace.minio.metadata[0].name
     annotations = {
       "kubernetes.io/service-account.name"      = local.minio_account_name
       "kubernetes.io/service-account.namespace" = local.namespace
@@ -74,4 +74,3 @@ resource "kubernetes_secret_v1" "minio_admin" {
     kubernetes_service_account.minio_admin,
   ]
 }
-

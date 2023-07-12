@@ -13,19 +13,23 @@ terraform {
     local = "~> 2.2"
     random = {
       source  = "hashicorp/random"
+      version = "~> 3.5"
     }
 
     aws = {
       source  = "hashicorp/aws"
+      version = "~> 5.7"
     }
     kubectl = {
       source  = "gavinbunney/kubectl"
+      version = "~> 1.14"
     }
     helm = {
       source  = "hashicorp/helm"
+      version = "~> 2.10"
     }
     kubernetes = {
-      source  = "hashicorp/kubernetes"
+      source = "hashicorp/kubernetes"
     }
   }
 }

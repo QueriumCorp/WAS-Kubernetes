@@ -2,15 +2,15 @@
 
 The [Wolfram Application Server (WAS)](https://www.wolfram.com/application-server/) combines the computational power of the Wolfram Engine with the robust containerization technologies available today. It provides a scalable deployment model for your Wolfram-powered web applications. The documentation provided here along with the appropriate license will get you started in no time.
 
-In order to deploy and use Wolfram Language content, you will need a license file provided by Wolfram Research. Contact your sales representative at [1-800-WOLFRAM](tel:18009653726) to discuss licensing options. 
+In order to deploy and use Wolfram Language content, you will need a license file provided by Wolfram Research. Contact your sales representative at [1-800-WOLFRAM](tel:18009653726) to discuss licensing options.
 
-The Wolfram Application Server runs within Kubernetes. You need to choose your Kubernetes environment. We support deploying the Wolfram Application Server onto Amazon, Azure and your on-premises cluster. 
+The Wolfram Application Server runs within Kubernetes. You need to choose your Kubernetes environment. We support deploying the Wolfram Application Server onto Amazon, Azure and your on-premises cluster.
 
 ## Amazon
-Instantiate a cluster in Amazon EKS, check out the following repository (EnvironmentSetup/AWS) and follow the instructions in [README.md](./EnvironmentSetup/AWS/README.md). 
+Instantiate a cluster in Amazon EKS, check out the following repository (EnvironmentSetup/AWS) and follow the instructions in [README.md](./EnvironmentSetup/AWS/README.md).
 
 ## Azure
-Instantiate a cluster in Azure, check out the following repository (EnvironmentSetup/Azure) and follow the instructions in [README.md](./EnvironmentSetup/Azure/README.md). 
+Instantiate a cluster in Azure, check out the following repository (EnvironmentSetup/Azure) and follow the instructions in [README.md](./EnvironmentSetup/Azure/README.md).
 
 ## On-premises
 Contact Wolfram Technical Support for options and documentation.
