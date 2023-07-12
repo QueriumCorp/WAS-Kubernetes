@@ -42,3 +42,7 @@ shared_resource_name = "was2"
 # valid choices: 'SPOT', 'ON_DEMAND'
 capacity_type  = "SPOT"
 instance_types = ["c5.2xlarge", "t3.2xlarge", "c5d.2xlarge", "t3a.2xlarge", "t2.2xlarge"]
+
+min_worker_node     = 2
+desired_worker_node = 2
+max_worker_node     = 10

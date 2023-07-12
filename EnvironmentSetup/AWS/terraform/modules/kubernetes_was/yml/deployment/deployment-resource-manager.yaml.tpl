@@ -30,7 +30,7 @@ spec:
         - name: LOG_LOCATION
           value: /opt/app/logs
         - name: KAFKA.BOOTSTRAP-SERVERS
-          value: kafka-persistent-kafka-bootstrap.kafka.svc.cluster.local:9092
+          value: ${namespace}-kafka-bootstrap.kafka.svc.cluster.local:9092
         - name: MINIOACCESSKEY
           value: ${minio_access_key}
         - name: MINIOSECRETKEY

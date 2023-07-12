@@ -2,8 +2,9 @@ apiVersion: kafka.strimzi.io/v1beta2
 kind: KafkaTopic
 metadata:
   name: endpoint-info
+  namespace: ${name}
   labels:
-    strimzi.io/cluster: kafka-persistent
+    strimzi.io/cluster: ${name}
 spec:
   partitions: 2
   replicas: 3
@@ -18,8 +19,9 @@ apiVersion: kafka.strimzi.io/v1beta2
 kind: KafkaTopic
 metadata:
   name: resource-info
+  namespace: ${name}
   labels:
-    strimzi.io/cluster: kafka-persistent
+    strimzi.io/cluster: ${name}
 spec:
   partitions: 2
   replicas: 3
@@ -34,8 +36,9 @@ apiVersion: kafka.strimzi.io/v1beta2
 kind: KafkaTopic
 metadata:
   name: nodefile-info
+  namespace: ${name}
   labels:
-    strimzi.io/cluster: kafka-persistent
+    strimzi.io/cluster: ${name}
 spec:
   partitions: 2
   replicas: 3

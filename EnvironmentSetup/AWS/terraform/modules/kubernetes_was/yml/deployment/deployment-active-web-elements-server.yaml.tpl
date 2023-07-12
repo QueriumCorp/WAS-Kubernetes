@@ -30,7 +30,7 @@ spec:
         - name: APPLICATIONSERVER_CACHEDIRECTORY
           value: /tmp/.wolframcache
         - name: KAFKA.BOOTSTRAP-SERVERS
-          value: kafka-persistent-kafka-bootstrap.kafka.svc.cluster.local:9092
+          value: ${namespace}-kafka-bootstrap.kafka.svc.cluster.local:9092
         - name: applicationserver.nodefiles.cachedirectory
           value: /opt/.wolframcache/nodefiles/
         - name: applicationserver.version

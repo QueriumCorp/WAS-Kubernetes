@@ -66,7 +66,7 @@ spec:
         - name: LOG_LOCATION
           value: /opt/app/logs
         - name: KAFKA.BOOTSTRAP-SERVERS
-          value: kafka-persistent-kafka-bootstrap.kafka.svc.cluster.local:9092
+          value: was2-kafka-bootstrap.kafka.svc.cluster.local:9092
         image: wolframapplicationserver/endpoint-manager:1.2.1
         name: endpoint-manager
         ports:
@@ -97,7 +97,7 @@ spec:
         command: ["bash", "-c", "for i in $(seq 1 3000); do nc -zvw1 minio 9000 && exit 0 || sleep 3; done; exit 1"]
       - name: init-kafka
         image: bash
-        command: ["bash", "-c", "for i in $(seq 1 3000); do nc -zvw1 kafka-persistent-kafka-bootstrap.kafka.svc.cluster.local 9092 && exit 0 || sleep 3; done; exit 1"]
+        command: ["bash", "-c", "for i in $(seq 1 3000); do nc -zvw1 was2-kafka-bootstrap.kafka.svc.cluster.local 9092 && exit 0 || sleep 3; done; exit 1"]
       - name: init-kafka-resources-topic
         image: bash
         command: ["bash", "-c", "apk --update add curl; set -x; while true; do response=$(curl -s kafka-bridge-service.kafka.svc.cluster.local:9092/topics); if [[ ${response} =~ .*\"resource-info\".* ]]; then break; else sleep 5; fi; done" ]

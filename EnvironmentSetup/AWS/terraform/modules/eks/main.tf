@@ -93,9 +93,9 @@ module "eks" {
       name              = "${var.shared_resource_name}-worker-nodes"
       capacity_type     = var.capacity_type
       enable_monitoring = false
-      desired_capacity  = var.desired_worker_node
-      max_capacity      = var.max_worker_node
-      min_capacity      = var.min_worker_node
+      desired_size      = var.desired_worker_node
+      max_size          = var.max_worker_node
+      min_size          = var.min_worker_node
       disk_size         = var.disk_size
       instance_types    = var.instance_types
 
