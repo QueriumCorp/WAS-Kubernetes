@@ -1,7 +1,7 @@
 apiVersion: kafka.strimzi.io/v1beta2
 kind: KafkaBridge
 metadata:
-  name: kafka
+  name: ${name}
   namespace: ${kafka_namespace}
 spec:
   replicas: 1
