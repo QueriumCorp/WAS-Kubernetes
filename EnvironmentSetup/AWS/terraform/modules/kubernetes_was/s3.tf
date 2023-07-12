@@ -61,9 +61,19 @@ resource "random_id" "id" {
 resource "aws_iam_user" "was_s3_storage_user" {
   name = "s3-openedx-user-${random_id.id.hex}"
   path = "/system/s3-bucket-user/"
-  tags = {}
+  tags = var.tags
 }
 
+
+resource "aws_iam_access_key" "was_s3_storage_user" {
+  user = aws_iam_user.was_s3_storage_user.name
+}
+
+resource "aws_iam_user_policy" "policy" {
+  name   = "${var.shared_resource_name}-s3-bucket"
+  policy = data.aws_iam_policy_document.user_policy.json
+  user   = aws_iam_user.was_s3_storage_user.name
+}
 
 resource "kubernetes_secret" "was_s3" {
   metadata {
@@ -95,14 +105,4 @@ data "aws_iam_policy_document" "user_policy" {
       "${module.was_s3_storage.s3_bucket_arn}/*"
     ]
   }
-}
-
-resource "aws_iam_access_key" "was_s3_storage_user" {
-  user = aws_iam_user.was_s3_storage_user.name
-}
-
-resource "aws_iam_user_policy" "policy" {
-  name   = "${var.shared_resource_name}-s3-bucket"
-  policy = data.aws_iam_policy_document.user_policy.json
-  user   = aws_iam_user.was_s3_storage_user.name
 }

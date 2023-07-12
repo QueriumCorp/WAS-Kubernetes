@@ -70,10 +70,10 @@ spec:
       initContainers:
       - name: init-minio
         image: bash
-        command: ["bash", "-c", "for i in $(seq 1 3000); do nc -zvw1 minio 9000 && exit 0 || sleep 3; done; exit 1"]
+        command: ["bash", "-c", "for i in $(seq 1 3000); do kubectl rollout status deployment minio -n minio --timeout=90s && exit 0 || sleep 3; done; exit 1"]
       - name: init-kafka
         image: bash
-        command: ["bash", "-c", "for i in $(seq 1 3000); do nc -zvw1 kafka-persistent-kafka-bootstrap.kafka.svc.cluster.local 9092 && exit 0 || sleep 3; done; exit 1"]
+        command: ["bash", "-c", "for i in $(seq 1 3000); do kubectl wait kafka/${namespace} --for=condition=Ready --timeout=300s -n ${kafka_namespace} && exit 0 || sleep 3; done; exit 1"]
       - name: init-kafka-resources-topic
         image: bash
         command: ["bash", "-c", "apk --update add curl; set -x; while true; do response=$(curl -s kafka-bridge-service.kafka.svc.cluster.local:9092/topics); if [[ ${response} =~ .*\"resource-info\".* ]]; then break; else sleep 5; fi; done" ]

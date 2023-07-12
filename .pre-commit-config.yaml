@@ -22,7 +22,7 @@ repos:
       - id: trailing-whitespace
       - id: pretty-format-json
      # - id: check-yaml
-        exclude: EnvironmentSetup/General^
+        exclude: EnvironmentSetup/Azure^
   - repo: https://github.com/gruntwork-io/pre-commit
     rev: v0.1.22 # Get the latest from: https://github.com/gruntwork-io/pre-commit/releases
     hooks:
@@ -34,4 +34,4 @@ repos:
      # - id: shellcheck
       - id: yapf
       - id: markdown-link-check
-        exclude: EnvironmentSetup/AWS/README.md
+        exclude: EnvironmentSetup/Azure^

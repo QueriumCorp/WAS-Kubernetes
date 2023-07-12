@@ -1,3 +1,11 @@
+#------------------------------------------------------------------------------
+# written by: Lawrence McDaniel
+#             https://lawrencemcdaniel.com/
+#
+# date:       jul-2023
+#
+# usage: install Wolfram Application Server for Kubernetes
+#------------------------------------------------------------------------------
 locals {
 
   subnet_ids_list         = tolist(data.aws_subnets.was.ids)
@@ -23,8 +31,8 @@ data "aws_vpc" "was" {
 }
 
 
-data "aws_availability_zones" "available" {
-}
+#data "aws_availability_zones" "available" {
+#}
 
 data "aws_subnets" "was" {
   filter {

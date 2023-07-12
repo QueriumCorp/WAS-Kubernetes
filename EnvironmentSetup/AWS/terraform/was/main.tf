@@ -1,4 +1,20 @@
-# need this bc the default aws profile specifies us-east-2
+#------------------------------------------------------------------------------
+# written by: Lawrence McDaniel
+#             https://lawrencemcdaniel.com/
+#
+# date:       jul-2023
+#
+# usage: create a Wolfram Application Service stack, consisting of the following:
+#       - VPC
+#       - EKS cluster + managed node group + EBS CSI Driver, CNI, kube-proxy, CoreDNS
+#       - Kubernetes cert-manager
+#       - Kubernetes Nginx ingress controller
+#       - Kubernetes Minio
+#       - Kubernetes Prometheus
+#       - Kubernetes Strimzi operator for Kafka
+#       - Kubernetes vertical pod autoscaler
+#       - Wolfram Application Server for Kubernetes
+#------------------------------------------------------------------------------
 
 module "eks" {
   source = "../modules/eks"
