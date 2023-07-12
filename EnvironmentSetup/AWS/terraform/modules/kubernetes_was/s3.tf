@@ -16,16 +16,7 @@ module "was_s3_storage" {
       allowed_methods = ["GET", "POST", "PUT", "HEAD"]
       allowed_origins = [
         "https://${var.domain}",
-        "https://apps.${var.domain}",
-        "https://discovery.${var.domain}",
-        "https://preview.${var.domain}",
-        "https://${var.environment_studio_domain}",
-
-        "http://${var.domain}",
-        "http://apps.${var.domain}",
-        "http://discovery.${var.domain}",
-        "http://preview.${var.domain}",
-        "http://${var.environment_studio_domain}"
+        "http://${var.domain}"
       ]
       allowed_headers = ["*"]
       expose_headers = [
@@ -111,7 +102,7 @@ resource "aws_iam_access_key" "was_s3_storage_user" {
 }
 
 resource "aws_iam_user_policy" "policy" {
-  name   = "${var.share_resource_name}-s3-bucket"
+  name   = "${var.shared_resource_name}-s3-bucket"
   policy = data.aws_iam_policy_document.user_policy.json
   user   = aws_iam_user.was_s3_storage_user.name
 }

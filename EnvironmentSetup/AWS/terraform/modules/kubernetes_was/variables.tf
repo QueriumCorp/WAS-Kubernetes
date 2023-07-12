@@ -7,6 +7,10 @@
 # usage: build an EKS cluster load balancer
 #------------------------------------------------------------------------------
 
+variable "shared_resource_name" {
+  type = string  
+}
+
 variable "namespace" {
   type    = string
   default = "was"

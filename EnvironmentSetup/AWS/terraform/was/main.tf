@@ -75,10 +75,13 @@ module "cert_manager" {
 
 module "was" {
   source          = "../modules/kubernetes_was"
-  account_id      = var.account_id
-  namespace       = var.shared_resource_name
-  aws_region      = var.aws_region
-  domain          = "${var.shared_resource_name}.${var.root_domain}"
-  s3_bucket       = "320713933456-${var.shared_resource_name}"
+
+  shared_resource_name  = var.shared_resource_name
+  account_id            = var.account_id
+  namespace             = var.shared_resource_name
+  aws_region            = var.aws_region
+  domain                = "${var.shared_resource_name}.${var.root_domain}"
+  s3_bucket             = "320713933456-${var.shared_resource_name}"
+  
   depends_on = [module.eks]
 }

@@ -7,7 +7,7 @@ data "template_file" "ingress-grafana" {
 }
 
 resource "kubectl_manifest" "ingress-grafana" {
-  yaml_body = template_file.ingress-grafana.rendered
+  yaml_body = data.template_file.ingress-grafana.rendered
 
   depends_on = [
     helm_release.prometheus
