@@ -31,14 +31,16 @@ data "template_file" "strimzi-values" {
 data "template_file" "kafka" {
   template = file("${path.module}/yml/kafka.yaml.tpl")
   vars = {
-    name = var.name
+    name            = var.name
+    kafka_namespace = local.kafka_namespace
   }
 }
 
 data "template_file" "kafka-bridge" {
   template = file("${path.module}/yml/kafka-bridge.yaml.tpl")
   vars = {
-    name = var.name
+    name            = var.name
+    kafka_namespace = local.kafka_namespace
   }
 }
 
@@ -87,7 +89,7 @@ data "template_file" "was-topic-endpoint-info" {
   template = file("${path.module}/yml/was-topic-endpoint-info.yaml.tpl")
   vars = {
     name            = var.name
-    kafka_namespace = "kafka"
+    kafka_namespace = local.kafka_namespace
   }
 }
 
@@ -95,7 +97,7 @@ data "template_file" "was-topic-nodefile-info" {
   template = file("${path.module}/yml/was-topic-nodefile-info.yaml.tpl")
   vars = {
     name            = var.name
-    kafka_namespace = "kafka"
+    kafka_namespace = local.kafka_namespace
   }
 }
 
@@ -103,19 +105,31 @@ data "template_file" "was-topic-resource-info" {
   template = file("${path.module}/yml/was-topic-resource-info.yaml.tpl")
   vars = {
     name            = var.name
-    kafka_namespace = "kafka"
+    kafka_namespace = local.kafka_namespace
   }
 }
 
 resource "kubectl_manifest" "was-topic-endpoint-info" {
   yaml_body          = data.template_file.was-topic-endpoint-info.rendered
-  override_namespace = "kafka"
+  override_namespace = local.kafka_namespace
+  depends_on = [
+    helm_release.strimzi,
+    kubectl_manifest.kafka
+  ]
 }
 resource "kubectl_manifest" "was-topic-nodefile-info" {
   yaml_body          = data.template_file.was-topic-nodefile-info.rendered
-  override_namespace = "kafka"
+  override_namespace = local.kafka_namespace
+  depends_on = [
+    helm_release.strimzi,
+    kubectl_manifest.kafka
+  ]
 }
 resource "kubectl_manifest" "was-topic-resource-info" {
   yaml_body          = data.template_file.was-topic-resource-info.rendered
-  override_namespace = "kafka"
+  override_namespace = local.kafka_namespace
+  depends_on = [
+    helm_release.strimzi,
+    kubectl_manifest.kafka
+  ]
 }
