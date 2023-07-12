@@ -26,10 +26,7 @@ module "vpc" {
     "kubernetes.io/role/elb"                            = "1"
   }
 
-  tags = {
-    Terraform   = "true"
-    Environment = "${var.shared_resource_name}"
-  }
+  tags = var.tags
 }
 
 
@@ -44,10 +41,7 @@ module "eks" {
   cluster_endpoint_private_access = true
   cluster_endpoint_public_access  = true
   enable_irsa                     = true
-
-  tags = {
-    Environment = "Wolfram Application Server"
-  }
+  tags                            = var.tags
 
   create_kms_key            = true
   manage_aws_auth_configmap = true

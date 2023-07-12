@@ -73,7 +73,7 @@ resource "aws_ebs_volume" "endpoint-logs" {
   availability_zone = data.aws_subnet.private_subnet.availability_zone
   size              = 10
 
-  tags = {}
+  tags = var.tags
 
   # local.ebsVolumePreventDestroy defaults to 'Y'
   # for anything other than an upper case 'N' we'll assume that

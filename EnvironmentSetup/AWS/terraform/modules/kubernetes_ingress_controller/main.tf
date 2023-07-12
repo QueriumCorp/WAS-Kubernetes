@@ -20,7 +20,6 @@
 #   helm show values ingress-nginx/ingress-nginx
 #------------------------------------------------------------------------------
 locals {
-  tags = {}
 }
 
 data "template_file" "nginx-values" {

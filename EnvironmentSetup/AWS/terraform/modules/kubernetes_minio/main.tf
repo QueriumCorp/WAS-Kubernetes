@@ -26,7 +26,6 @@ locals {
   namespace              = "minio"
   minio_account_name     = "minio-admin"
   minio_ingress_hostname = var.ingress_hostname
-  tags = {}
 }
 
 

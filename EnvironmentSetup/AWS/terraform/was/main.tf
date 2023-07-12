@@ -30,31 +30,44 @@ module "eks" {
 module "strimzi" {
   source     = "../modules/kubernetes_strimzi"
   name       = var.shared_resource_name
+  tags       = var.tags
 
   depends_on = [module.eks]
 }
 
 module "minio" {
   source     = "../modules/kubernetes_minio"
-  namespace   = var.shared_resource_name
-  ingress_hostname = "minio.${var.services_subdomain}"
+
+  namespace         = var.shared_resource_name
+  ingress_hostname  = "minio.${var.services_subdomain}"
+  tags              = var.tags
+
   depends_on = [module.eks, module.metricsserver]
 }
 
 module "vpa" {
   source     = "../modules/kubernetes_vpa"
+
+  tags       = var.tags
+
   depends_on = [module.eks]
 }
 
 module "metricsserver" {
   source     = "../modules/kubernetes_metricsserver"
+
+  tags       = var.tags
+
   depends_on = [module.eks]
 }
 
 module "prometheus" {
   source     = "../modules/kubernetes_prometheus"
-  depends_on = [module.eks, module.metricsserver]
+
   domain     = "${var.shared_resource_name}.${var.root_domain}"
+  tags       = var.tags
+
+  depends_on = [module.eks, module.metricsserver]
 }
 
 module "ingress_controller" {
@@ -69,6 +82,7 @@ module "cert_manager" {
   namespace           = var.shared_resource_name
   services_subdomain  = var.services_subdomain
   aws_region          = var.aws_region
+  tags                = var.tags
 
   depends_on = [module.eks]
 }
@@ -81,7 +95,8 @@ module "was" {
   namespace             = var.shared_resource_name
   aws_region            = var.aws_region
   domain                = "${var.shared_resource_name}.${var.root_domain}"
-  s3_bucket             = "320713933456-${var.shared_resource_name}"
-  
+  s3_bucket             = "${var.account_id}-${var.shared_resource_name}"
+  tags                  = var.tags
+
   depends_on = [module.eks]
 }

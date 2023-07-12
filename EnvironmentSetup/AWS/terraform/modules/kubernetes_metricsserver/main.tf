@@ -23,9 +23,8 @@
 #-----------------------------------------------------------
 locals {
   metrics_server = "metrics-server"
-  tags           = {}
-
 }
+
 data "template_file" "metrics-server-values" {
   template = file("${path.module}/config/metrics-server-values.yaml")
   vars     = {}

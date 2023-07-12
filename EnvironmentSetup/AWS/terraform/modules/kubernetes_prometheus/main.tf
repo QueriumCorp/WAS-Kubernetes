@@ -37,8 +37,6 @@
 locals {
   cost_analyzer = "cost-analyzer"
   prometheus    = "prometheus"
-
-  tags = {}
 }
 
 data "template_file" "prometheus-values" {

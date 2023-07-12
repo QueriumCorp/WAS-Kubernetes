@@ -23,7 +23,6 @@
 locals {
   kafka_namespace = "kafka"
   zookeeper_name = "${var.name}-zookeeper"
-  tags = {}
 }
 
 data "template_file" "zookeeper-values" {
