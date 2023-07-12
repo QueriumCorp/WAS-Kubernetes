@@ -4,8 +4,8 @@
 # Required inputs
 # -----------------------------------------------------------------------------
 account_id         = "320713933456"
-aws_region         = "us-east-1"
-aws_profile        = "default"
+aws_region         = "us-east-2"
+aws_profile        = "querium"
 root_domain        = "stepwisemath.ai"
 services_subdomain = "live.stepwisemath.ai"
 aws_auth_users = [

@@ -50,6 +50,13 @@ module "strimzi" {
   depends_on = [module.eks]
 }
 
+module "kafka" {
+  source = "../modules/kubernetes_kafka"
+  name   = var.shared_resource_name
+
+  depends_on = [module.strimzi]
+}
+
 module "minio" {
   source = "../modules/kubernetes_minio"
 
