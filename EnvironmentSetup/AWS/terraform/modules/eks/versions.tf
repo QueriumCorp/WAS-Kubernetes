@@ -2,7 +2,7 @@
 # written by: Lawrence McDaniel
 #             https://lawrencemcdaniel.com/
 #
-# date: Mar-2022
+# date: jul-2023
 #
 # usage: create an EKS cluster
 #------------------------------------------------------------------------------
@@ -11,9 +11,15 @@ terraform {
 
   required_providers {
     local = "~> 2.2"
+
     random = {
       source  = "hashicorp/random"
       version = "~> 3.5"
+    }
+
+    null = {
+      source  = "hashicorp/null"
+      version = "~> 3.2"
     }
 
     aws = {

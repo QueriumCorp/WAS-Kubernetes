@@ -2,7 +2,7 @@
 # written by:   Lawrence McDaniel
 #               https://lawrencemcdaniel.com
 #
-# date:         oct-2022
+# date:         jul-2023
 #
 # usage:        create a default cluster-wide nginx-ingress-controller
 #               to be used by any ingress anywhere in the cluster

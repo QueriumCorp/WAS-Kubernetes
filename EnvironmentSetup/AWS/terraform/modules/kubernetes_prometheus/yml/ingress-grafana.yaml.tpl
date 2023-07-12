@@ -1,12 +1,3 @@
-#------------------------------------------------------------------------------
-# written by: Miguel Afonso
-#             https://www.linkedin.com/in/mmafonso/
-#
-# date: Aug-2021
-#
-# usage: setup nginx for EKS load balancer.
-#        see https://cert-manager.io/docs/
-#------------------------------------------------------------------------------
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:

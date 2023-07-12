@@ -2,7 +2,7 @@
 # written by: Lawrence McDaniel
 #             https://lawrencemcdaniel.com/
 #
-# date: Dec-2022
+# date: jul-2023
 #
 # Create the Amazon EBS CSI driver IAM role for service accounts
 # https://docs.aws.amazon.com/eks/latest/userguide/csi-iam-role.html

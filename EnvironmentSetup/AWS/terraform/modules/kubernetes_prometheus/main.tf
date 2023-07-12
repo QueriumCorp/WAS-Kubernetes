@@ -2,7 +2,7 @@
 # written by: Lawrence McDaniel
 #             https://lawrencemcdaniel.com/
 #
-# date: Aug-2022
+# date:       jul-2023
 #
 # usage: installs Prometheus monitoring.
 #

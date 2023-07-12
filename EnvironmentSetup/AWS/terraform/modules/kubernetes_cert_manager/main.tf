@@ -1,8 +1,8 @@
 #------------------------------------------------------------------------------
-# written by: Miguel Afonso
-#             https://www.linkedin.com/in/mmafonso/
+# written by: Lawrence McDaniel
+#             https://lawrencemcdaniel.com/
 #
-# date: Aug-2021
+# date: jul-2023
 #
 # usage: Add tls certs for EKS cluster load balancer
 #        see https://cert-manager.io/docs/

@@ -1,16 +1,11 @@
-#------------------------------------------------------------------------------
-#
-# see: https://github.com/kubernetes-sigs/metrics-server
-#
-#------------------------------------------------------------------------------
-
 #-----------------------------------------------------------
 # written by: Lawrence McDaniel
 #             https://lawrencemcdaniel.com/
 #
-# date: Aug-2022
+# date:       jul-2023
 #
 # usage: installs Kubernetes metrics-server.
+# see: https://github.com/kubernetes-sigs/metrics-server
 #
 # NOTE: you must initialize a local helm repo in order to run
 # this script.
