@@ -35,13 +35,6 @@ data "template_file" "kafka" {
   }
 }
 
-data "template_file" "was-topics" {
-  template = file("${path.module}/yml/was-topics.yaml.tpl")
-  vars = {
-    name = var.name
-  }
-}
-
 data "template_file" "kafka-bridge" {
   template = file("${path.module}/yml/kafka-bridge.yaml.tpl")
   vars = {
@@ -79,12 +72,6 @@ resource "kubectl_manifest" "kafka" {
   depends_on         = [helm_release.strimzi]
 }
 
-
-resource "kubectl_manifest" "was-topics" {
-  yaml_body = data.template_file.was-topics.rendered
-
-  depends_on = [helm_release.strimzi]
-}
 
 resource "kubectl_manifest" "kafka-bridge" {
   yaml_body = data.template_file.kafka-bridge.rendered

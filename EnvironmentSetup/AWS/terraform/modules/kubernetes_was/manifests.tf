@@ -73,6 +73,22 @@ data "template_file" "hpa-autoscaler-endpoint-manager" {
   }
 }
 
+data "template_file" "was-topics" {
+  template = file("${path.module}/yml/was-topics.yaml.tpl")
+  vars = {
+    name = var.shared_resource_name
+  }
+}
+
+#------------------------------------------------------------------------------
+#                             kafka
+#------------------------------------------------------------------------------
+resource "kubectl_manifest" "was-topics" {
+  yaml_body = data.template_file.was-topics.rendered
+
+}
+
+
 #------------------------------------------------------------------------------
 #                             services
 #------------------------------------------------------------------------------
@@ -94,17 +110,24 @@ resource "kubectl_manifest" "service-resource-manager" {
 
 # prerequisites to Active Web Elements Server
 resource "kubectl_manifest" "deployment-resource-manager" {
-  yaml_body  = data.template_file.deployment-resource-manager.rendered
-  depends_on = [kubectl_manifest.service-endpoint-manager]
+  yaml_body = data.template_file.deployment-resource-manager.rendered
+  depends_on = [
+    kubectl_manifest.was-topics,
+    kubectl_manifest.service-endpoint-manager
+  ]
 }
 resource "kubectl_manifest" "deployment-endpoint-manager" {
-  yaml_body  = data.template_file.deployment-endpoint-manager.rendered
-  depends_on = [kubectl_manifest.service-endpoint-manager]
+  yaml_body = data.template_file.deployment-endpoint-manager.rendered
+  depends_on = [
+    kubectl_manifest.was-topics,
+    kubectl_manifest.service-endpoint-manager
+  ]
 }
 
 resource "kubectl_manifest" "deployment-active-web-elements-server" {
   yaml_body = data.template_file.deployment-active-web-elements-server.rendered
   depends_on = [
+    kubectl_manifest.was-topics,
     kubectl_manifest.service-active-web-elements-server,
     kubectl_manifest.deployment-resource-manager,
     kubectl_manifest.deployment-endpoint-manager
