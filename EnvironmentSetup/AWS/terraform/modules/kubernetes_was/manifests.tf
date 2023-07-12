@@ -73,42 +73,6 @@ data "template_file" "hpa-autoscaler-endpoint-manager" {
   }
 }
 
-data "template_file" "was-topic-endpoint-info" {
-  template = file("${path.module}/yml/was-topic-endpoint-info.yaml.tpl")
-  vars = {
-    name            = var.shared_resource_name
-    kafka_namespace = "kafka"
-  }
-}
-
-data "template_file" "was-topic-nodefile-info" {
-  template = file("${path.module}/yml/was-topic-nodefile-info.yaml.tpl")
-  vars = {
-    name            = var.shared_resource_name
-    kafka_namespace = "kafka"
-  }
-}
-
-data "template_file" "was-topic-resource-info" {
-  template = file("${path.module}/yml/was-topic-resource-info.yaml.tpl")
-  vars = {
-    name            = var.shared_resource_name
-    kafka_namespace = "kafka"
-  }
-}
-
-#------------------------------------------------------------------------------
-#                             kafka
-#------------------------------------------------------------------------------
-resource "kubectl_manifest" "was-topic-endpoint-info" {
-  yaml_body = data.template_file.was-topic-endpoint-info.rendered
-}
-resource "kubectl_manifest" "was-topic-nodefile-info" {
-  yaml_body = data.template_file.was-topic-nodefile-info.rendered
-}
-resource "kubectl_manifest" "was-topic-resource-info" {
-  yaml_body = data.template_file.was-topic-resource-info.rendered
-}
 
 
 #------------------------------------------------------------------------------
@@ -134,18 +98,12 @@ resource "kubectl_manifest" "service-resource-manager" {
 resource "kubectl_manifest" "deployment-resource-manager" {
   yaml_body = data.template_file.deployment-resource-manager.rendered
   depends_on = [
-    kubectl_manifest.was-topic-endpoint-info,
-    kubectl_manifest.was-topic-nodefile-info,
-    kubectl_manifest.was-topic-resource-info,
     kubectl_manifest.service-endpoint-manager
   ]
 }
 resource "kubectl_manifest" "deployment-endpoint-manager" {
   yaml_body = data.template_file.deployment-endpoint-manager.rendered
   depends_on = [
-    kubectl_manifest.was-topic-endpoint-info,
-    kubectl_manifest.was-topic-nodefile-info,
-    kubectl_manifest.was-topic-resource-info,
     kubectl_manifest.service-endpoint-manager
   ]
 }
@@ -153,9 +111,6 @@ resource "kubectl_manifest" "deployment-endpoint-manager" {
 resource "kubectl_manifest" "deployment-active-web-elements-server" {
   yaml_body = data.template_file.deployment-active-web-elements-server.rendered
   depends_on = [
-    kubectl_manifest.was-topic-endpoint-info,
-    kubectl_manifest.was-topic-nodefile-info,
-    kubectl_manifest.was-topic-resource-info,
     kubectl_manifest.service-active-web-elements-server,
     kubectl_manifest.deployment-resource-manager,
     kubectl_manifest.deployment-endpoint-manager
