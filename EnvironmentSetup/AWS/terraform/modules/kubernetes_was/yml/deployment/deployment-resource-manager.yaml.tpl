@@ -82,7 +82,7 @@ spec:
         command: ["bash", "-c", "apk --update add curl; set -x; while true; do response=$(curl -s ${namespace}-bridge-service.kafka.svc.cluster.local:9092/topics); if [[ ${response} =~ .*\"nodefile-info\".* ]]; then break; else sleep 5; fi; done" ]
       - name: init-minio
         image: bash
-        command: ["bash", "-c", "for i in {1..100}; do sleep 1; if nslookup minio-api 9000; then exit 0; fi; done; exit 1"]
+        command: ["bash", "-c", "for i in $(seq 1 3000); do nc -zvw1 ${namespace}-minio-tenant-hl.${namespace}.svc.cluster.local 9000 && exit 0 || sleep 3; done; exit 1"]
       volumes:
         - name: resources-logs-storage
           persistentVolumeClaim:
