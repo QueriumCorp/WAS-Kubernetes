@@ -43,8 +43,8 @@ shared_resource_name = "was2"
 capacity_type  = "SPOT"
 instance_types = ["c5.2xlarge", "t3.2xlarge", "c5d.2xlarge", "t3a.2xlarge", "t2.2xlarge"]
 
-min_worker_node     = 2
-desired_worker_node = 2
+min_worker_node     = 3
+desired_worker_node = 3
 max_worker_node     = 10
 
 # for latest stable container versions see https://hub.docker.com/u/wolframapplicationserver
