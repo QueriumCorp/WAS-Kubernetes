@@ -101,3 +101,20 @@ variable "tags" {
     Environment = "was"
   }
 }
+
+# Wolfram Application Server
+variable "was_active_web_elements_server_version" {
+  # see https://hub.docker.com/r/wolframapplicationserver/active-web-elements-server/tags
+  type    = string
+  default = "3.1.5"
+}
+variable "was_endpoint_manager_version" {
+  # see https://hub.docker.com/r/wolframapplicationserver/endpoint-manager/tags
+  type    = string
+  default = "1.2.1"
+}
+variable "was_resource_manager_version" {
+  # see https://hub.docker.com/r/wolframapplicationserver/resource-manager/tags
+  type    = string
+  default = "1.2.1"
+}

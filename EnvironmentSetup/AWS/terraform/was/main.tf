@@ -77,11 +77,6 @@ module "metricsserver" {
   depends_on = [module.eks]
 }
 
-module "minio" {
-  source = "../modules/kubernetes_minio"
-
-  depends_on = [module.eks, module.metricsserver, module.vpa]
-}
 
 module "prometheus" {
   source = "../modules/kubernetes_prometheus"
@@ -108,6 +103,12 @@ module "cert_manager" {
   depends_on = [module.eks]
 }
 
+module "minio" {
+  source = "../modules/kubernetes_was_minio"
+
+  depends_on = [module.eks, module.metricsserver, module.vpa]
+}
+
 module "was" {
   source = "../modules/kubernetes_was"
 
@@ -118,6 +119,10 @@ module "was" {
   domain               = "${var.shared_resource_name}.${var.root_domain}"
   s3_bucket            = "${var.account_id}-${var.shared_resource_name}"
   tags                 = var.tags
+
+  was_active_web_elements_server_version = var.was_active_web_elements_server_version
+  was_endpoint_manager_version           = var.was_endpoint_manager_version
+  was_resource_manager_version           = var.was_resource_manager_version
 
   depends_on = [module.eks]
 }

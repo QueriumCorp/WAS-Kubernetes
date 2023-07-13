@@ -46,3 +46,8 @@ instance_types = ["c5.2xlarge", "t3.2xlarge", "c5d.2xlarge", "t3a.2xlarge", "t2.
 min_worker_node     = 2
 desired_worker_node = 2
 max_worker_node     = 10
+
+# for latest stable container versions see https://hub.docker.com/u/wolframapplicationserver
+was_active_web_elements_server_version = "3.1.5"
+was_endpoint_manager_version           = "1.2.1"
+was_resource_manager_version           = "1.2.1"

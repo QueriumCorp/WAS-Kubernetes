@@ -31,15 +31,17 @@ data "template_file" "service-endpoint-manager" {
 data "template_file" "deployment-active-web-elements-server" {
   template = file("${path.module}/yml/deployment/deployment-active-web-elements-server.yaml.tpl")
   vars = {
-    namespace = var.namespace
-    domain    = var.domain
+    namespace                              = var.namespace
+    domain                                 = var.domain
+    was_active_web_elements_server_version = var.was_active_web_elements_server_version
   }
 }
 data "template_file" "deployment-endpoint-manager" {
   template = file("${path.module}/yml/deployment/deployment-endpoint-manager.yaml.tpl")
   vars = {
-    namespace = var.namespace
-    response  = ""
+    namespace                    = var.namespace
+    response                     = ""
+    was_endpoint_manager_version = var.was_endpoint_manager_version
   }
 }
 
@@ -47,6 +49,8 @@ data "template_file" "deployment-endpoint-manager" {
 data "template_file" "deployment-resource-manager" {
   template = file("${path.module}/yml/deployment/deployment-resource-manager.yaml.tpl")
   vars = {
+    was_resource_manager_version = var.was_resource_manager_version
+
     namespace               = var.namespace
     kafka_namespace         = "kafka"
     response                = ""

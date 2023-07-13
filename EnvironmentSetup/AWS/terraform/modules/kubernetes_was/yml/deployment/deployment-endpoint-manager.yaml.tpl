@@ -67,7 +67,7 @@ spec:
           value: /opt/app/logs
         - name: KAFKA.BOOTSTRAP-SERVERS
           value: was2-kafka-bootstrap.kafka.svc.cluster.local:9092
-        image: wolframapplicationserver/endpoint-manager:1.2.1
+        image: wolframapplicationserver/endpoint-manager:${was_endpoint_manager_version}
         name: endpoint-manager
         ports:
         - containerPort: 8085

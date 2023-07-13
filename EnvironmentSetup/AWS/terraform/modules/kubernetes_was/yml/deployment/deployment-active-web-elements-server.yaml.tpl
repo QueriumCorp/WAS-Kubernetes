@@ -61,7 +61,7 @@ spec:
           value: "http://${domain}/endpoints/"
         - name: applicationserver.restart.url
           value: "http://${domain}/.applicationserver/kernel/restart"
-        image: wolframapplicationserver/active-web-elements-server:3.1.5
+        image: wolframapplicationserver/active-web-elements-server:${was_active_web_elements_server_version}
         name: active-web-elements-server
         ports:
         - containerPort: 8080
