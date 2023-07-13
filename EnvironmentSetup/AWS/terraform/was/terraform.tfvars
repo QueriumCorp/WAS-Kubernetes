@@ -41,7 +41,8 @@ shared_resource_name = "was2"
 
 # valid choices: 'SPOT', 'ON_DEMAND'
 capacity_type  = "SPOT"
-instance_types = ["c5.2xlarge", "t3.2xlarge", "c5d.2xlarge", "t3a.2xlarge", "t2.2xlarge"]
+#instance_types = ["c5.2xlarge", "t3.2xlarge", "c5d.2xlarge", "t3a.2xlarge", "t2.2xlarge"]
+instance_types = ["t3.2xlarge", "t3a.2xlarge", "t2.2xlarge"]
 
 min_worker_node     = 3
 desired_worker_node = 3
