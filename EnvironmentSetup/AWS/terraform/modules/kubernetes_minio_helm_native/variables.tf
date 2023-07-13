@@ -23,3 +23,12 @@ variable "tenantPoolsVolumesPerServer" {
   type    = number
   default = 4
 }
+
+variable "tenantPoolsSize" {
+  type    = string
+  default = "10Gi"
+}
+variable "tenantPoolsStorageClassName" {
+  type    = string
+  default = "standard"
+}

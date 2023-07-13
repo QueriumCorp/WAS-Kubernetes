@@ -110,6 +110,8 @@ module "minio" {
   minio_host                  = "minio.${var.root_domain}"
   tenantPoolsServers          = var.tenantPoolsServers
   tenantPoolsVolumesPerServer = var.tenantPoolsVolumesPerServer
+  tenantPoolsSize             = var.tenantPoolsSize
+  tenantPoolsStorageClassName = var.tenantPoolsStorageClassName
 
   depends_on = [module.eks]
 }

@@ -55,3 +55,5 @@ was_resource_manager_version           = "1.2.1"
 # Minio
 tenantPoolsServers          = 4
 tenantPoolsVolumesPerServer = 4
+tenantPoolsSize             = "10Gi"
+tenantPoolsStorageClassName = "gp2"

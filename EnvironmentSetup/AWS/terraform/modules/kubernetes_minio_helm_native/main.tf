@@ -33,8 +33,8 @@ locals {
   minio_tenant_name           = "${var.shared_resource_name}-minio-tenant"
   tenantPoolsServers          = var.tenantPoolsServers
   tenantPoolsVolumesPerServer = var.tenantPoolsVolumesPerServer
-  tenantPoolsSize             = "10Gi"
-  tenantPoolsStorageClassName = "gp2"
+  tenantPoolsSize             = var.tenantPoolsSize
+  tenantPoolsStorageClassName = var.tenantPoolsStorageClassName
 }
 
 
