@@ -28,11 +28,15 @@ locals {
 }
 
 
-data "template_file" "minio-values" {
-  template = file("${path.module}/yml/minio-values.yaml")
+data "template_file" "minio-operator-values" {
+  template = file("${path.module}/yml/minio-operator-values.yaml")
 }
 
-resource "helm_release" "minio" {
+data "template_file" "minio-tenant-values" {
+  template = file("${path.module}/yml/minio-tenant-values.yaml")
+}
+
+resource "helm_release" "minio-operator" {
   namespace        = local.namespace
   create_namespace = true
 
@@ -42,7 +46,22 @@ resource "helm_release" "minio" {
   version    = "~> 5.0"
 
   values = [
-    data.template_file.minio-values.rendered
+    data.template_file.minio-operator-values.rendered
+  ]
+
+}
+
+resource "helm_release" "minio-tenant" {
+  namespace        = var.namespace
+  create_namespace = false
+
+  name       = "minio"
+  repository = "https://raw.githubusercontent.com/minio/tenant/master/"
+  chart      = "tenant"
+  version    = "~> 5.0"
+
+  values = [
+    data.template_file.minio-tenant-values.rendered
   ]
 
 }

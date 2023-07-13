@@ -123,3 +123,11 @@ resource "aws_iam_policy" "worker_policy" {
 
   policy = file("${path.module}/node-workers-policy.json")
 }
+
+resource "kubernetes_namespace" "was" {
+  metadata {
+    name = var.namespace
+  }
+
+  depends_on = [module.eks]
+}

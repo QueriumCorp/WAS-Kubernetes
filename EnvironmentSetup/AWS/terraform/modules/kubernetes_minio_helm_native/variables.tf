@@ -6,3 +6,6 @@
 #
 # usage: create an EKS cluster
 #------------------------------------------------------------------------------
+variable "namespace" {
+  type = string
+}
