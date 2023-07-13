@@ -7,9 +7,6 @@
 # usage: create an EKS cluster
 #------------------------------------------------------------------------------
 variable "namespace" {
-  type = string
-}
-
-variable "minio_host" {
-  type = string
+  type    = string
+  default = "was"
 }

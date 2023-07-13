@@ -106,7 +106,8 @@ module "cert_manager" {
 module "minio" {
   source = "../modules/kubernetes_minio_helm_native"
 
-  namespace = var.shared_resource_name
+  namespace  = var.shared_resource_name
+  minio_host = "minio.${var.root_domain}"
 
   depends_on = [module.eks]
 }

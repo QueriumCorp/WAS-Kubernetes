@@ -5,7 +5,7 @@
 # date: Jan-2023
 #
 # usage: installs minio
-# see: https://minio.dev/docs/latest/tutorials/getting-started/
+# see: https://min.io/docs/minio/kubernetes/upstream/operations/install-deploy-manage/deploy-operator-helm.html
 #
 # requirements: you must initialize a local helm repo in order to run
 # this mdoule.
@@ -16,15 +16,17 @@
 #   helm search repo minio/operator
 #   helm search repo minio/tenant
 #   helm show values minio/operator
+#   helm show values minio/tenant
 #
 # NOTE: run `helm repo update` prior to running this
 #       Terraform module.
 #
 # To generate the web app sign-in token:
-#   kubectl get --namespace minio secret minio-admin -o go-template='{{.data.token | base64decode}}'
+#   $ SA_TOKEN=$(kubectl -n minio-operator  get secret console-sa-secret -o jsonpath="{.data.token}" | base64 --decode)
+#   $ echo $SA_TOKEN
 #-----------------------------------------------------------
 locals {
-  namespace = "minio"
+  namespace = "minio-operator"
 }
 
 
@@ -34,6 +36,14 @@ data "template_file" "minio-operator-values" {
 
 data "template_file" "minio-tenant-values" {
   template = file("${path.module}/yml/minio-tenant-values.yaml")
+}
+
+data "template_file" "minio-console-secret" {
+  template = file("${path.module}/yml/minio-console-secret.yaml")
+
+  vars = {
+    minio_namespace = local.namespace
+  }
 }
 
 resource "helm_release" "minio-operator" {
@@ -49,6 +59,15 @@ resource "helm_release" "minio-operator" {
     data.template_file.minio-operator-values.rendered
   ]
 
+  set {
+    name  = "console.ingress.enabled"
+    value = true
+  }
+  set {
+    name  = "console.ingress.host"
+    value = var.minio_host
+  }
+
 }
 
 resource "helm_release" "minio-tenant" {
@@ -56,7 +75,7 @@ resource "helm_release" "minio-tenant" {
   create_namespace = false
 
   name       = "minio"
-  repository = "https://raw.githubusercontent.com/minio/tenant/master/"
+  repository = "https://raw.githubusercontent.com/minio/operator/master/"
   chart      = "tenant"
   version    = "~> 5.0"
 
@@ -64,4 +83,10 @@ resource "helm_release" "minio-tenant" {
     data.template_file.minio-tenant-values.rendered
   ]
 
+}
+
+resource "kubectl_manifest" "minio-console-secret" {
+  yaml_body = data.template_file.minio-console-secret.rendered
+
+  depends_on = [helm_release.minio-operator]
 }

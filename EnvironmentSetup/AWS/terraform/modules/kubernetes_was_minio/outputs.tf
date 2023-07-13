@@ -4,12 +4,5 @@
 #
 # date: jul-2023
 #
-# usage: create an EKS cluster
+# usage: minio module outputs
 #------------------------------------------------------------------------------
-variable "namespace" {
-  type = string
-}
-
-variable "minio_host" {
-  type = string
-}
