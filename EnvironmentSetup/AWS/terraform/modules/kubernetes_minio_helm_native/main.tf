@@ -26,7 +26,10 @@
 #   $ echo $SA_TOKEN
 #-----------------------------------------------------------
 locals {
-  namespace                   = "minio-operator"
+  namespace = "minio-operator"
+
+  secretsName                 = "${var.shared_resource_name}-env-configuration"
+  secretsAccessKey            = "minio"
   minio_tenant_name           = "${var.shared_resource_name}-minio-tenant"
   tenantPoolsServers          = var.tenantPoolsServers
   tenantPoolsVolumesPerServer = var.tenantPoolsVolumesPerServer
@@ -39,7 +42,18 @@ data "template_file" "minio-operator-values" {
 }
 
 data "template_file" "minio-tenant-values" {
-  template = file("${path.module}/yml/minio-tenant-values.yaml")
+  template = file("${path.module}/yml/minio-tenant-values.yaml.tpl")
+
+  vars = {
+    secretsName                 = local.secretsName
+    secretsAccessKey            = local.secretsAccessKey
+    secretsSecretKey            = random_password.minio-tenant.result
+    tenantName                  = local.minio_tenant_name
+    tenantConfigurationName     = local.secretsName
+    tenantPoolsServers          = local.tenantPoolsServers
+    tenantPoolsVolumesPerServer = local.tenantPoolsVolumesPerServer
+    tenantPoolsSize             = local.tenantPoolsSize
+  }
 }
 
 data "template_file" "minio-console-secret" {
@@ -93,34 +107,6 @@ resource "helm_release" "minio-tenant" {
     data.template_file.minio-tenant-values.rendered
   ]
 
-  set {
-    name  = "tenant.name"
-    value = local.minio_tenant_name
-  }
-  set {
-    name  = "tenant.pools.servers"
-    value = local.tenantPoolsServers
-  }
-  set {
-    name  = "tenant.pools.volumesPerServer"
-    value = local.tenantPoolsVolumesPerServer
-  }
-  set {
-    name  = "tenant.pools.size"
-    value = local.tenantPoolsSize
-  }
-  set {
-    name  = "secrets.name"
-    value = "${var.shared_resource_name}-env-configuration"
-  }
-  set {
-    name  = "secrets.accessKey"
-    value = "minio"
-  }
-  set {
-    name  = "secrets.secretKey"
-    value = random_password.minio-tenant.result
-  }
 }
 
 ###############################################################################
