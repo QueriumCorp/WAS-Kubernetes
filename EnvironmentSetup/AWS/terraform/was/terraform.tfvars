@@ -4,7 +4,7 @@
 # Required inputs
 # -----------------------------------------------------------------------------
 account_id         = "320713933456"
-aws_region         = "us-east-2"
+aws_region         = "us-east-1"
 aws_profile        = "stepwise"
 root_domain        = "stepwisemath.ai"
 services_subdomain = "live.stepwisemath.ai"
