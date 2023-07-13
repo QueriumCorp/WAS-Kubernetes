@@ -27,7 +27,7 @@ tenant:
       ## size specifies the capacity per volume
       size: ${tenantPoolsSize}
       ## storageClass specifies the storage class name to be used for this pool
-      storageClassName: standard
+      storageClassName: ${tenantPoolsStorageClassName}
       ## Used to specify annotations for pods
       annotations: { }
       ## Used to specify labels for pods

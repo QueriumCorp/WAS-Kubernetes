@@ -34,6 +34,7 @@ locals {
   tenantPoolsServers          = var.tenantPoolsServers
   tenantPoolsVolumesPerServer = var.tenantPoolsVolumesPerServer
   tenantPoolsSize             = "10Gi"
+  tenantPoolsStorageClassName = "gp2"
 }
 
 
@@ -53,6 +54,7 @@ data "template_file" "minio-tenant-values" {
     tenantPoolsServers          = local.tenantPoolsServers
     tenantPoolsVolumesPerServer = local.tenantPoolsVolumesPerServer
     tenantPoolsSize             = local.tenantPoolsSize
+    tenantPoolsStorageClassName = local.tenantPoolsStorageClassName
   }
 }
 
@@ -107,6 +109,7 @@ resource "helm_release" "minio-tenant" {
     data.template_file.minio-tenant-values.rendered
   ]
 
+  depends_on = [helm_release.minio-operator]
 }
 
 ###############################################################################
