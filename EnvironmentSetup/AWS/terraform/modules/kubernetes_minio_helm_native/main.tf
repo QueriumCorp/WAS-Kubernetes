@@ -11,10 +11,11 @@
 # this mdoule.
 #
 #   brew install helm
-#   helm repo add bitnami https://charts.bitnami.com/bitnami
+#   helm repo add minio https://raw.githubusercontent.com/minio/operator/master/
 #   helm repo update
-#   helm search repo bitnami/minio
-#   helm show values bitnami/minio
+#   helm search repo minio/operator
+#   helm search repo minio/tenant
+#   helm show values minio/operator
 #
 # NOTE: run `helm repo update` prior to running this
 #       Terraform module.
@@ -23,8 +24,7 @@
 #   kubectl get --namespace minio secret minio-admin -o go-template='{{.data.token | base64decode}}'
 #-----------------------------------------------------------
 locals {
-  namespace          = "minio"
-  minio_account_name = "minio-admin"
+  namespace = "minio"
 }
 
 
@@ -32,34 +32,17 @@ data "template_file" "minio-values" {
   template = file("${path.module}/yml/minio-values.yaml")
 }
 
-resource "random_password" "minio_admin" {
-  length  = 16
-  special = false
-  keepers = {
-    version = "1"
-  }
-}
-
 resource "helm_release" "minio" {
   namespace        = local.namespace
-  create_namespace = false
+  create_namespace = true
 
   name       = "minio"
-  repository = "https://charts.bitnami.com/bitnami"
-  chart      = "minio"
-  version    = "~> 12.6"
-
-  # see https://docs.bitnami.com/kubernetes/infrastructure/minio/configuration/expose-service/
-  set {
-    name  = "ingress.enabled"
-    value = false
-  }
+  repository = "https://raw.githubusercontent.com/minio/operator/master/"
+  chart      = "operator"
+  version    = "~> 5.0"
 
   values = [
     data.template_file.minio-values.rendered
   ]
 
-  depends_on = [
-    kubernetes_namespace.minio
-  ]
 }
