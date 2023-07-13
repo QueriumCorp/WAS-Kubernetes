@@ -2,10 +2,10 @@
 # written by: Lawrence McDaniel
 #             https://lawrencemcdaniel.com/
 #
-# date: Jan-2023
+# date:       jul-2023
 #
-# usage: installs Minio Operator and Minio Tenant
-# see: https://min.io/docs/minio/kubernetes/upstream/operations/install-deploy-manage/deploy-operator-helm.html
+# usage:  installs Minio Operator and Minio Tenant
+#         see: https://min.io/docs/minio/kubernetes/upstream/operations/install-deploy-manage/deploy-operator-helm.html
 #
 # requirements: you must initialize a local helm repo in order to run
 # this mdoule.

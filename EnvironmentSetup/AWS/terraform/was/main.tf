@@ -135,5 +135,5 @@ module "was" {
   was_endpoint_manager_version           = var.was_endpoint_manager_version
   was_resource_manager_version           = var.was_resource_manager_version
 
-  depends_on = [module.eks, module.kafka, module.minio]
+  depends_on = [module.eks, module.minio]
 }

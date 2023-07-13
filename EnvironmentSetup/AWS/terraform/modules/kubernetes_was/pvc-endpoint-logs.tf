@@ -31,6 +31,7 @@ resource "kubernetes_persistent_volume" "endpoint-logs" {
   }
 
   spec {
+    persistent_volume_reclaim_policy = "Delete"
     capacity = {
       storage = "10Gi"
     }
