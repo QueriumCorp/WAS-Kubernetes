@@ -102,6 +102,17 @@ variable "tags" {
   }
 }
 
+# Minio
+variable "tenantPoolsServers" {
+  type    = number
+  default = 4
+}
+variable "tenantPoolsVolumesPerServer" {
+  type    = number
+  default = 4
+}
+
+
 # Wolfram Application Server
 variable "was_active_web_elements_server_version" {
   # see https://hub.docker.com/r/wolframapplicationserver/active-web-elements-server/tags

@@ -108,8 +108,8 @@ module "minio" {
 
   shared_resource_name        = var.shared_resource_name
   minio_host                  = "minio.${var.root_domain}"
-  tenantPoolsServers          = 2
-  tenantPoolsVolumesPerServer = 1
+  tenantPoolsServers          = var.tenantPoolsServers
+  tenantPoolsVolumesPerServer = var.tenantPoolsVolumesPerServer
 
   depends_on = [module.eks]
 }

@@ -51,3 +51,7 @@ max_worker_node     = 10
 was_active_web_elements_server_version = "3.1.5"
 was_endpoint_manager_version           = "1.2.1"
 was_resource_manager_version           = "1.2.1"
+
+# Minio
+tenantPoolsServers          = 4
+tenantPoolsVolumesPerServer = 4
