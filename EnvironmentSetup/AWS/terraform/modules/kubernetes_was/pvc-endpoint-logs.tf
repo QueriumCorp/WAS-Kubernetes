@@ -6,13 +6,13 @@ resource "kubernetes_persistent_volume_claim_v1" "endpoint-logs" {
     namespace = var.namespace
   }
   spec {
-    access_modes = ["ReadWriteMany"]
+    access_modes = ["ReadWriteOnce"]
     resources {
       requests = {
         storage = "10Gi"
       }
     }
-    volume_name = kubernetes_persistent_volume.endpoint-logs.metadata.0.name
+    volume_name = kubernetes_persistent_volume.endpoint-logs.metadata[0].name
   }
 }
 
@@ -20,9 +20,9 @@ resource "kubernetes_persistent_volume" "endpoint-logs" {
   metadata {
     name = "endpoint-logs"
     labels = {
-      "topology.kubernetes.io/region" = "${var.aws_region}"
-      "topology.kubernetes.io/zone"   = "${aws_ebs_volume.endpoint-logs.availability_zone}"
-      "ebs_volume_id"                 = "${aws_ebs_volume.endpoint-logs.id}"
+      "topology.kubernetes.io/region" = var.aws_region
+      "topology.kubernetes.io/zone"   = aws_ebs_volume.endpoint-logs.availability_zone
+      "ebs_volume_id"                 = aws_ebs_volume.endpoint-logs.id
       "name"                          = "endpoint-logs"
       "namespace"                     = var.namespace
     }
@@ -34,7 +34,7 @@ resource "kubernetes_persistent_volume" "endpoint-logs" {
     capacity = {
       storage = "10Gi"
     }
-    access_modes       = ["ReadWriteMany"]
+    access_modes       = ["ReadWriteOnce"]
     storage_class_name = "gp2"
     persistent_volume_source {
       aws_elastic_block_store {
@@ -48,12 +48,12 @@ resource "kubernetes_persistent_volume" "endpoint-logs" {
           match_expressions {
             key      = "topology.kubernetes.io/zone"
             operator = "In"
-            values   = ["${aws_ebs_volume.endpoint-logs.availability_zone}"]
+            values   = [aws_ebs_volume.endpoint-logs.availability_zone]
           }
           match_expressions {
             key      = "topology.kubernetes.io/region"
             operator = "In"
-            values   = ["${var.aws_region}"]
+            values   = [var.aws_region]
           }
         }
       }

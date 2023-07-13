@@ -43,7 +43,7 @@ spec:
           value: ${resource_bucket_region}
         - name: NODEFILES.BUCKET.REGION
           value: ${nodefiles_bucket_region}
-        image: wolframapplicationserver/resource-manager:1.2.1
+        image: wolframapplicationserver/resource-manager:3.1.5
         name: resource-manager
         ports:
         - containerPort: 9090
@@ -68,9 +68,6 @@ spec:
         - mountPath: "/opt/app/logs"
           name: resources-logs-storage
       initContainers:
-      - name: init-minio
-        image: bash
-        command: ["bash", "-c", "for i in $(seq 1 3000); do nc -zvw1 minio 9000 && exit 0 || sleep 3; done; exit 1"]
       - name: init-kafka
         image: bash
         command: ["bash", "-c", "for i in $(seq 1 3000); do nc -zvw1 ${namespace}-kafka-bootstrap.kafka.svc.cluster.local 9092 && exit 0 || sleep 3; done; exit 1"]
@@ -83,6 +80,9 @@ spec:
       - name: init-kafka-nodefiles-topic
         image: bash
         command: ["bash", "-c", "apk --update add curl; set -x; while true; do response=$(curl -s ${namespace}-bridge-service.kafka.svc.cluster.local:9092/topics); if [[ ${response} =~ .*\"nodefile-info\".* ]]; then break; else sleep 5; fi; done" ]
+      - name: init-minio
+        image: bash
+        command: ["bash", "-c", "for i in {1..100}; do sleep 1; if nslookup minio-api 9000; then exit 0; fi; done; exit 1"]
       volumes:
         - name: resources-logs-storage
           persistentVolumeClaim:
