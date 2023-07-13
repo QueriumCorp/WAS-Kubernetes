@@ -65,12 +65,6 @@ module "kafka_topics" {
   depends_on = [module.strimzi]
 }
 
-module "minio" {
-  source = "../modules/kubernetes_minio"
-
-  depends_on = [module.eks, module.metricsserver]
-}
-
 module "vpa" {
   source = "../modules/kubernetes_vpa"
 
@@ -81,6 +75,12 @@ module "metricsserver" {
   source = "../modules/kubernetes_metricsserver"
 
   depends_on = [module.eks]
+}
+
+module "minio" {
+  source = "../modules/kubernetes_minio"
+
+  depends_on = [module.eks, module.metricsserver, module.vpa]
 }
 
 module "prometheus" {
