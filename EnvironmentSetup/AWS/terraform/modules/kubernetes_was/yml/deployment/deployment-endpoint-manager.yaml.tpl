@@ -92,24 +92,21 @@ spec:
         - mountPath: "/opt/app/logs"
           name: endpoint-logs-storage
       initContainers:
-      - name: init-minio
-        image: bash
-        command: ["bash", "-c", "for i in $(seq 1 3000); do nc -zvw1 minio 9000 && exit 0 || sleep 3; done; exit 1"]
       - name: init-kafka
         image: bash
-        command: ["bash", "-c", "for i in $(seq 1 3000); do nc -zvw1 was2-kafka-bootstrap.kafka.svc.cluster.local 9092 && exit 0 || sleep 3; done; exit 1"]
+        command: ["bash", "-c", "for i in $(seq 1 3000); do nc -zvw1 ${namespace}-kafka-bootstrap.kafka.svc.cluster.local 9092 && exit 0 || sleep 3; done; exit 1"]
       - name: init-kafka-resources-topic
         image: bash
-        command: ["bash", "-c", "apk --update add curl; set -x; while true; do response=$(curl -s kafka-bridge-service.kafka.svc.cluster.local:9092/topics); if [[ ${response} =~ .*\"resource-info\".* ]]; then break; else sleep 5; fi; done" ]
+        command: ["bash", "-c", "apk --update add curl; set -x; while true; do response=$(curl -s ${namespace}-bridge-service.kafka.svc.cluster.local:9092/topics); if [[ ${response} =~ .*\"resource-info\".* ]]; then break; else sleep 5; fi; done" ]
       - name: init-kafka-endpoints-topic
         image: bash
-        command: ["bash", "-c", "apk --update add curl; set -x; while true; do response=$(curl -s kafka-bridge-service.kafka.svc.cluster.local:9092/topics); if [[ ${response} =~ .*\"endpoint-info\".* ]]; then break; else sleep 5; fi; done" ]
+        command: ["bash", "-c", "apk --update add curl; set -x; while true; do response=$(curl -s ${namespace}-bridge-service.kafka.svc.cluster.local:9092/topics); if [[ ${response} =~ .*\"endpoint-info\".* ]]; then break; else sleep 5; fi; done" ]
       - name: init-kafka-nodefiles-topic
         image: bash
-        command: ["bash", "-c", "apk --update add curl; set -x; while true; do response=$(curl -s kafka-bridge-service.kafka.svc.cluster.local:9092/topics); if [[ ${response} =~ .*\"nodefile-info\".* ]]; then break; else sleep 5; fi; done" ]
-      - name: init-resource-manager
+        command: ["bash", "-c", "apk --update add curl; set -x; while true; do response=$(curl -s ${namespace}-bridge-service.kafka.svc.cluster.local:9092/topics); if [[ ${response} =~ .*\"nodefile-info\".* ]]; then break; else sleep 5; fi; done" ]
+      - name: init-minio
         image: bash
-        command: ["bash", "-c", "for i in $(seq 1 3000); do nc -zvw1 resource-manager 9090 && exit 0 || sleep 3; done; exit 1"]
+        command: ["bash", "-c", "for i in {1..100}; do sleep 1; if nslookup minio-api 9000; then exit 0; fi; done; exit 1"]
       volumes:
         - name: endpoint-logs-storage
           persistentVolumeClaim:
