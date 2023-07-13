@@ -26,7 +26,11 @@
 #   $ echo $SA_TOKEN
 #-----------------------------------------------------------
 locals {
-  namespace = "minio-operator"
+  namespace                   = "minio-operator"
+  minio_tenant_name           = "${var.shared_resource_name}-minio-tenant"
+  tenantPoolsServers          = var.tenantPoolsServers
+  tenantPoolsVolumesPerServer = var.tenantPoolsVolumesPerServer
+  tenantPoolsSize             = "10Gi"
 }
 
 
@@ -46,6 +50,9 @@ data "template_file" "minio-console-secret" {
   }
 }
 
+###############################################################################
+#                           Operator Deployment
+###############################################################################
 resource "helm_release" "minio-operator" {
   namespace        = local.namespace
   create_namespace = true
@@ -70,6 +77,9 @@ resource "helm_release" "minio-operator" {
 
 }
 
+###############################################################################
+#                           Tenant Deployment
+###############################################################################
 resource "helm_release" "minio-tenant" {
   namespace        = var.shared_resource_name
   create_namespace = false
@@ -85,7 +95,23 @@ resource "helm_release" "minio-tenant" {
 
   set {
     name  = "tenant.name"
-    value = var.shared_resource_name
+    value = local.minio_tenant_name
+  }
+  set {
+    name  = "tenant.pools.servers"
+    value = local.tenantPoolsServers
+  }
+  set {
+    name  = "tenant.pools.volumesPerServer"
+    value = local.tenantPoolsVolumesPerServer
+  }
+  set {
+    name  = "tenant.pools.size"
+    value = local.tenantPoolsSize
+  }
+  set {
+    name  = "secrets.name"
+    value = "${var.shared_resource_name}-env-configuration"
   }
   set {
     name  = "secrets.accessKey"
@@ -96,6 +122,10 @@ resource "helm_release" "minio-tenant" {
     value = random_password.minio-tenant.result
   }
 }
+
+###############################################################################
+#                           SUPPORTING RESOURCES
+###############################################################################
 
 # this is an alternative means of accessing the console.
 # You only need this if you disable the ingress in the Helm deployment

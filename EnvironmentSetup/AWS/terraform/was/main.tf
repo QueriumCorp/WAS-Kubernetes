@@ -106,8 +106,10 @@ module "cert_manager" {
 module "minio" {
   source = "../modules/kubernetes_minio_helm_native"
 
-  shared_resource_name = var.shared_resource_name
-  minio_host           = "minio.${var.root_domain}"
+  shared_resource_name        = var.shared_resource_name
+  minio_host                  = "minio.${var.root_domain}"
+  tenantPoolsServers          = 2
+  tenantPoolsVolumesPerServer = 1
 
   depends_on = [module.eks]
 }

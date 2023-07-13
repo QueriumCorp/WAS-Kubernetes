@@ -13,3 +13,13 @@ variable "shared_resource_name" {
 variable "minio_host" {
   type = string
 }
+
+variable "tenantPoolsServers" {
+  type    = number
+  default = 4
+}
+
+variable "tenantPoolsVolumesPerServer" {
+  type    = number
+  default = 4
+}
