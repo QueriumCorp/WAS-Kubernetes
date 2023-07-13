@@ -71,7 +71,7 @@ resource "helm_release" "minio-operator" {
 }
 
 resource "helm_release" "minio-tenant" {
-  namespace        = var.namespace
+  namespace        = var.shared_resource_name
   create_namespace = false
 
   name       = "minio"
@@ -83,10 +83,32 @@ resource "helm_release" "minio-tenant" {
     data.template_file.minio-tenant-values.rendered
   ]
 
+  set {
+    name  = "tenant.name"
+    value = var.shared_resource_name
+  }
+  set {
+    name  = "secrets.accessKey"
+    value = "minio"
+  }
+  set {
+    name  = "secrets.secretKey"
+    value = random_password.minio-tenant.result
+  }
 }
 
+# this is an alternative means of accessing the console.
+# You only need this if you disable the ingress in the Helm deployment
 resource "kubectl_manifest" "minio-console-secret" {
   yaml_body = data.template_file.minio-console-secret.rendered
 
   depends_on = [helm_release.minio-operator]
+}
+
+resource "random_password" "minio-tenant" {
+  length  = 16
+  special = false
+  keepers = {
+    version = "1"
+  }
 }

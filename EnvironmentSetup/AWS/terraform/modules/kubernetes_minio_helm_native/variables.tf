@@ -6,7 +6,7 @@
 #
 # usage: create an EKS cluster
 #------------------------------------------------------------------------------
-variable "namespace" {
+variable "shared_resource_name" {
   type = string
 }
 
