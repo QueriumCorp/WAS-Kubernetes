@@ -41,30 +41,6 @@ module "eks" {
 
 }
 
-# Strimzi is an operator that installs, configures and
-# manages all Kafka resources on a near real-time basis
-module "strimzi" {
-  source = "../modules/kubernetes_strimzi"
-
-  name = var.shared_resource_name
-
-  depends_on = [module.eks]
-}
-
-module "kafka" {
-  source = "../modules/kubernetes_kafka"
-  name   = var.shared_resource_name
-
-  depends_on = [module.strimzi]
-}
-
-module "kafka_topics" {
-  source = "../modules/kubernetes_kafka_topics"
-  name   = var.shared_resource_name
-
-  depends_on = [module.strimzi]
-}
-
 module "vpa" {
   source = "../modules/kubernetes_vpa"
 
@@ -103,6 +79,38 @@ module "cert_manager" {
   depends_on = [module.eks]
 }
 
+# Strimzi is an operator that installs, configures and
+# manages all Kafka resources on a near real-time basis
+module "strimzi" {
+  source = "../modules/kubernetes_strimzi"
+
+  name = var.shared_resource_name
+
+  depends_on = [
+    module.eks,
+    module.cert_manager,
+    module.ingress_controller,
+    module.metricsserver,
+    module.prometheus,
+    module.vpa
+  ]
+}
+
+module "kafka" {
+  source = "../modules/kubernetes_kafka"
+  name   = var.shared_resource_name
+
+  depends_on = [module.strimzi]
+}
+
+module "kafka_topics" {
+  source = "../modules/kubernetes_kafka_topics"
+  name   = var.shared_resource_name
+
+  depends_on = [module.strimzi]
+}
+
+
 module "minio" {
   source = "../modules/kubernetes_minio_helm_native"
 
@@ -113,8 +121,9 @@ module "minio" {
   tenantPoolsSize             = var.tenantPoolsSize
   tenantPoolsStorageClassName = var.tenantPoolsStorageClassName
 
-  depends_on = [module.eks]
+  depends_on = [module.eks, module.kafka]
 }
+
 
 module "was" {
   source = "../modules/kubernetes_was"
@@ -131,5 +140,5 @@ module "was" {
   was_endpoint_manager_version           = var.was_endpoint_manager_version
   was_resource_manager_version           = var.was_resource_manager_version
 
-  depends_on = [module.eks]
+  depends_on = [module.eks, module.kafka, module.minio]
 }
