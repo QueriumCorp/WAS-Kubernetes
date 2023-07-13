@@ -1,7 +1,7 @@
 data "kubernetes_secret" "minio-admin" {
   metadata {
-    name      = "minio"
-    namespace = "minio"
+    name      = "minio-credentials"
+    namespace = var.shared_resource_name
   }
 }
 
@@ -54,8 +54,8 @@ data "template_file" "deployment-resource-manager" {
     namespace               = var.namespace
     kafka_namespace         = "kafka"
     response                = ""
-    minio_access_key        = data.kubernetes_secret.minio-admin.data["root-user"]
-    minio_secret_key        = data.kubernetes_secret.minio-admin.data["root-password"]
+    minio_access_key        = data.kubernetes_secret.minio-admin.data["MINIO_USERNAME"]
+    minio_secret_key        = data.kubernetes_secret.minio-admin.data["MINIO_PASSWORD"]
     resource_info_bucket    = var.s3_bucket
     nodefiles_bucket        = var.s3_bucket
     resource_bucket_region  = var.aws_region

@@ -133,3 +133,16 @@ resource "random_password" "minio-tenant" {
     version = "1"
   }
 }
+
+resource "kubernetes_secret" "minio-credentials" {
+  metadata {
+    name      = "minio-credentials"
+    namespace = var.shared_resource_name
+  }
+
+  data = {
+    MINIO_USERNAME = local.secretsAccessKey
+    MINIO_PASSWORD = random_password.minio-tenant.result
+  }
+
+}

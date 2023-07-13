@@ -116,7 +116,7 @@ module "minio" {
   tenantPoolsSize             = var.tenantPoolsSize
   tenantPoolsStorageClassName = var.tenantPoolsStorageClassName
 
-  depends_on = [module.eks, module.kafka]
+  depends_on = [module.eks, module.strimzi]
 }
 
 
