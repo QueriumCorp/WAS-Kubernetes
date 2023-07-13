@@ -4,7 +4,7 @@
 #
 # date: Jan-2023
 #
-# usage: installs minio
+# usage: installs Minio Operator and Minio Tenant
 # see: https://min.io/docs/minio/kubernetes/upstream/operations/install-deploy-manage/deploy-operator-helm.html
 #
 # requirements: you must initialize a local helm repo in order to run
@@ -13,21 +13,23 @@
 #   brew install helm
 #   helm repo add minio https://raw.githubusercontent.com/minio/operator/master/
 #   helm repo update
+#
 #   helm search repo minio/operator
 #   helm search repo minio/tenant
+#
 #   helm show values minio/operator
 #   helm show values minio/tenant
 #
 # NOTE: run `helm repo update` prior to running this
 #       Terraform module.
 #
-# To generate the web app sign-in token:
+#  To generate the web app sign-in token for localhost access to the console, :
 #   $ SA_TOKEN=$(kubectl -n minio-operator  get secret console-sa-secret -o jsonpath="{.data.token}" | base64 --decode)
 #   $ echo $SA_TOKEN
 #-----------------------------------------------------------
 locals {
-  namespace = "minio-operator"
-
+  minio_operator_namespace    = "minio-operator"
+  minio_tenant_namespace      = var.shared_resource_name
   secretsName                 = "${var.shared_resource_name}-env-configuration"
   secretsAccessKey            = "minio"
   minio_tenant_name           = "${var.shared_resource_name}-minio-tenant"
@@ -62,7 +64,7 @@ data "template_file" "minio-console-secret" {
   template = file("${path.module}/yml/minio-console-secret.yaml")
 
   vars = {
-    minio_namespace = local.namespace
+    minio_namespace = local.minio_operator_namespace
   }
 }
 
@@ -70,7 +72,7 @@ data "template_file" "minio-console-secret" {
 #                           Operator Deployment
 ###############################################################################
 resource "helm_release" "minio-operator" {
-  namespace        = local.namespace
+  namespace        = local.minio_operator_namespace
   create_namespace = true
 
   name       = "minio"
@@ -97,7 +99,7 @@ resource "helm_release" "minio-operator" {
 #                           Tenant Deployment
 ###############################################################################
 resource "helm_release" "minio-tenant" {
-  namespace        = var.shared_resource_name
+  namespace        = local.minio_tenant_namespace
   create_namespace = false
 
   name       = "minio"

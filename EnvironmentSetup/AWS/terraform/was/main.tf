@@ -87,12 +87,7 @@ module "strimzi" {
   name = var.shared_resource_name
 
   depends_on = [
-    module.eks,
-    module.cert_manager,
-    module.ingress_controller,
-    module.metricsserver,
-    module.prometheus,
-    module.vpa
+    module.eks
   ]
 }
 
@@ -112,7 +107,7 @@ module "kafka_topics" {
 
 
 module "minio" {
-  source = "../modules/kubernetes_minio_helm_native"
+  source = "../modules/kubernetes_minio"
 
   shared_resource_name        = var.shared_resource_name
   minio_host                  = "minio.${var.root_domain}"
