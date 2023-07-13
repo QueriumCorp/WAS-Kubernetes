@@ -102,7 +102,7 @@ resource "kubectl_manifest" "service-resource-manager" {
 resource "kubectl_manifest" "deployment-resource-manager" {
   yaml_body = data.template_file.deployment-resource-manager.rendered
   depends_on = [
-    kubectl_manifest.service-endpoint-manager
+    kubectl_manifest.service-resource-manager
   ]
 }
 resource "kubectl_manifest" "deployment-endpoint-manager" {

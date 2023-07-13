@@ -1,13 +1,4 @@
-#------------------------------------------------------------------------------
-# written by: Lawrence McDaniel
-#             https://lawrencemcdaniel.com/
-#
-# date:       jul-2023
-#
-# usage: install Wolfram Application Server for Kubernetes
-#------------------------------------------------------------------------------
 locals {
-
   subnet_ids_list         = tolist(data.aws_subnets.was.ids)
   subnet_ids_random_index = random_id.index.dec % length(data.aws_subnets.was.ids)
   instance_subnet_id      = local.subnet_ids_list[local.subnet_ids_random_index]
