@@ -45,7 +45,8 @@ module "eks" {
 # manages all Kafka resources on a near real-time basis
 module "strimzi" {
   source = "../modules/kubernetes_strimzi"
-  name   = var.shared_resource_name
+
+  name = var.shared_resource_name
 
   depends_on = [module.eks]
 }
@@ -84,7 +85,8 @@ module "prometheus" {
 }
 
 module "ingress_controller" {
-  source     = "../modules/kubernetes_ingress_controller"
+  source = "../modules/kubernetes_ingress_controller"
+
   depends_on = [module.eks]
 }
 
@@ -102,9 +104,10 @@ module "cert_manager" {
 module "was" {
   source = "../modules/kubernetes_was"
 
+  aws_region = var.aws_region
+
   shared_resource_name = var.shared_resource_name
   namespace            = var.shared_resource_name
-  aws_region           = var.aws_region
   domain               = "${var.shared_resource_name}.${var.root_domain}"
   s3_bucket            = "${var.account_id}-${var.shared_resource_name}"
   tags                 = var.tags
