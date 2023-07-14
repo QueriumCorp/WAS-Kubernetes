@@ -81,6 +81,9 @@ resource "aws_ebs_volume" "endpoint-logs" {
   # we should not destroy this resource.
   lifecycle {
     prevent_destroy = false
+    ignore_changes = [
+      tags
+    ]
   }
 
   depends_on = [

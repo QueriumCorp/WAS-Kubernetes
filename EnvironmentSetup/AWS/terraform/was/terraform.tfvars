@@ -45,8 +45,8 @@ capacity_type = "SPOT"
 #instance_types = ["c5.2xlarge", "t3.2xlarge", "c5d.2xlarge", "t3a.2xlarge", "t2.2xlarge"]
 instance_types = ["t3.2xlarge", "t3a.2xlarge", "t2.2xlarge"]
 
-min_worker_node     = 3
-desired_worker_node = 3
+min_worker_node     = 2
+desired_worker_node = 2
 max_worker_node     = 10
 
 # Minio
