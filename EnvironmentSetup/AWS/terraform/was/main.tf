@@ -19,11 +19,12 @@
 module "eks" {
   source = "../modules/eks"
 
+  root_domain          = var.domain
+  domain               = "${var.shared_resource_name}.${var.domain}"
   shared_resource_name = var.shared_resource_name
 
-  account_id  = var.account_id
-  aws_region  = var.aws_region
-  aws_profile = var.aws_profile
+  account_id = var.account_id
+  aws_region = var.aws_region
 
   cidr                = var.cidr
   private_subnets     = var.private_subnets
@@ -50,7 +51,7 @@ module "vpa" {
 module "cert_manager" {
   source = "../modules/kubernetes_cert_manager"
 
-  domain     = var.domain
+  domain     = "${var.shared_resource_name}.${var.domain}"
   namespace  = var.shared_resource_name
   aws_region = var.aws_region
 
@@ -67,13 +68,15 @@ module "prometheus" {
   source = "../modules/kubernetes_prometheus"
 
   domain         = "${var.shared_resource_name}.${var.domain}"
-  cluster_issuer = var.domain
+  cluster_issuer = "${var.shared_resource_name}.${var.domain}"
 
   depends_on = [module.eks, module.metricsserver]
 }
 
 module "ingress_controller" {
   source = "../modules/kubernetes_ingress_controller"
+
+  domain = "${var.shared_resource_name}.${var.domain}"
 
   depends_on = [module.eks]
 }
@@ -128,7 +131,7 @@ module "was" {
   shared_resource_name = var.shared_resource_name
   namespace            = var.shared_resource_name
   domain               = "${var.shared_resource_name}.${var.domain}"
-  cluster_issuer       = var.domain
+  cluster_issuer       = "${var.shared_resource_name}.${var.domain}"
   s3_bucket            = "${var.account_id}-${var.shared_resource_name}"
   tags                 = var.tags
 

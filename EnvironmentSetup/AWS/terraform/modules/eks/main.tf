@@ -9,6 +9,20 @@
 data "aws_availability_zones" "available" {
 }
 
+data "aws_route53_zone" "root_domain" {
+  name = var.root_domain
+}
+
+resource "aws_route53_zone" "subdomain" {
+  name = var.domain
+}
+resource "aws_route53_record" "subdomain-ns" {
+  zone_id = data.aws_route53_zone.root_domain.zone_id
+  name    = aws_route53_zone.subdomain.name
+  type    = "NS"
+  ttl     = "600"
+  records = aws_route53_zone.subdomain.name_servers
+}
 
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"

@@ -11,3 +11,6 @@ variable "namespace" {
   type    = string
   default = "ingress-controller"
 }
+variable "domain" {
+  type = string
+}

@@ -1,14 +1,15 @@
+variable "root_domain" {
+  type = string
+}
+variable "domain" {
+  type = string
+}
 variable "account_id" {
   default = "01234567891"
   type    = string
 }
 variable "aws_region" {
   default = "us-east-1"
-  type    = string
-}
-
-variable "aws_profile" {
-  default = "default"
   type    = string
 }
 
