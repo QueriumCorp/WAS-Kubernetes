@@ -16,6 +16,9 @@
 #   helm show all jetstack/cert-manager
 #   helm show values jetstack/cert-manager
 #------------------------------------------------------------------------------
+data "aws_eks_cluster" "eks" {
+  name = var.namespace
+}
 
 locals {
   cert_manager_namespace = var.cert_manager_namespace

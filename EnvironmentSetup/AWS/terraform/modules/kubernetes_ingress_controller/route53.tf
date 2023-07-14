@@ -12,8 +12,11 @@ data "aws_route53_zone" "domain" {
 data "aws_elb_hosted_zone_id" "main" {}
 data "kubernetes_service" "ingress_nginx_controller" {
   metadata {
-    name = "common-ingress-nginx-controller"
+    name      = "common-ingress-nginx-controller"
+    namespace = var.namespace
   }
+
+  depends_on = [helm_release.ingress_nginx_controller]
 }
 
 resource "aws_route53_record" "naked" {

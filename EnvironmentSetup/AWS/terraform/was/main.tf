@@ -55,6 +55,8 @@ module "cert_manager" {
   namespace  = var.shared_resource_name
   aws_region = var.aws_region
 
+  depends_on = [module.eks]
+
 }
 
 module "metricsserver" {
