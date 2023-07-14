@@ -30,7 +30,7 @@ spec:
     - "*.${domain}"
     secretName: ${domain}-tls
   rules:
-  - host: ${environment_domain}
+  - host: ${domain}
     http:
         paths:
           - path: /
