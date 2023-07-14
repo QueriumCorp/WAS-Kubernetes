@@ -11,3 +11,7 @@
 variable "domain" {
   type = string
 }
+
+variable "cluster_issuer" {
+  type = string
+}

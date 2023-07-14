@@ -2,7 +2,8 @@
 data "template_file" "ingress-grafana" {
   template = file("${path.module}/yml/ingress-grafana.yaml.tpl")
   vars = {
-    domain = var.domain
+    domain         = var.domain
+    cluster_issuer = var.cluster_issuer
   }
 }
 

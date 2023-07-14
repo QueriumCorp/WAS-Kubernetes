@@ -16,7 +16,7 @@ spec:
   secretName: ${domain}-tls
   issuerRef:
     kind: ClusterIssuer
-    name: ${domain}
+    name: ${cluster_issuer}
   commonName: ${domain}
   dnsNames:
     - "${domain}"

@@ -30,6 +30,9 @@ variable "domain" {
   type = string
 }
 
+variable "cluster_issuer" {
+  type = string
+}
 variable "s3_bucket" {
   type = string
 }

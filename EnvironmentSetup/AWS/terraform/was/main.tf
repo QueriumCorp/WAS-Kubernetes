@@ -66,7 +66,8 @@ module "metricsserver" {
 module "prometheus" {
   source = "../modules/kubernetes_prometheus"
 
-  domain = "${var.shared_resource_name}.${var.domain}"
+  domain         = "${var.shared_resource_name}.${var.domain}"
+  cluster_issuer = var.domain
 
   depends_on = [module.eks, module.metricsserver]
 }
@@ -127,6 +128,7 @@ module "was" {
   shared_resource_name = var.shared_resource_name
   namespace            = var.shared_resource_name
   domain               = "${var.shared_resource_name}.${var.domain}"
+  cluster_issuer       = var.domain
   s3_bucket            = "${var.account_id}-${var.shared_resource_name}"
   tags                 = var.tags
 
