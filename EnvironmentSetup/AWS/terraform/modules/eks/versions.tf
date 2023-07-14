@@ -24,7 +24,7 @@ terraform {
 
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 5.7"
+      version = "~> 5.8"
     }
     kubectl = {
       source  = "gavinbunney/kubectl"
@@ -35,7 +35,8 @@ terraform {
       version = "~> 2.10"
     }
     kubernetes = {
-      source = "hashicorp/kubernetes"
+      source  = "hashicorp/kubernetes"
+      version = "~> 2.22"
     }
   }
 }

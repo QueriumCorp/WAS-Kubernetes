@@ -1,13 +1,3 @@
-affinity:
-  nodeAffinity:
-    preferredDuringSchedulingIgnoredDuringExecution:
-    - weight: 1
-      preference:
-        matchExpressions:
-        - key: node-group
-          operator: In
-          values:
-          - live
 serviceAccount:
   annotations:
     eks.amazonaws.com/role-arn: ${role_arn}

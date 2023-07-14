@@ -12,21 +12,23 @@
 #
 #   helm repo add jetstack https://charts.jetstack.io
 #   helm repo update
+#   helm search repo jetstack/cert-manager
 #   helm show all jetstack/cert-manager
 #   helm show values jetstack/cert-manager
 #------------------------------------------------------------------------------
 
 locals {
+  cert_manager_namespace = var.cert_manager_namespace
 }
 
 resource "helm_release" "cert-manager" {
   name             = "cert-manager"
-  namespace        = var.cert_manager_namespace
+  namespace        = local.cert_manager_namespace
   create_namespace = true
 
   chart      = "cert-manager"
   repository = "jetstack"
-  version    = "~> 1.11"
+  version    = "~> 1.12"
   values = [
     data.template_file.cert-manager-values.rendered
   ]
@@ -39,7 +41,7 @@ data "template_file" "cert-manager-values" {
   template = file("${path.module}/manifests/cert-manager-values.yaml.tpl")
   vars = {
     role_arn  = module.cert_manager_irsa.iam_role_arn
-    namespace = var.cert_manager_namespace
+    namespace = local.cert_manager_namespace
   }
 }
 
@@ -78,10 +80,10 @@ resource "aws_iam_policy" "cert_manager_policy" {
 
 module "cert_manager_irsa" {
   source                        = "terraform-aws-modules/iam/aws//modules/iam-assumable-role-with-oidc"
-  version                       = "~> 5.10"
+  version                       = "~> 5.27"
   create_role                   = true
   role_name                     = "${var.namespace}-cert_manager-irsa"
   provider_url                  = replace(data.aws_eks_cluster.eks.identity[0].oidc[0].issuer, "https://", "")
   role_policy_arns              = [aws_iam_policy.cert_manager_policy.arn]
-  oidc_fully_qualified_subjects = ["system:serviceaccount:${var.cert_manager_namespace}:cert-manager"]
+  oidc_fully_qualified_subjects = ["system:serviceaccount:${local.cert_manager_namespace}:cert-manager"]
 }

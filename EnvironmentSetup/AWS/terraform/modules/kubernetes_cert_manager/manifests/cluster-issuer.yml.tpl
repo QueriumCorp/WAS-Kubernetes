@@ -1,14 +1,13 @@
----
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
-  name: ${services_subdomain}
+  name: ${domain}
   namespace: ${namespace}
 spec:
   acme:
-    email: no-reply@${root_domain}
+    email: no-reply@${domain}
     privateKeySecretRef:
-      name: ${services_subdomain}
+      name: ${domain}
     server: https://acme-v02.api.letsencrypt.org/directory
     solvers:
       - dns01:

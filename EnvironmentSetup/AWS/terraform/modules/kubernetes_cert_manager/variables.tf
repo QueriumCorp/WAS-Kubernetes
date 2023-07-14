@@ -1,20 +1,18 @@
 #------------------------------------------------------------------------------
-# written by: Lawrence McDaniel
-#             https://lawrencemcdaniel.com/
+# written by: Miguel Afonso
+#             https://www.linkedin.com/in/mmafonso/
 #
-# date:       jul-2023
+# date: Aug-2021
 #
 # usage: build an EKS cluster load balancer
 #------------------------------------------------------------------------------
-variable "aws_region" {
-  type = string
-}
-variable "root_domain" {
+variable "domain" {
   type = string
 }
 
 variable "namespace" {
-  type = string
+  type    = string
+  default = "was"
 }
 
 variable "cert_manager_namespace" {
@@ -22,9 +20,9 @@ variable "cert_manager_namespace" {
   default = "cert-manager"
 }
 
-
-variable "services_subdomain" {
-  type = string
+variable "aws_region" {
+  type    = string
+  default = "us-east-1"
 }
 
 variable "tags" {

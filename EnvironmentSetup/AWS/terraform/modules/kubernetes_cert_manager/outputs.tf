@@ -2,7 +2,7 @@
 # written by: Lawrence McDaniel
 #             https://lawrencemcdaniel.com/
 #
-# date: jul-2023
+# date: Mar-2022
 #
 # usage: cert-manager module outputs
 #------------------------------------------------------------------------------

@@ -13,14 +13,10 @@ variable "aws_profile" {
   type    = string
 }
 
-variable "root_domain" {
+variable "domain" {
   type = string
 }
 
-variable "services_subdomain" {
-  description = "a hostname that you control where all ingreses will point: was.example.com"
-  type        = string
-}
 variable "cidr" {
   type    = string
   default = "192.168.0.0/20"

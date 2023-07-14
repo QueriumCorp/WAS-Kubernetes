@@ -47,6 +47,15 @@ module "vpa" {
   depends_on = [module.eks]
 }
 
+module "cert_manager" {
+  source = "../modules/kubernetes_cert_manager"
+
+  domain     = var.domain
+  namespace  = var.shared_resource_name
+  aws_region = var.aws_region
+
+}
+
 module "metricsserver" {
   source = "../modules/kubernetes_metricsserver"
 
@@ -57,7 +66,7 @@ module "metricsserver" {
 module "prometheus" {
   source = "../modules/kubernetes_prometheus"
 
-  domain = "${var.shared_resource_name}.${var.root_domain}"
+  domain = "${var.shared_resource_name}.${var.domain}"
 
   depends_on = [module.eks, module.metricsserver]
 }
@@ -68,16 +77,6 @@ module "ingress_controller" {
   depends_on = [module.eks]
 }
 
-module "cert_manager" {
-  source = "../modules/kubernetes_cert_manager"
-
-  root_domain        = var.root_domain
-  namespace          = var.shared_resource_name
-  services_subdomain = var.services_subdomain
-  aws_region         = var.aws_region
-
-  depends_on = [module.eks]
-}
 
 # Strimzi is an operator that installs, configures and
 # manages all Kafka resources on a near real-time basis
@@ -110,7 +109,7 @@ module "minio" {
   source = "../modules/kubernetes_minio"
 
   shared_resource_name        = var.shared_resource_name
-  minio_host                  = "minio.${var.root_domain}"
+  minio_host                  = "minio.${var.domain}"
   tenantPoolsServers          = var.tenantPoolsServers
   tenantPoolsVolumesPerServer = var.tenantPoolsVolumesPerServer
   tenantPoolsSize             = var.tenantPoolsSize
@@ -127,7 +126,7 @@ module "was" {
 
   shared_resource_name = var.shared_resource_name
   namespace            = var.shared_resource_name
-  domain               = "${var.shared_resource_name}.${var.root_domain}"
+  domain               = "${var.shared_resource_name}.${var.domain}"
   s3_bucket            = "${var.account_id}-${var.shared_resource_name}"
   tags                 = var.tags
 
