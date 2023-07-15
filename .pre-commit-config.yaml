@@ -1,6 +1,11 @@
 default_language_version:
   # default language version for each language
   python: python3.9
+exclude: |
+    (?x)^(
+        EnvironmentSetup/Azure^|
+        EnvironmentSetup/AWS-legacy^
+    )$
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.4.0
@@ -23,11 +28,6 @@ repos:
       - id: trailing-whitespace
       - id: pretty-format-json
      # - id: check-yaml
-        exclude: |
-            (?x)^(
-                EnvironmentSetup/Azure^|
-                EnvironmentSetup/AWS-legacy^
-            )$
   - repo: https://github.com/gruntwork-io/pre-commit
     rev: v0.1.22 # Get the latest from: https://github.com/gruntwork-io/pre-commit/releases
     hooks:
@@ -41,7 +41,5 @@ repos:
       - id: markdown-link-check
         exclude: |
             (?x)^(
-                EnvironmentSetup/Azure^|
-                EnvironmentSetup/AWS-legacy^|
                 EnvironmentSetup/AWS/README.md
             )$
