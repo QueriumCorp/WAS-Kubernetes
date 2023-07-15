@@ -282,7 +282,7 @@ $ k9s
 
 After successfully running the Terraform script the k9s home screen should look similiar to the following:
 
-![k9s home screen](https://raw.githubusercontent.com/QueriumCorp/WAS-Kubernetes/mcdaniel-20230706/EnvironmentSetup/AWS/doc/wolfram-welcome-screen.png "K9s Home Screen")
+![k9s home screen](https://raw.githubusercontent.com/QueriumCorp/WAS-Kubernetes/mcdaniel-20230706/EnvironmentSetup/AWS/doc/k8s-environment.png "K9s Home Screen")
 
 
 ## III. WAS Usage
