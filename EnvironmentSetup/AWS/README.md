@@ -78,7 +78,7 @@ This will interactively prompt for your AWS IAM user access key, secret key and 
 
 Helm helps you manage Kubernetes applications. Based on yaml 'charts', Helm helps you define, install, and upgrade even the most complex Kubernetes applications. Wolfram Application Server depends on multiple large complex subsystems, and fortunately, vendor-supported Helm charts are available for each of these.
 
-Helm charts first need to be downloaded and added to your local Helm repository.
+Helm charts first need to be downloaded and added to your local Helm repository. The helm charts will be automatically executed by Terraform at the appropriate time. There is nothing further that you need to do beyond adding these charts to your local helm repository.
 
 ```console
 $ helm repo add aws-efs-csi-driver https://kubernetes-sigs.github.io/aws-efs-csi-driver/
