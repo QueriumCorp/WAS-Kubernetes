@@ -192,7 +192,10 @@ $ cd ~/WAS-Kubernetes/EnvironmentSetup/AWS/terraform/was
 $ terraform init
 ```
 
-To deployment WAS run the following
+Screen output should resemble the following:
+![k9s home screen](https://raw.githubusercontent.com/QueriumCorp/WAS-Kubernetes/mcdaniel-20230706/EnvironmentSetup/AWS/doc/terraform-init.png "K9s Home Screen")
+
+To deploy WAS run the following
 
 ```console
 $ terraform apply
