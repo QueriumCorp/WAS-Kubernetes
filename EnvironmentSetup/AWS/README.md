@@ -2,13 +2,13 @@
 
 ## Introduction
 
-This document describes how to deploy Wolfram Application Server (WAS) on Kubernetes hosted on AWS cloud infrastructure.
+This document describes how to deploy [Wolfram Application Server (WAS)](https://www.wolfram.com/application-server/) onto Kubernetes hosted with [AWS cloud infrastructure](https://aws.amazon.com/).
 
-This is a Terraform based installation methodology that fully reliably automates the build, management and destruction process of all resources. Terraform is an infrastructure-as-code command line tool that will create and configure all of the approximately 120 resources that are needed for running WAS on Kubernetes infrastructure. These Terraform scripts will install and configure all cloud infrastructure resources and system software on which WAS depends. This process will take around 15 minutes to complete and will generate copious amounts of console output.
+This is a [Terraform](https://www.terraform.io/) based installation methodology that reliably automates the complete build, management and destruction processes of all resources. [Terraform](https://www.terraform.io/) is an [infrastructure-as-code](https://en.wikipedia.org/wiki/Infrastructure_as_code) command line tool that will create and configure all of the approximately 120 resources that are needed for running WAS on Kubernetes infrastructure. These Terraform scripts will install and configure all cloud infrastructure resources and system software on which WAS depends. This process will take around 15 minutes to complete and will generate copious amounts of console output.
 
-Terraform will create a dedicated Virtual Private Network (VPC) to contain all other resources that it creates. This VPC serves as an additionl 'chinese wall' that prevents these AWS resources and system software packages from being able to interact with any other AWS resources that might already exist in your AWS account. This additional layer is strongly recommended, and you will incur negligable additional AWS cost for adding this additional layer of security protection.
+Terraform will create a dedicated [AWS Virtual Private Network (VPC)](https://aws.amazon.com/vpc/) to contain all other resources that it creates. This VPC serves as an additionl 'chinese wall' that prevents these AWS resources and system software packages from being able to interact with any other AWS resources that might already exist in your AWS account. This additional layer is strongly recommended, and you will incur negligable additional AWS cost for adding this additional layer of security protection.
 
-The Amazon Elastic Kubernetes Service (EKS) stack consists of the following:
+The WAS [AWS Elastic Kubernetes Service (EKS)](https://aws.amazon.com/eks/) application stack consists of the following:
 
 * a AWS S3 bucket and DynamoDB table for managing Terraform state
 * a dedicated [AWS VPC](https://aws.amazon.com/vpc/)
@@ -28,10 +28,10 @@ The Amazon Elastic Kubernetes Service (EKS) stack consists of the following:
 * Kubernetes [Kakfa](https://bitnami.com/stack/kafka/helm)
 * [Wolfram Application Server](https://www.wolfram.com/application-server/)
 
-**WARNINGS:
+**WARNINGS**:
 
-1. The EKS service will create many AWS resources in other parts of your AWS account including EC2, VPC, IAM and KMS. You should not directly modify any of these resources, as this could lead to unintended consequences in the safe operation of your Kubernetes cluster up to and including permanent loss of access to the cluster itself.
-2. Terraform is a memory intensive application. For best results you should run this on a computer with at least 4Gib of free memory.**
+**1. The EKS service will create many AWS resources in other parts of your AWS account including EC2, VPC, IAM and KMS. You should not directly modify any of these resources, as this could lead to unintended consequences in the safe operation of your Kubernetes cluster up to and including permanent loss of access to the cluster itself.**
+**2. Terraform is a memory intensive application. For best results you should run this on a computer with at least 4Gib of free memory.**
 
 ## I. Installation Prerequisites
 
@@ -47,7 +47,7 @@ Ensure that your environment includes the latest stable releases of the followin
 * [helm](https://helm.sh/)
 * [k9s](https://k9scli.io/)
 
-*** Install required software packages using Homebrew
+### Install required software packages using Homebrew
 
 If necessary, install [Homebrew](https://brew.sh/)
 
@@ -63,7 +63,7 @@ Use homebrew to install all required packages.
 $ brew install awscli kubernetes-cli terraform helm k9s
 ```
 
-*** Configure the AWS CLI
+### Configure the AWS CLI
 
 To configure the AWS CLI run the following command:
 
@@ -73,7 +73,7 @@ $ aws configure
 
 This will interactively prompt for your AWS IAM user access key, secret key and preferred region.
 
-*** Install Helm charts
+### Install Helm charts
 
 Helm helps you manage Kubernetes applications. Based on yaml 'charts', Helm helps you define, install, and upgrade even the most complex Kubernetes applications. Wolfram Application Server depends on multiple large complex subsystems, and fortunately, vendor-supported Helm charts are available for each of these.
 
@@ -91,7 +91,7 @@ $ helm repo add cowboysysop https://cowboysysop.github.io/charts/
 $ helm repo update
 ```
 
-*** Setup Terraform
+### Setup Terraform
 
 Terraform is a declarative open-source infrastructure-as-code software tool created by HashiCorp. This repo leverages Terraform to create all cloud infrastructure as well as to install and configure all software packages that run inside of Kubernetes. Terraform relies on an S3 bucket for storing its state data, and a DynamoDB table for managing a semaphore lock during operations.
 
