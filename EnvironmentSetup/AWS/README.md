@@ -193,7 +193,7 @@ $ terraform init
 ```
 
 Screen output should resemble the following:
-![k9s home screen](https://raw.githubusercontent.com/QueriumCorp/WAS-Kubernetes/mcdaniel-20230706/EnvironmentSetup/AWS/doc/terraform-init.png "K9s Home Screen")
+![k9s home screen](https://raw.githubusercontent.com/QueriumCorp/WAS-Kubernetes/querium/EnvironmentSetup/AWS/doc/terraform-init.png "K9s Home Screen")
 
 To deploy WAS run the following
 
@@ -285,7 +285,7 @@ $ k9s
 
 After successfully running the Terraform script the k9s home screen should look similiar to the following:
 
-![k9s home screen](https://raw.githubusercontent.com/QueriumCorp/WAS-Kubernetes/mcdaniel-20230706/EnvironmentSetup/AWS/doc/k8s-environment.png "K9s Home Screen")
+![k9s home screen](https://raw.githubusercontent.com/QueriumCorp/WAS-Kubernetes/querium/EnvironmentSetup/AWS/doc/k8s-environment.png "K9s Home Screen")
 
 
 ## III. WAS Usage
@@ -305,7 +305,7 @@ URL endpoints will be as follows, where <was.example.com> matches your value of 
 
 The WAS home screen will return this error message until you add a valid software license key.
 
-![WAS error screen](https://raw.githubusercontent.com/QueriumCorp/WAS-Kubernetes/mcdaniel-20230706/EnvironmentSetup/AWS/doc/wolfram-welcome-screen.png "WAS error screen")
+![WAS error screen](https://raw.githubusercontent.com/QueriumCorp/WAS-Kubernetes/querium/EnvironmentSetup/AWS/doc/wolfram-welcome-screen.png "WAS error screen")
 
 
 ### Step 3. Install license
