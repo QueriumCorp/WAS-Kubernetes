@@ -7,18 +7,7 @@
 # usage: installs strimzi operator for kafka.
 # see: https://artifacthub.io/packages/helm/strimzi/strimzi-kafka-operator
 #
-# requirements: you must initialize a local helm repo in order to run
-# this mdoule.
-#
-# Strimzi
-#   brew install helm
-#   helm repo add strimzi https://strimzi.io/charts/
-#   helm repo update
-#   helm search repo strimzi
-#   helm show values strimzi/strimzi-kafka-operator
-#
-# NOTE: run `helm repo update` prior to running this
-#       Terraform module.
+# requirements: Strimzi must be installed first.
 #-----------------------------------------------------------
 locals {
   kafka_namespace = "kafka"

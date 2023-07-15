@@ -35,4 +35,8 @@ repos:
      # - id: shellcheck
       - id: yapf
       - id: markdown-link-check
-        exclude: EnvironmentSetup/Azure^
+        exclude: |
+            (?x)^(
+                EnvironmentSetup/Azure^|
+                EnvironmentSetup/AWS/README.md
+            )$

@@ -2,11 +2,13 @@
 
 ## Introduction
 
-This document describes the setup of Amazon Kubernetes (EKS) and Wolfram Application Server (WAS).
+This document describes how to deploy Wolfram Application Server (WAS) on Kubernetes hosted on AWS cloud infrastructure.
 
-This is a Terraform based, fully automated build-deploy script. Terraform is an infrastructure-as-code command line tool that will create and configure all required AWS resources, and install and configure all system software on which WAS depends. This process will take around 30 minutes to complete and will generate copious amounts of console output. Where possible Terraform uses Helm to install Kuberetes system softare packages.
+This is a Terraform based installation methodology that fully reliably automates the build, management and destruction process of all resources. Terraform is an infrastructure-as-code command line tool that will create and configure all of the approximately 120 resources that are needed for running WAS on Kubernetes infrastructure. These Terraform scripts will install and configure all cloud infrastructure resources and system software on which WAS depends. This process will take around 15 minutes to complete and will generate copious amounts of console output.
 
-The Amazon EKS stack consists of the following:
+Terraform will create a dedicated Virtual Private Network (VPC) to contain all other resources that it creates. This VPC serves as an additionl 'chinese wall' that prevents these AWS resources and system software packages from being able to interact with any other AWS resources that might already exist in your AWS account. This additional layer is strongly recommended, and you will incur negligable additional AWS cost for adding this additional layer of security protection.
+
+The Amazon Elastic Kubernetes Service (EKS) stack consists of the following:
 
 * a AWS S3 bucket and DynamoDB table for managing Terraform state
 * a dedicated [AWS VPC](https://aws.amazon.com/vpc/)
@@ -26,9 +28,12 @@ The Amazon EKS stack consists of the following:
 * Kubernetes [Kakfa](https://bitnami.com/stack/kafka/helm)
 * [Wolfram Application Server](https://www.wolfram.com/application-server/)
 
-**WARNING: Terraform is a memory intensive application. For best results you should run this on a computer with at least 4Gib of free memory.**
+**WARNINGS:
 
-## I. Install prerequisites
+1. The EKS service will create many AWS resources in other parts of your AWS account including EC2, VPC, IAM and KMS. You should not directly modify any of these resources, as this could lead to unintended consequences in the safe operation of your Kubernetes cluster up to and including permanent loss of access to the cluster itself.
+2. Terraform is a memory intensive application. For best results you should run this on a computer with at least 4Gib of free memory.**
+
+## I. Installation Prerequisites
 
 Quickstart for Linux & macOS operating systems.
 
@@ -41,6 +46,8 @@ Ensure that your environment includes the latest stable releases of the followin
 * [terraform](https://www.terraform.io/)
 * [helm](https://helm.sh/)
 * [k9s](https://k9scli.io/)
+
+*** Install required software packages using Homebrew
 
 If necessary, install [Homebrew](https://brew.sh/)
 
@@ -56,6 +63,8 @@ Use homebrew to install all required packages.
 $ brew install awscli kubernetes-cli terraform helm k9s
 ```
 
+*** Configure the AWS CLI
+
 To configure the AWS CLI run the following command:
 
 ```console
@@ -64,31 +73,53 @@ $ aws configure
 
 This will interactively prompt for your AWS IAM user access key, secret key and preferred region.
 
-Create Terraform required state management resources. Terraform uses a dediated AWS S3 bucket for storing its state data, and a DynamoDB table for managing a semphore lock during operations.
+*** Install Helm charts
+
+Helm helps you manage Kubernetes applications. Based on yaml 'charts', Helm helps you define, install, and upgrade even the most complex Kubernetes applications. Wolfram Application Server depends on multiple large complex subsystems, and fortunately, vendor-supported Helm charts are available for each of these.
+
+Helm charts first need to be downloaded and added to your local Helm repository.
+
+```console
+$ helm repo add aws-efs-csi-driver https://kubernetes-sigs.github.io/aws-efs-csi-driver/
+$ helm repo add jetstack https://charts.jetstack.io
+$ helm repo add ingress-nginx https://github.com/kubernetes/ingress-nginx
+$ helm repo add metrics-server https://kubernetes-sigs.github.io/metrics-server/
+$ helm repo add minio https://raw.githubusercontent.com/minio/operator/master/
+$ helm repo add prometheus-community https://prometheus-community.github.io/helm-charts/
+$ helm repo add strimzi https://strimzi.io/charts/
+$ helm repo add cowboysysop https://cowboysysop.github.io/charts/
+$ helm repo update
+```
+
+*** Setup Terraform
+
+Terraform is a declarative open-source infrastructure-as-code software tool created by HashiCorp. This repo leverages Terraform to create all cloud infrastructure as well as to install and configure all software packages that run inside of Kubernetes. Terraform relies on an S3 bucket for storing its state data, and a DynamoDB table for managing a semaphore lock during operations.
+
+Use these environment variables for creating consistnent, unique resources names for these two objects.
 
 ```console
 $ AWS_ACCOUNT=012345678912      # add your 12-digit AWS account number here
 $ AWS_REGION=us-east-1
-$ AWS_DYNAMODB_TABLE="terraform-state-lock-was"
-$ AWS_S3_BUCKET="${AWS_ACCOUNT}-terraform-tfstate-was"
 ```
 
-Create an AWS S3 Bucket
+First create an AWS S3 Bucket
 
 ```console
+$ AWS_S3_BUCKET="${AWS_ACCOUNT}-terraform-tfstate-was"
 $ aws s3api create-bucket --bucket $AWS_S3_BUCKET --region $AWS_REGION
 ```
 
-Create a DynamoDB table
+Then create a DynamoDB table
 
 ```console
+$ AWS_DYNAMODB_TABLE="terraform-state-lock-was"
 $ aws dynamodb create-table --region $AWS_REGION --table-name $AWS_DYNAMODB_TABLE  \
                --attribute-definitions AttributeName=LockID,AttributeType=S  \
                --key-schema AttributeName=LockID,KeyType=HASH --provisioned-throughput  \
                ReadCapacityUnits=1,WriteCapacityUnits=1
 ```
 
-## II. Build and deploy WAS
+## II. Build and Deploy WAS
 
 ### Step 1. Checkout the repository
 
@@ -108,40 +139,71 @@ $ cd ~/WAS-Kubernetes/EnvironmentSetup/AWS/
 $ vim terraform/was/terraform.tfvars
 ```
 
-Rows 1 thru 12 of this file contain required inputs as follows
+Required inputs are as follows:
 
 ```terraform
 account_id           = "012345678912"
 aws_region           = "us-east-1"
-aws_profile          = "default"
-root_domain          = "example.com"
-services_subdomain   = "was.example.com"
-aws_auth_users       = []
-kms_key_owners       = []
+domain               = "example.com"
+shared_resource_name = "was"
 ```
 
-Additional optional inputs include the folowing:
+And there are additional optional inputs include the folowing:
+
+Of particular interest
 
 ```terraform
+was_active_web_elements_server_version  = "3.1.5"
+was_endpoint_manager_version            = "1.2.1"
+was_resource_manager_version            = "1.2.1"
+```
+
+and less so, but worth mentioning
+
+```terraform
+tags                 = {}
+aws_profile          = "default"
+aws_auth_users       = []
+kms_key_owners       = []
 shared_resource_name = "was"
 cidr                 = "192.168.0.0/20"
 private_subnets      = ["192.168.4.0/24", "192.168.5.0/24"]
 public_subnets       = ["192.168.1.0/24", "192.168.2.0/24"]
 cluster_version      = "1.27"
-capacity_type        = "ON_DEMAND"
+capacity_type        = "SPOT"
 min_worker_node      = 2
 desired_worker_node  = 2
 max_worker_node      = 10
 disk_size            = 30
-instance_types       = ["c5.2xlarge"]
+instance_types       = ["t3.2xlarge", "t3a.2xlarge", "t2.2xlarge"]
 ```
 
 ### Step 4. Run the following command to set up EKS and deploy WAS
+
+The Terraform modules in this repo rely extensively on calls to other third party Terraform modules published and maintained by [AWS](https://registry.terraform.io/namespaces/terraform-aws-modules). These modules will be downloaded by Terraform so that these can be executed locally from your computer. Noteworth examples of such third party modules include:
+
+* [terraform-aws-modules/vpc](https://registry.terraform.io/modules/terraform-aws-modules/vpc/aws/latest)
+* [terraform-aws-modules/eks](https://registry.terraform.io/modules/terraform-aws-modules/eks/aws/latest)
 
 ```console
 $ cd ~/WAS-Kubernetes/EnvironmentSetup/AWS/terraform/was
 $ terraform init
 $ terraform apply
+```
+
+To deployment WAS run the following
+
+```console
+$ terraform apply
+```
+
+You can optionally run Terraform modules individually. Some examples include
+
+```console
+$ terraform apply -target=module.eks
+$ terraform apply -target=module.kafka
+$ terraform apply -target=module.minio
+$ terraform apply -target=module.was
 ```
 
 ### Step 5. Interact with the AWS EKS Kubernetes cluster
@@ -155,8 +217,12 @@ $ k9s
 
 If necessary, you can use the following command to refresh your kubectl authentication resources.
 
+First, configure kubectl to connect to your AWS EKS Kubernetes cluster.
+
 ```console
-$ aws eks --region us-east-1 update-kubeconfig --name was
+$ AWS_REGION=us-east-1
+$ EKS_CLUSTER_NAME=was
+$ aws eks --region $AWS_REGION update-kubeconfig --name $EKS_CLUSTER_NAME --alias $EKS_CLUSTER_NAME
 ```
 
 Use this command to verify that kubectl can access Kubernetes cluster resources.
@@ -176,8 +242,18 @@ vpa                  Active   106m
 was                  Active   100m
 ```
 
-## III. WAS Usage
+Run k9s from your command line
 
+```console
+$ k9s
+```
+
+After successfully running the Terraform script the k9s home screen should look similiar to the following:
+
+![k9s home screen](https://raw.githubusercontent.com/QueriumCorp/WAS-Kubernetes/mcdaniel-20230706/EnvironmentSetup/AWS/doc/wolfram-welcome-screen.png "K9s Home Screen")
+
+
+## III. WAS Usage
 
 ### Step 1. Interact with WAS
 
@@ -190,23 +266,33 @@ URL endpoints will be as follows, where <was.example.com> matches your value of 
 * Endpoints Info: https://was.example.com/.applicationserver/info
 * Restart AWES: https://was.example.com/.applicationserver/kernel/restart
 
-### Step 2. Get a license file from your Wolfram Research sales representative.
+### Step 2. Get a license file from your Wolfram Research sales representative
+
+The WAS home screen will return this error message until you add a valid software license key.
+
+![WAS error screen](https://raw.githubusercontent.com/QueriumCorp/WAS-Kubernetes/mcdaniel-20230706/EnvironmentSetup/AWS/doc/wolfram-welcome-screen.png "WAS error screen")
+
 
 ### Step 3. Install license
 
 This file needs to be deployed to WAS as a node file in the conventional location `.Wolfram/Licensing/mathpass`. From a Wolfram Language client, this may be achieved using the following code:
 
+```javascript
     was = ServiceConnect["WolframApplicationServer", "https://example.com/"];
     ServiceExecute[was, "DeployNodeFile",
     {"Contents"-> File["/path/to/mathpass"], "NodeFile" -> ".Wolfram/Licensing/mathpass"}]
+```
+
 
 
 Alternatively you may use the [node files REST API](../../Documentation/API/NodeFilesManager.md) to install the license file.
 
 **Note:** In order to use the Wolfram Language functions, the WolframApplicationServer paclet must be installed and loaded. Run the following code:
 
+```javascript
     PacletInstall["WolframApplicationServer"];
     Needs["WolframApplicationServer`"]
+```
 
 ### Step 4. Restart
 
