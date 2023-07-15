@@ -2,8 +2,8 @@ terraform {
   backend "s3" {
     bucket         = "terraform-tfstate-${var.cluster-name}"
     key            = "global/s3/terraform.tfstate"
-    region         = "${var.aws_region}"
-    dynamodb_table = "${var.dynamodb_table}"
+    region         = var.aws_region
+    dynamodb_table = var.dynamodb_table
     encrypt        = true
   }
   required_version = "~> 1.2.4"
@@ -37,16 +37,16 @@ data "aws_availability_zones" "available" {
 }
 
 module "vpc" {
-  source                 = "terraform-aws-modules/vpc/aws"
-  version                = "3.14.2"
-  name                   = "${var.cluster-name}-vpc"
-  cidr                   = "10.168.0.0/16"
-  azs                    = data.aws_availability_zones.available.names
-  private_subnets        = ["10.168.128.0/18", "10.168.192.0/18"]
-  public_subnets         = ["10.168.0.0/18", "10.168.64.0/18"]
-  enable_nat_gateway     = true
-  single_nat_gateway     = true
-  enable_dns_hostnames   = true
+  source               = "terraform-aws-modules/vpc/aws"
+  version              = "3.14.2"
+  name                 = "${var.cluster-name}-vpc"
+  cidr                 = "10.168.0.0/16"
+  azs                  = data.aws_availability_zones.available.names
+  private_subnets      = ["10.168.128.0/18", "10.168.192.0/18"]
+  public_subnets       = ["10.168.0.0/18", "10.168.64.0/18"]
+  enable_nat_gateway   = true
+  single_nat_gateway   = true
+  enable_dns_hostnames = true
 
 
   public_subnet_tags = {
@@ -57,24 +57,24 @@ module "vpc" {
     "kubernetes.io/cluster/${var.cluster-name}" = "shared"
     "kubernetes.io/role/internal-elb"           = "1"
   }
-  
+
   tags = {
-    Terraform = "true"
+    Terraform   = "true"
     Environment = "${var.cluster-name}"
   }
 
 }
 
 module "eks" {
-  source                    = "terraform-aws-modules/eks/aws"
-  version                   = "16.1.0"
-  cluster_name              = var.cluster-name
-  cluster_version           = var.cluster-version
-  subnets                   = module.vpc.private_subnets
-  vpc_id                    = module.vpc.vpc_id
-  write_kubeconfig          = false
-  cluster_create_timeout    = "120m"
-  
+  source                 = "terraform-aws-modules/eks/aws"
+  version                = "16.1.0"
+  cluster_name           = var.cluster-name
+  cluster_version        = var.cluster-version
+  subnets                = module.vpc.private_subnets
+  vpc_id                 = module.vpc.vpc_id
+  write_kubeconfig       = false
+  cluster_create_timeout = "120m"
+
   tags = {
     Environment = "Wolfram Application Server"
   }
@@ -86,7 +86,7 @@ module "eks" {
       max_capacity     = var.max-worker-node
       min_capacity     = var.min-worker-node
       disk_size        = var.disk-size
-      instance_types    = [var.instance_type]
+      instance_types   = [var.instance_type]
     }
   }
 

@@ -1,173 +1,382 @@
-# Amazon EKS WAS Setup
+# Amazon EKS Setup
 
 ## Introduction
 
-This document describes the setup of Amazon Kubernetes (EKS) and Wolfram Application Server (WAS).
+This document describes how to deploy [Wolfram Application Server (WAS)](https://www.wolfram.com/application-server/) onto Kubernetes hosted with [AWS cloud infrastructure](https://aws.amazon.com/).
 
+This is a [Terraform](https://www.terraform.io/) based installation methodology that reliably automates the complete build, management and destruction processes of all resources. [Terraform](https://www.terraform.io/) is an [infrastructure-as-code](https://en.wikipedia.org/wiki/Infrastructure_as_code) command line tool that will create and configure all of the approximately 120 software and cloud infrastructure resources that are needed for running WAS on Kubernetes infrastructure. These Terraform scripts will install and configure all cloud infrastructure resources and system software on which WAS depends. This process will take around 15 minutes to complete and will generate copious amounts of console output.
 
-## Prerequisite Tools
+Terraform will create a dedicated [AWS Virtual Private Network (VPC)](https://aws.amazon.com/vpc/) to contain all other resources that it creates. This VPC serves as an additional 'chinese wall' that prevents these AWS resources and system software packages from being able to interact with any other AWS resources that might already exist in your AWS account. This additional layer is strongly recommended, and you will incur negligable additional AWS cost for adding this additional layer of security protection.
 
-The following CLI tools are required to be installed on your local machine to complete the setup and installation:
+The WAS [AWS Elastic Kubernetes Service (EKS)](https://aws.amazon.com/eks/) application stack consists of the following:
 
-* **AWS CLIv2** - https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html#getting-started-install-instructions
+* a AWS S3 bucket and DynamoDB table for managing Terraform state
+* a dedicated [AWS VPC](https://aws.amazon.com/vpc/)
+* a dedicated [AWS EKS Kubernetes cluster](https://aws.amazon.com/eks/)
+  * a configurable [Managed Node Group](https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html) with on-demand and spot-priced tier options
+  * AWS EKS Add-on [EFS CSI Driver](https://docs.aws.amazon.com/eks/latest/userguide/ebs-csi.html)
+  * AWS EKS Add-on [EBS CSI Driver](https://docs.aws.amazon.com/eks/latest/userguide/ebs-csi.html)
+  * AWS EKS Add-on [VPC CNI](https://docs.aws.amazon.com/eks/latest/userguide/managing-vpc-cni.html)
+  * AWS EKS Add-on [kube-proxy](https://docs.aws.amazon.com/eks/latest/userguide/eks-add-ons.html)
+  * AWS EKS Add-on [CoreDNS](https://docs.aws.amazon.com/eks/latest/userguide/managing-coredns.html)
+* Kubernetes [Vertical Pod Autoscaler](https://docs.aws.amazon.com/eks/latest/userguide/vertical-pod-autoscaler.html)
+* Kubernetes [Metrics Server](https://github.com/kubernetes-sigs/metrics-server)
+* Kubernetes [Prometheus](https://prometheus.io/)
+* Kubernetes [cert-manager](https://cert-manager.io/)
+* Kubernetes [Nginx Ingress Controller](https://docs.nginx.com/nginx-ingress-controller/)
+* Kubernetes [Minio](https://bitnami.com/stack/minio/helm)
+* Kubernetes [Kakfa](https://bitnami.com/stack/kafka/helm)
+* [Wolfram Application Server](https://www.wolfram.com/application-server/)
 
-* **Kubectl >= 1.24** - https://kubernetes.io/docs/tasks/tools/install-kubectl/
+**WARNINGS**:
 
-* **Docker v20.10 or newer** - https://docs.docker.com/get-docker/
+**1. The EKS service will create many AWS resources in other parts of your AWS account including EC2, VPC, IAM and KMS. You should not directly modify any of these resources, as this could lead to unintended consequences in the safe operation of your Kubernetes cluster up to and including permanent loss of access to the cluster itself.**
 
-* **Docker Compose  v1.28.6 or newer** - https://docs.docker.com/compose/install/
+**2. Terraform is a memory intensive application. For best results you should run this on a computer with at least 4Gib of free memory.**
 
+## I. Installation Prerequisites
 
-### Default Configuration
-The automated configuration tool will use the following default values when building EKS and configuring WAS.
+Quickstart for Linux & macOS operating systems.
 
-* Cluster Name: WAS
-* Region: us-east-1
-* AMI Instance Type: c5.2xlarge
-* Disk Size: 30GB
-* Node Group scaling configuration: [Minimum size: 2, Maximum size: 10, Desired size: 2]
-* Kubernetes Version: 1.22
+**Prerequisite:** Obtain an [AWS IAM User](https://aws.amazon.com/iam/) with administrator priviledges, access key and secret key.
 
-To change any of the above defaults open `Source/terraform/variables.tf`, modify accordingly and save file.
+Ensure that your environment includes the latest stable releases of the following software packages:
 
+* [aws cli](https://aws.amazon.com/cli/)
+* [kubectl (Kubernetes cli)](https://kubernetes.io/docs/tasks/tools/)
+* [terraform](https://www.terraform.io/)
+* [helm](https://helm.sh/)
+* [k9s](https://k9scli.io/)
 
-## First Time Setup
+### Install required software packages using Homebrew
 
-**Prerequisite:** Obtain an AWS IAM User with administrator priviledges, access key and secret key.
+If necessary, install [Homebrew](https://brew.sh/)
+
+```console
+$ /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+$ echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' >> /home/ubuntu/.profile
+$ eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+```
+
+Use homebrew to install all required packages.
+
+```console
+$ brew install awscli kubernetes-cli terraform helm k9s
+```
+
+### Configure the AWS CLI
 
 To configure the AWS CLI run the following command:
 
-	aws configure
+```console
+$ aws configure
+```
 
-This will interactively prompt for your AWS IAM user access key, secret key and preferred region. 
+This will interactively prompt for your AWS IAM user access key, secret key and preferred region.
 
-**Note:** Your region needs to match the above default configuration else the setup will fail.
+### Install Helm charts
 
-## Setup
+Helm helps you manage Kubernetes applications. Based on yaml 'charts', Helm helps you define, install, and upgrade even the most complex Kubernetes applications. Wolfram Application Server depends on multiple large complex subsystems, and fortunately, vendor-supported Helm charts are available for each of these.
 
-**Step 1.** Checkout the repository:
+Helm charts first need to be downloaded and added to your local Helm repository. The helm charts will be automatically executed by Terraform at the appropriate time. There is nothing further that you need to do beyond adding these charts to your local helm repository.
 
-	git clone https://github.com/WolframResearch/WAS-Kubernetes.git
+```console
+$ helm repo add aws-efs-csi-driver https://kubernetes-sigs.github.io/aws-efs-csi-driver/
+$ helm repo add jetstack https://charts.jetstack.io
+$ helm repo add ingress-nginx https://github.com/kubernetes/ingress-nginx
+$ helm repo add metrics-server https://kubernetes-sigs.github.io/metrics-server/
+$ helm repo add minio https://raw.githubusercontent.com/minio/operator/master/
+$ helm repo add prometheus-community https://prometheus-community.github.io/helm-charts/
+$ helm repo add strimzi https://strimzi.io/charts/
+$ helm repo add cowboysysop https://cowboysysop.github.io/charts/
+$ helm repo update
+```
 
-**Step 2.** Change directory to AWS:
+### Setup Terraform
 
-	cd WAS-Kubernetes/EnvironmentSetup/AWS/
+Terraform is a declarative open-source infrastructure-as-code software tool created by HashiCorp. This repo leverages Terraform to create all cloud infrastructure as well as to install and configure all software packages that run inside of Kubernetes. Terraform relies on an S3 bucket for storing its state data, and a DynamoDB table for managing a semaphore lock during operations.
 
-**Step 3.** Run the following command to set up EKS and deploy WAS:
+Use these three environment variables for creating the uniquely named resources that the Terraform modules in this repo will be expecting to find at run-time.
 
-	mkdir -p ~/.kube && docker-compose up --build -d && clear && docker exec -it aws-setup-manager bash setup --create && sudo chown -R $USER ~/.kube
+```console
+$ AWS_ACCOUNT=012345678912      # add your 12-digit AWS account number here
+$ AWS_REGION=us-east-1
+$ AWS_ENVIRONMENT=was
+```
 
-**Note:** This can take approximately 45 minutes to complete.
+First create an AWS S3 Bucket
+
+```console
+$ AWS_S3_BUCKET="${AWS_ACCOUNT}-terraform-tfstate-${AWS_ENVIRONMENT}"
+$ aws s3api create-bucket --bucket $AWS_S3_BUCKET --region $AWS_REGION
+```
+
+Then create a DynamoDB table
+
+```console
+$ AWS_DYNAMODB_TABLE="terraform-state-lock-${AWS_ENVIRONMENT}"
+$ aws dynamodb create-table --region $AWS_REGION --table-name $AWS_DYNAMODB_TABLE  \
+               --attribute-definitions AttributeName=LockID,AttributeType=S  \
+               --key-schema AttributeName=LockID,KeyType=HASH --provisioned-throughput  \
+               ReadCapacityUnits=1,WriteCapacityUnits=1
+```
+
+## II. Build and Deploy WAS
+
+### Step 1. Checkout the repository
+
+```console
+$ git clone https://github.com/WolframResearch/WAS-Kubernetes.git
+```
+
+### Step 2. Change directory to AWS
+
+```console
+$ cd ~/WAS-Kubernetes/EnvironmentSetup/AWS/
+```
+
+### Step 3. Configure your environment by setting Terraform global variable values
+
+```console
+$ vim terraform/was/terraform.tfvars
+```
+
+Required inputs are as follows:
+
+```terraform
+account_id           = "012345678912"
+aws_region           = "us-east-1"
+domain               = "example.com"
+shared_resource_name = "was"
+```
+
+And there are additional optional inputs include the folowing:
+
+Of particular interest
+
+```terraform
+was_active_web_elements_server_version  = "3.1.5"
+was_endpoint_manager_version            = "1.2.1"
+was_resource_manager_version            = "1.2.1"
+```
+
+and less so, but worth mentioning
+
+```terraform
+tags                 = {}
+aws_profile          = "default"
+aws_auth_users       = []
+kms_key_owners       = []
+shared_resource_name = "was"
+cidr                 = "192.168.0.0/20"
+private_subnets      = ["192.168.4.0/24", "192.168.5.0/24"]
+public_subnets       = ["192.168.1.0/24", "192.168.2.0/24"]
+cluster_version      = "1.27"
+capacity_type        = "SPOT"
+min_worker_node      = 2
+desired_worker_node  = 2
+max_worker_node      = 10
+disk_size            = 30
+instance_types       = ["t3.2xlarge", "t3a.2xlarge", "t2.2xlarge"]
+```
+
+### Step 4. Run the following command to set up EKS and deploy WAS
+
+The Terraform modules in this repo rely extensively on calls to other third party Terraform modules published and maintained by [AWS](https://registry.terraform.io/namespaces/terraform-aws-modules). These modules will be downloaded by Terraform so that these can be executed locally from your computer. Noteworth examples of such third party modules include:
+
+* [terraform-aws-modules/vpc](https://registry.terraform.io/modules/terraform-aws-modules/vpc/aws/latest)
+* [terraform-aws-modules/eks](https://registry.terraform.io/modules/terraform-aws-modules/eks/aws/latest)
+
+```console
+$ cd ~/WAS-Kubernetes/EnvironmentSetup/AWS/terraform/was
+$ terraform init
+```
+
+Screen output should resemble the following:
+![k9s home screen](https://raw.githubusercontent.com/QueriumCorp/WAS-Kubernetes/mcdaniel-20230706/EnvironmentSetup/AWS/doc/terraform-init.png "K9s Home Screen")
+
+To deploy WAS run the following
+
+```console
+$ terraform apply
+```
+
+You can optionally run Terraform modules individually. Some examples include
+
+```console
+$ terraform apply -target=module.eks
+$ terraform apply -target=module.kafka
+$ terraform apply -target=module.minio
+$ terraform apply -target=module.was
+```
+
+### Trouble Shooting
+
+Terraform sets a 'lock' in the AWS DynamoDB table that you created in the Terraform Setup above. If a Terraform operation fails then on your next operation attempt you will likely encounter the following error response, indicating that the Terraform state is currently locked.
+
+```console
+│ Error: Error acquiring the state lock
+│
+│ Error message: ConditionalCheckFailedException: The conditional request failed
+│ Lock Info:
+│   ID:        e1bd1079-86dc-0cd5-ea98-4d8c5ddb4d5a
+│   Path:      320713933456-terraform-tfstate-was-01/was/terraform.tfstate
+│   Operation: OperationTypeApply
+│   Who:       ubuntu@ip-192-168-2-200
+│   Version:   1.5.2
+│   Created:   2023-07-10 17:11:39.939826727 +0000 UTC
+│   Info:
+│
+│
+│ Terraform acquires a state lock to protect the state from being written
+│ by multiple users at the same time. Please resolve the issue above and try
+│ again. For most commands, you can disable locking with the "-lock=false"
+│ flag, but this is not recommended.
+
+```
+
+You can optionall execute the Terraform scripts without a lock, as follows:
+
+```console
+$ terraform apply -lock=false
+```
+
+### Step 5. Interact with the AWS EKS Kubernetes cluster
+
+You can use k9s, a text-based gui, to view and interact with Kubernetes resources. k9s relies on kubectl to
+communicate with the AWS EKS Kuberenetes cluster.
+
+```console
+$ k9s
+```
+
+If necessary, you can use the following command to refresh your kubectl authentication resources.
+
+First, configure kubectl to connect to your AWS EKS Kubernetes cluster.
+
+```console
+$ AWS_REGION=us-east-1
+$ EKS_CLUSTER_NAME=was
+$ aws eks --region $AWS_REGION update-kubeconfig --name $EKS_CLUSTER_NAME --alias $EKS_CLUSTER_NAME
+```
+
+Use this command to verify that kubectl can access Kubernetes cluster resources.
+
+```console
+$ kubectl get namespaces
+NAME                 STATUS   AGE
+default              Active   3h
+ingress-controller   Active   101m
+kafka                Active   100m
+kube-node-lease      Active   3h
+kube-public          Active   3h
+kube-system          Active   3h
+metrics-server       Active   106m
+prometheus           Active   105m
+vpa                  Active   106m
+was                  Active   100m
+```
+
+Run k9s from your command line
+
+```console
+$ k9s
+```
+
+After successfully running the Terraform script the k9s home screen should look similiar to the following:
+
+![k9s home screen](https://raw.githubusercontent.com/QueriumCorp/WAS-Kubernetes/mcdaniel-20230706/EnvironmentSetup/AWS/doc/k8s-environment.png "K9s Home Screen")
 
 
-**Step 4.** Run the following command to retrieve your base URL and application URLs:
+## III. WAS Usage
 
-	docker-compose up --build -d && clear && docker exec -it aws-setup-manager bash setup --endpoint-info
+### Step 1. Interact with WAS
 
+URL endpoints will be as follows, where <was.example.com> matches your value of services_subdomain above:
 
-The output of this command will follow this pattern:
-	
-	Base URL - Active Web Elements Server: http://<your-base-url>/
-	
-	Resource Manager: http://<your-base-url>/resources/
-	
-	Endpoints Manager: http://<your-base-url>/endpoints/
-	
-	Nodefiles: http://<your-base-url>/nodefiles/
-	
-	Endpoints Info: http://<your-base-url>/.applicationserver/info
-	
-	Restart AWES: http://<your-base-url>/.applicationserver/kernel/restart
+* Active Web Elements Server: https://was.example.com/
+* Resource Manager: https://was.example.com/resources/
+* Endpoints Manager: https://was.example.com/endpoints/
+* Nodefiles: https://was.example.com/nodefiles/
+* Endpoints Info: https://was.example.com/.applicationserver/info
+* Restart AWES: https://was.example.com/.applicationserver/kernel/restart
 
+### Step 2. Get a license file from your Wolfram Research sales representative
 
+The WAS home screen will return this error message until you add a valid software license key.
 
-**Step 5.** After completion, run this command to shutdown the aws-setup-manager:
-
-	docker-compose down
+![WAS error screen](https://raw.githubusercontent.com/QueriumCorp/WAS-Kubernetes/mcdaniel-20230706/EnvironmentSetup/AWS/doc/wolfram-welcome-screen.png "WAS error screen")
 
 
-**Step 6.** Get a license file from your Wolfram Research sales representative.
+### Step 3. Install license
 
+This file needs to be deployed to WAS as a node file in the conventional location `.Wolfram/Licensing/mathpass`. From a Wolfram Language client, this may be achieved using the following code:
 
-**Step 7.** This file needs to be deployed to WAS as a node file in the conventional location `.Wolfram/Licensing/mathpass`. From a Wolfram Language client, this may be achieved using the following code: 
-
-    was = ServiceConnect["WolframApplicationServer", "http://<your-base-url>"];
+```javascript
+    was = ServiceConnect["WolframApplicationServer", "https://example.com/"];
     ServiceExecute[was, "DeployNodeFile",
     {"Contents"-> File["/path/to/mathpass"], "NodeFile" -> ".Wolfram/Licensing/mathpass"}]
+```
+
 
 
 Alternatively you may use the [node files REST API](../../Documentation/API/NodeFilesManager.md) to install the license file.
 
 **Note:** In order to use the Wolfram Language functions, the WolframApplicationServer paclet must be installed and loaded. Run the following code:
 
+```javascript
     PacletInstall["WolframApplicationServer"];
     Needs["WolframApplicationServer`"]
+```
 
-**Step 8.** Restart the application using the [restart API](../../Documentation/API/Utilities.md) to enable your Wolfram Engines.
+### Step 4. Restart
 
-URL: `http://<your-base-url>/.applicationserver/kernel/restart`
-	
-The default credentials for this API are: 
-	
+Restart the application using the [restart API](../../Documentation/API/Utilities.md) to enable your Wolfram Engines.
+
+URL: `https://example.com/.applicationserver/kernel/restart`
+
+The default credentials for this API are:
+
 	Username: applicationserver
-	
+
 	Password: P7g[/Y8v?KR}#YvN
 
 
 To change these, see the [configuration documentation](../../Configuration.md).
 
-**Note:** Active Web Elements Server will restart and activate using the mathpass. Upon successful activation, the application shall start. 
+**Note:** Active Web Elements Server will restart and activate using the mathpass. Upon successful activation, the application shall start.
 
 Your setup is now complete.
 
 
-## Remove the cluster
+## IV. Uninstall
 
-The following completely deletes everything including the kubernetes cluster, Wolfram Application Server and all resources:
+The following completely destroys everything including the kubernetes cluster, Wolfram Application Server and all resources:
 
-**Step 1.** Update the `terraform/variables.tf` file with your WAS cluster info(aws_region, cluster name etc.)
-
-**Step 2.** Change your directory to the directory containing `docker-compose.yml` directory and run the following command to destroy your EKS cluster and WAS:
-
-	docker-compose up --build -d && clear && docker exec -it aws-setup-manager bash setup --delete
-
-**Warning:** All data will be destroyed.
-
-**Step 2.** After completion, shutdown the aws-setup-manager by running the following command:
-
-	docker-compose down	-v
-
----
-
-## Troubleshooting
-
-**1.** Backend configuration is changed error.
-```
-Building EKS - (can take upto 30 minutes) [ERROR] Failed with error: 1
-[ ✘ ]
-
-[ERROR] Something went wrong. Exiting.
-[ERROR] The last few log entries were:
-╷
-│ Error: Backend configuration changed
-│
-│ A change in the backend configuration has been detected, which may require
-│ migrating existing state.
-│
-│ If you wish to attempt automatic migration of the state, use “terraform
-│ init -migrate-state”.
-│ If you wish to store the current configuration with no changes to the
-│ state, use “terraform init -reconfigure”.
+```console
+$ cd ~/WAS-Kubernetes/EnvironmentSetup/AWS/Source/terraform/was
+$ terraform init
+$ terraform destroy
 ```
 
-You need to check these bullet-points.
+Delete Terraform state management resources
 
-* Check S3/DynamoDb for previous WAS setup states. If any of them exists, remove it manually on AWS Console.
+```console
+$ AWS_ACCOUNT=012345678912      # add your 12-digit AWS account number here
+$ AWS_REGION=us-east-1
+$ AWS_DYNAMODB_TABLE="terraform-state-lock-was"
+$ AWS_S3_BUCKET="${AWS_ACCOUNT}-terraform-tfstate-was"
+```
 
-  
+To delete the DynamoDB table
 
-* Remove docker container cache.
+```console
+$ aws dynamodb delete-table --region $AWS_REGION --table-name $AWS_DYNAMODB_TABLE
+```
 
-  * Stop the running `aws-setup-manager` container with `docker kill <CONTAINER_ID>`
-  * `docker container prune -f`
-  * `docker volume prune -a -f`
+To delete the AWS S3 bucket
+
+```console
+$ aws s3 rm s3://$AWS_S3_BUCKET --recursive
+$ aws s3 rb s3://$AWS_S3_BUCKET --force
+```
