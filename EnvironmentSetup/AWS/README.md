@@ -96,24 +96,25 @@ $ helm repo update
 
 Terraform is a declarative open-source infrastructure-as-code software tool created by HashiCorp. This repo leverages Terraform to create all cloud infrastructure as well as to install and configure all software packages that run inside of Kubernetes. Terraform relies on an S3 bucket for storing its state data, and a DynamoDB table for managing a semaphore lock during operations.
 
-Use these environment variables for creating consistnent, unique resources names for these two objects.
+Use these three environment variables for creating the uniquely named resources that the Terraform modules in this repo will be expecting to find at run-time.
 
 ```console
 $ AWS_ACCOUNT=012345678912      # add your 12-digit AWS account number here
 $ AWS_REGION=us-east-1
+$ AWS_ENVIRONMENT=was
 ```
 
 First create an AWS S3 Bucket
 
 ```console
-$ AWS_S3_BUCKET="${AWS_ACCOUNT}-terraform-tfstate-was"
+$ AWS_S3_BUCKET="${AWS_ACCOUNT}-terraform-tfstate-${AWS_ENVIRONMENT}"
 $ aws s3api create-bucket --bucket $AWS_S3_BUCKET --region $AWS_REGION
 ```
 
 Then create a DynamoDB table
 
 ```console
-$ AWS_DYNAMODB_TABLE="terraform-state-lock-was"
+$ AWS_DYNAMODB_TABLE="terraform-state-lock-${AWS_ENVIRONMENT}"
 $ aws dynamodb create-table --region $AWS_REGION --table-name $AWS_DYNAMODB_TABLE  \
                --attribute-definitions AttributeName=LockID,AttributeType=S  \
                --key-schema AttributeName=LockID,KeyType=HASH --provisioned-throughput  \
@@ -189,7 +190,6 @@ The Terraform modules in this repo rely extensively on calls to other third part
 ```console
 $ cd ~/WAS-Kubernetes/EnvironmentSetup/AWS/terraform/was
 $ terraform init
-$ terraform apply
 ```
 
 To deployment WAS run the following
@@ -205,6 +205,37 @@ $ terraform apply -target=module.eks
 $ terraform apply -target=module.kafka
 $ terraform apply -target=module.minio
 $ terraform apply -target=module.was
+```
+
+### Trouble Shooting
+
+Terraform sets a 'lock' in the AWS DynamoDB table that you created in the Terraform Setup above. If a Terraform operation fails then on your next operation attempt you will likely encounter the following error response, indicating that the Terraform state is currently locked.
+
+```console
+│ Error: Error acquiring the state lock
+│
+│ Error message: ConditionalCheckFailedException: The conditional request failed
+│ Lock Info:
+│   ID:        e1bd1079-86dc-0cd5-ea98-4d8c5ddb4d5a
+│   Path:      320713933456-terraform-tfstate-was-01/was/terraform.tfstate
+│   Operation: OperationTypeApply
+│   Who:       ubuntu@ip-192-168-2-200
+│   Version:   1.5.2
+│   Created:   2023-07-10 17:11:39.939826727 +0000 UTC
+│   Info:
+│
+│
+│ Terraform acquires a state lock to protect the state from being written
+│ by multiple users at the same time. Please resolve the issue above and try
+│ again. For most commands, you can disable locking with the "-lock=false"
+│ flag, but this is not recommended.
+
+```
+
+You can optionall execute the Terraform scripts without a lock, as follows:
+
+```console
+$ terraform apply -lock=false
 ```
 
 ### Step 5. Interact with the AWS EKS Kubernetes cluster
