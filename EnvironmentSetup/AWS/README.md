@@ -8,7 +8,7 @@ This is a [Terraform](https://www.terraform.io/) based installation methodology 
 
 Terraform will create a dedicated [AWS Virtual Private Network (VPC)](https://aws.amazon.com/vpc/) to contain all other resources that it creates. This VPC serves as an additional 'chinese wall' that prevents these AWS resources and system software packages from being able to interact with any other AWS resources that might already exist in your AWS account. This additional layer is strongly recommended, and you will incur negligable additional AWS cost for adding this additional layer of security protection.
 
-The WAS [AWS Elastic Kubernetes Service (EKS)](https://aws.amazon.com/eks/) application stack consists of the following:
+The WAS application stack consists of the following:
 
 * a AWS S3 bucket and DynamoDB table for managing Terraform state
 * a dedicated [AWS VPC](https://aws.amazon.com/vpc/)
@@ -78,12 +78,12 @@ This will interactively prompt for your AWS IAM user access key, secret key and 
 
 Helm helps you manage Kubernetes applications. Based on yaml 'charts', Helm helps you define, install, and upgrade even the most complex Kubernetes applications. Wolfram Application Server depends on multiple large complex subsystems, and fortunately, vendor-supported Helm charts are available for each of these.
 
-Helm charts first need to be downloaded and added to your local Helm repository. The helm charts will be automatically executed by Terraform at the appropriate time. There is nothing further that you need to do beyond adding these charts to your local helm repository.
+Helm charts first need to be downloaded and added to your local Helm repository. The helm charts will be automatically executed by Terraform at the appropriate time, so there is nothing further that you need to do beyond adding these charts to your local helm repository.
 
 ```console
 $ helm repo add aws-efs-csi-driver https://kubernetes-sigs.github.io/aws-efs-csi-driver/
 $ helm repo add jetstack https://charts.jetstack.io
-$ helm repo add ingress-nginx https://github.com/kubernetes/ingress-nginx
+$ helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
 $ helm repo add metrics-server https://kubernetes-sigs.github.io/metrics-server/
 $ helm repo add minio https://raw.githubusercontent.com/minio/operator/master/
 $ helm repo add prometheus-community https://prometheus-community.github.io/helm-charts/
@@ -98,10 +98,13 @@ Terraform is a declarative open-source infrastructure-as-code software tool crea
 
 Use these three environment variables for creating the uniquely named resources that the Terraform modules in this repo will be expecting to find at run-time.
 
+**IMPORTANT: these three settings should be consistent with the values your set in terraform.tfvars in the next section.**
+
 ```console
 $ AWS_ACCOUNT=012345678912      # add your 12-digit AWS account number here
-$ AWS_REGION=us-east-1
-$ AWS_ENVIRONMENT=was
+$
+$ AWS_REGION=us-east-1          # any valid AWS region code.
+$ AWS_ENVIRONMENT=was           # any valid string. Keep it short -- 3 characters is ideal.
 ```
 
 First create an AWS S3 Bucket
@@ -135,7 +138,26 @@ $ git clone https://github.com/WolframResearch/WAS-Kubernetes.git
 $ cd ~/WAS-Kubernetes/EnvironmentSetup/AWS/
 ```
 
-### Step 3. Configure your environment by setting Terraform global variable values
+### Step 3. Configure your Terraform backend
+
+Edit the following snippet so that bucket, region and dynamodb_table are consistent with your values of $AWS_REGION, $AWS_S3_BUCKET, $AWS_DYNAMODB_TABLE
+
+```console
+$ vim terraform/was/terraform.tf
+```
+
+```terraform
+  backend "s3" {
+    bucket         = "012345678912-terraform-tfstate-was"
+    key            = "was/terraform.tfstate"
+    region         = "us-east-1"
+    dynamodb_table = "terraform-state-lock-was"
+    profile        = "default"
+    encrypt        = false
+  }
+````
+
+### Step 4. Configure your environment by setting Terraform global variable values
 
 ```console
 $ vim terraform/was/terraform.tfvars
@@ -180,7 +202,7 @@ disk_size            = 30
 instance_types       = ["t3.2xlarge", "t3a.2xlarge", "t2.2xlarge"]
 ```
 
-### Step 4. Run the following command to set up EKS and deploy WAS
+### Step 5. Run the following command to set up EKS and deploy WAS
 
 The Terraform modules in this repo rely extensively on calls to other third party Terraform modules published and maintained by [AWS](https://registry.terraform.io/namespaces/terraform-aws-modules). These modules will be downloaded by Terraform so that these can be executed locally from your computer. Noteworth examples of such third party modules include:
 
@@ -211,6 +233,23 @@ $ terraform apply -target=module.was
 ```
 
 ### Trouble Shooting
+
+#### Error: Incompatible provider version
+
+This is a known shortcoming of Terraform when run on macOS M1 platforms. See this [Terraform discussion forum thread](https://discuss.hashicorp.com/t/template-v2-2-0-does-not-have-a-package-available-mac-m1/35099/14) for trouble shooting ideas.
+
+```console
+│
+│ Provider registry.terraform.io/hashicorp/template v2.2.0 does not have a package available for your current platform, darwin_arm64.
+│
+│ Provider releases are separate from Terraform CLI releases, so not all providers are available for all platforms. Other versions of this provider may have different platforms supported.
+```
+
+#### Error loading state: BucketRegionError: incorrect region, the bucket is not in
+
+You'll encounter this error if the AWS region code in which you are attempting to deploy WAS does not match the region for the AWS S3 bucket you created.
+
+#### Error: Error acquiring the state lock
 
 Terraform sets a 'lock' in the AWS DynamoDB table that you created in the Terraform Setup above. If a Terraform operation fails then on your next operation attempt you will likely encounter the following error response, indicating that the Terraform state is currently locked.
 
