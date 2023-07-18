@@ -130,6 +130,8 @@ $ aws dynamodb create-table --region $AWS_REGION --table-name $AWS_DYNAMODB_TABL
 
 ```console
 $ git clone https://github.com/WolframResearch/WAS-Kubernetes.git
+$ cd WAS-Kubernetes
+$ git checkout querium
 ```
 
 ### Step 2. Change directory to AWS

@@ -56,7 +56,7 @@ resource "null_resource" "annotate-ebs-csi-controller" {
       # 1. configure kubeconfig locally with the credentials data of the just-created
       # kubernetes cluster.
       # ---------------------------------------
-      aws eks --region ${var.aws_region} update-kubeconfig --name ${var.shared_resource_name} --alias ${var.shared_resource_name}
+      aws eks --region ${var.aws_region} update-kubeconfig --name ${var.shared_resource_name} --alias ${var.shared_resource_name} --profile ${var.aws_profile}
       kubectl config use-context ${var.shared_resource_name}
       kubectl config set-context --current --namespace=kube-system
 
