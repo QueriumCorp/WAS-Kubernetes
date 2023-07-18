@@ -22,23 +22,22 @@ module "eks" {
   root_domain          = var.domain
   domain               = "${var.shared_resource_name}.${var.domain}"
   shared_resource_name = var.shared_resource_name
-
-  account_id = var.account_id
-  aws_region = var.aws_region
-
-  cidr                = var.cidr
-  private_subnets     = var.private_subnets
-  public_subnets      = var.public_subnets
-  namespace           = var.shared_resource_name
-  cluster_version     = var.cluster_version
-  disk_size           = var.disk_size
-  instance_types      = var.instance_types
-  desired_worker_node = var.desired_worker_node
-  min_worker_node     = var.min_worker_node
-  max_worker_node     = var.max_worker_node
-  capacity_type       = var.capacity_type
-  aws_auth_users      = var.aws_auth_users
-  kms_key_owners      = var.kms_key_owners
+  account_id           = var.account_id
+  aws_region           = var.aws_region
+  aws_profile          = var.aws_profile
+  cidr                 = var.cidr
+  private_subnets      = var.private_subnets
+  public_subnets       = var.public_subnets
+  namespace            = var.shared_resource_name
+  cluster_version      = var.cluster_version
+  disk_size            = var.disk_size
+  instance_types       = var.instance_types
+  desired_worker_node  = var.desired_worker_node
+  min_worker_node      = var.min_worker_node
+  max_worker_node      = var.max_worker_node
+  capacity_type        = var.capacity_type
+  aws_auth_users       = var.aws_auth_users
+  kms_key_owners       = var.kms_key_owners
 
 }
 

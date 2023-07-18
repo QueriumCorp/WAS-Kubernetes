@@ -13,6 +13,11 @@ variable "aws_region" {
   type    = string
 }
 
+variable "aws_profile" {
+  default = "default"
+  type    = string
+}
+
 variable "shared_resource_name" {
   default = "was"
   type    = string
