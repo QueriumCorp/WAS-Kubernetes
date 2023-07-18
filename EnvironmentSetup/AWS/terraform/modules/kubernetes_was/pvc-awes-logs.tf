@@ -82,7 +82,8 @@ resource "aws_ebs_volume" "awes-logs" {
   lifecycle {
     prevent_destroy = false
     ignore_changes = [
-      tags
+      tags,
+      availability_zone
     ]
   }
 

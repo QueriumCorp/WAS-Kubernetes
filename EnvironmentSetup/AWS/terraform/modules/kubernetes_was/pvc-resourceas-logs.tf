@@ -81,6 +81,10 @@ resource "aws_ebs_volume" "resources-logs" {
   # we should not destroy this resource.
   lifecycle {
     prevent_destroy = false
+    ignore_changes = [
+      tags,
+      availability_zone
+    ]
   }
 
   depends_on = [
