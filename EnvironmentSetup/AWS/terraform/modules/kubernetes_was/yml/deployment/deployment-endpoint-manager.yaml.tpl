@@ -29,7 +29,7 @@ spec:
         - name: LOG_LOCATION
           value: /opt/app/logs
         - name: KAFKA.BOOTSTRAP-SERVERS
-          value: was2-kafka-bootstrap.kafka.svc.cluster.local:9092
+          value: ${namespace}-kafka-bootstrap.kafka.svc.cluster.local:9092
         image: wolframapplicationserver/endpoint-manager:${was_endpoint_manager_version}
         name: endpoint-manager
         ports:
