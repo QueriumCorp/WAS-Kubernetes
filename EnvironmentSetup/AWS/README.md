@@ -351,7 +351,22 @@ The WAS home screen will return this error message until you add a valid softwar
 
 ### Step 3. Install license
 
-This file needs to be deployed to WAS as a node file in the conventional location `.Wolfram/Licensing/mathpass`. From a Wolfram Language client, this may be achieved using the following code:
+The filesystem directory where your Mathematica 'mathpass' file resides is shared between the web app server pods using an S3 bucket.
+If you run a shell from k8s on one of the web app server pods (e.g. active-web-elements-server-deployment-HHHHHHHHHH-HHHHH), you can run the 'math' command to launch Mathematica from the shell.
+Mathematica will display its version number (e.g. 13.1.0).  It will also prompt you for the password Wolfram gave you for WAS.
+If the password you entered was valid, it should be saved by Mathematica in the filesystem, which should persist in S3:
+```
+cat /usr/local/Wolfram/WolframEngine/13.1/Configuration/Licensing/mathpass
+active-web-elements-server-deployment-HHHHHHHHHH-HHHHH	HHHHHHHHHHHHHHHHHHHHHHHH	HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH	XXXXXXXXXXX	orgname	username
+```
+
+Running 'math' again should then go directly to the Mathematica prompt without requesting password information.
+
+Within a few minutes, the mathpass file on this pod should be synchronized to the other active-web-elements-server-deployment pod.
+
+NOTE: The following two methods for installing the mathpass file didn't work for us but are remain here for future reference.
+
+The mathpass file needs to be deployed to WAS as a node file in the conventional location `.Wolfram/Licensing/mathpass`. From a Wolfram Language client, this may be achieved using the following code:
 
 ```javascript
     was = ServiceConnect["WolframApplicationServer", "https://example.com/"];
@@ -359,9 +374,7 @@ This file needs to be deployed to WAS as a node file in the conventional locatio
     {"Contents"-> File["/path/to/mathpass"], "NodeFile" -> ".Wolfram/Licensing/mathpass"}]
 ```
 
-
-
-Alternatively you may use the [node files REST API](../../Documentation/API/NodeFilesManager.md) to install the license file.
+Alternatively, you may use the [node files REST API](../../Documentation/API/NodeFilesManager.md) to install the license file.
 
 **Note:** In order to use the Wolfram Language functions, the WolframApplicationServer paclet must be installed and loaded. Run the following code:
 
