@@ -14,7 +14,7 @@ terraform {
     key            = "was/terraform.tfstate"
     region         = "us-east-1"
     dynamodb_table = "terraform-state-lock-was"
-    profile        = "default"
+    profile        = "stepwise"
     encrypt        = false
   }
 

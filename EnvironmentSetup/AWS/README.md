@@ -192,15 +192,16 @@ aws_profile          = "default"
 aws_auth_users       = []
 kms_key_owners       = []
 shared_resource_name = "was"
-cidr                 = "192.168.0.0/20"
-private_subnets      = ["192.168.4.0/24", "192.168.5.0/24"]
-public_subnets       = ["192.168.1.0/24", "192.168.2.0/24"]
+azs                  = ["us-easta", "us-eastb", "us-eastc"]
+private_subnets      = ["10.0.0.0/20", "10.0.16.0/20", "10.0.32.0/20"]
+public_subnets       = ["10.0.48.0/20", "10.0.64.0/20", "10.0.80.0/20"]
+cidr                 = "10.0.0.0/16"
 cluster_version      = "1.27"
 capacity_type        = "SPOT"
 min_worker_node      = 2
 desired_worker_node  = 2
 max_worker_node      = 10
-disk_size            = 30
+disk_size            = 100
 instance_types       = ["t3.2xlarge", "t3a.2xlarge", "t2.2xlarge"]
 ```
 

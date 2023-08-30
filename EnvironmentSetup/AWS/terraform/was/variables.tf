@@ -44,21 +44,23 @@ variable "tags" {
 ###############################################################################
 # AWS Virtual Private Network Options
 ###############################################################################
+variable "azs" {
+  type    = list(string)
+  default = ["us-easta", "us-eastb", "us-eastc"]
+}
+
 variable "cidr" {
   description = "The subnet pattern to be used for all Terraform-managed resources requiring network configuration."
   type        = string
-  default     = "192.168.0.0/20"
 }
 
 variable "private_subnets" {
-  description = "The CIDR's of the two internal subnetworks that Terraform with automatically create for you."
+  description = "The CIDR's of the three internal subnetworks that Terraform with automatically create for you."
   type        = list(string)
-  default     = ["192.168.4.0/24", "192.168.5.0/24"]
 }
 variable "public_subnets" {
-  description = "the CIDRs of the two public subnets that Terraform will automatically create for you."
+  description = "the CIDRs of the three public subnets that Terraform will automatically create for you."
   type        = list(string)
-  default     = ["192.168.1.0/24", "192.168.2.0/24"]
 }
 
 
@@ -74,7 +76,7 @@ variable "cluster_version" {
 
 variable "disk_size" {
   description = "The number of gigabytes of storages to allocate to each Linux server node supporting your Kubernetes cluster"
-  default     = "30"
+  default     = 100
   type        = number
 }
 
@@ -146,7 +148,7 @@ variable "tenantPoolsSize" {
 variable "tenantPoolsStorageClassName" {
   description = "The kind of Kubernetes Storage Class to use for each Minio tenant pool AWS EBS volume"
   type        = string
-  default     = "gp2"
+  default     = "gp3"
 }
 
 

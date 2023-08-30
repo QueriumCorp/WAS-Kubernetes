@@ -25,6 +25,7 @@ module "eks" {
   account_id           = var.account_id
   aws_region           = var.aws_region
   aws_profile          = var.aws_profile
+  azs                  = var.azs
   cidr                 = var.cidr
   private_subnets      = var.private_subnets
   public_subnets       = var.public_subnets

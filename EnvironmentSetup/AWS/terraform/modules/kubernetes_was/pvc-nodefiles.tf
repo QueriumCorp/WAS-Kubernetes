@@ -36,7 +36,7 @@ resource "kubernetes_persistent_volume" "awes-nodefiles" {
       storage = "10Gi"
     }
     access_modes       = ["ReadWriteOnce"]
-    storage_class_name = "gp2"
+    storage_class_name = "gp3"
     persistent_volume_source {
       aws_elastic_block_store {
         volume_id = aws_ebs_volume.awes-nodefiles.id

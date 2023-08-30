@@ -34,7 +34,7 @@ variable "cluster_version" {
 }
 
 variable "disk_size" {
-  default = "30"
+  default = 100
   type    = number
 }
 
@@ -78,19 +78,22 @@ variable "kms_key_owners" {
   default = []
 }
 
-variable "private_subnets" {
+variable "azs" {
   type    = list(string)
-  default = ["192.168.4.0/24", "192.168.5.0/24"]
+  default = ["us-easta", "us-eastb", "us-eastc"]
+}
+variable "private_subnets" {
+  description = "The CIDR's of the three internal subnetworks that Terraform with automatically create for you."
+  type        = list(string)
 }
 variable "public_subnets" {
-  type    = list(string)
-  default = ["192.168.1.0/24", "192.168.2.0/24"]
+  description = "the CIDRs of the three public subnets that Terraform will automatically create for you."
+  type        = list(string)
 }
 
 
 variable "cidr" {
   type    = string
-  default = "10.168.0.0/16"
 }
 
 variable "tags" {

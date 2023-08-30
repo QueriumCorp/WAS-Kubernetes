@@ -6,6 +6,11 @@
 #
 # usage: create an EKS cluster
 #------------------------------------------------------------------------------
+locals {
+  timestamp = "${timestamp()}"
+  timestamp_sanitized = formatdate("YYYYMMDDhhmm", local.timestamp)
+}
+
 data "aws_availability_zones" "available" {
 }
 
@@ -30,7 +35,8 @@ module "vpc" {
 
   name                 = var.shared_resource_name
   cidr                 = var.cidr
-  azs                  = data.aws_availability_zones.available.names
+  azs                  = ["${var.aws_region}a", "${var.aws_region}b", "${var.aws_region}c"]
+
   private_subnets      = var.private_subnets
   public_subnets       = var.public_subnets
   enable_nat_gateway   = true
@@ -55,7 +61,7 @@ module "vpc" {
 
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
-  version = "~> 19.15"
+  version = "~> 19.16"
 
   cluster_name                    = var.shared_resource_name
   cluster_version                 = var.cluster_version
@@ -68,16 +74,25 @@ module "eks" {
   tags                            = var.tags
 
   create_kms_key            = true
+  kms_key_description       = "Kubernetes key for Wolfram Application Server"
+  kms_key_aliases           = ["eks/was-2023082919"]
   manage_aws_auth_configmap = true
   aws_auth_users            = var.aws_auth_users
   kms_key_owners            = var.kms_key_owners
 
 
   cluster_addons = {
-    vpc-cni    = {}
-    coredns    = {}
-    kube-proxy = {}
+    vpc-cni = {
+      most_recent = true
+    }
+    coredns    = {
+      most_recent = true
+    }
+    kube-proxy = {
+      most_recent = true
+    }
     aws-ebs-csi-driver = {
+      most_recent = true
       service_account_role_arn = aws_iam_role.AmazonEKS_EBS_CSI_DriverRoleWAS.arn
     }
   }
@@ -89,7 +104,15 @@ module "eks" {
       from_port   = 0
       to_port     = 0
       type        = "ingress"
-      cidr_blocks = ["192.168.0.0/16"]
+      cidr_blocks = ["10.0.0.0/16"]
+    }
+    port_8443 = {
+      description                = "open port 8443 to vpc"
+      protocol                   = "-1"
+      from_port                  = 8443
+      to_port                    = 8443
+      type                       = "ingress"
+      source_node_security_group = true
     }
     egress_all = {
       description      = "WAS: Node all egress"
@@ -110,8 +133,32 @@ module "eks" {
       desired_size      = var.desired_worker_node
       max_size          = var.max_worker_node
       min_size          = var.min_worker_node
-      disk_size         = var.disk_size
       instance_types    = var.instance_types
+
+      block_device_mappings = {
+        xvda = {
+          device_name = "/dev/xvda"
+          ebs = {
+            volume_type           = "gp3"
+            volume_size           = var.disk_size
+            delete_on_termination = true
+          }
+        }
+      }
+      tags = merge(
+        var.tags,
+        # Tag node group resources for Karpenter auto-discovery
+        # NOTE - if creating multiple security groups with this module, only tag the
+        # security group that Karpenter should utilize with the following tag
+        { Name = "eks-${var.shared_resource_name}" },
+        # Tag node group resources for Karpenter auto-discovery
+        # NOTE - if creating multiple security groups with this module, only tag the
+        # security group that Karpenter should utilize with the following tag
+        { 
+          "karpenter.sh/discovery" = var.namespace
+        },
+      )
+
 
       labels = {
         node-group = var.namespace
