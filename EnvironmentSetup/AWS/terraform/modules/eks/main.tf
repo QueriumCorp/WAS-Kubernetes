@@ -192,3 +192,13 @@ resource "kubernetes_namespace" "was" {
 
   depends_on = [module.eks]
 }
+
+data "template_file" "gp3" {
+  template = file("${path.module}/yml/gp3.yaml")
+}
+
+resource "kubectl_manifest" "vpa-cert-manager" {
+  yaml_body = data.template_file.gp3.rendered
+
+  depends_on = [module.eks]
+}

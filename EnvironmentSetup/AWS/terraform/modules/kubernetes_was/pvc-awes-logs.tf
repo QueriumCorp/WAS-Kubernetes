@@ -39,8 +39,8 @@ resource "kubernetes_persistent_volume" "awes-logs" {
     storage_class_name = "gp3"
     persistent_volume_source {
       aws_elastic_block_store {
-        volume_id = aws_ebs_volume.awes-logs.id
-        fs_type   = "ext4"
+        volume_id   = aws_ebs_volume.awes-logs.id
+        fs_type     = "ext4"
       }
     }
     node_affinity {
@@ -73,6 +73,7 @@ resource "kubernetes_persistent_volume" "awes-logs" {
 resource "aws_ebs_volume" "awes-logs" {
   availability_zone = data.aws_subnet.private_subnet.availability_zone
   size              = 10
+  type              = "gp3"
 
   tags = var.tags
 
