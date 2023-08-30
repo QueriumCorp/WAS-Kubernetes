@@ -1,11 +1,12 @@
 
 
-resource "kubernetes_persistent_volume_claim_v1" "awes-logs" {
+resource "kubernetes_persistent_volume_claim" "awes-logs" {
   metadata {
     name      = "awes-logs"
     namespace = var.namespace
   }
   spec {
+    storage_class_name = "gp3"
     access_modes = ["ReadWriteOnce"]
     resources {
       requests = {

@@ -148,7 +148,7 @@ variable "tenantPoolsSize" {
 variable "tenantPoolsStorageClassName" {
   description = "The kind of Kubernetes Storage Class to use for each Minio tenant pool AWS EBS volume"
   type        = string
-  default     = "gp2"
+  default     = "gp3"
 }
 
 

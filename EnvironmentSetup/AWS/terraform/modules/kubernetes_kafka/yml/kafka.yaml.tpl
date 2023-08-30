@@ -35,6 +35,7 @@ spec:
     storage:
       type: persistent-claim
       size: 100Gi
+      class: gp3
       deleteClaim: false
   entityOperator:
     topicOperator: {}

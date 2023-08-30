@@ -1,12 +1,13 @@
 
 
-resource "kubernetes_persistent_volume_claim_v1" "awes-nodefiles" {
+resource "kubernetes_persistent_volume_claim" "awes-nodefiles" {
   metadata {
     name      = "awes-nodefiles"
     namespace = var.namespace
   }
   spec {
     access_modes = ["ReadWriteOnce"]
+    storage_class_name = "gp3"
     resources {
       requests = {
         storage = "10Gi"

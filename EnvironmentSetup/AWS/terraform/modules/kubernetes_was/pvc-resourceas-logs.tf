@@ -1,12 +1,13 @@
 
 
-resource "kubernetes_persistent_volume_claim_v1" "resources-logs" {
+resource "kubernetes_persistent_volume_claim" "resources-logs" {
   metadata {
     name      = "resources-logs"
     namespace = var.namespace
   }
   spec {
     access_modes = ["ReadWriteOnce"]
+    storage_class_name = "gp3"
     resources {
       requests = {
         storage = "10Gi"
