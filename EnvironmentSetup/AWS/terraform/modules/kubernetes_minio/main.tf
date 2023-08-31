@@ -17,7 +17,7 @@
 #   helm search repo minio/operator
 #   helm search repo minio/tenant
 #
-#   helm show values minio/operator
+#   helm show values minio/minio-operator
 #   helm show values minio/tenant
 #
 # NOTE: run `helm repo update` prior to running this
@@ -41,7 +41,10 @@ locals {
 
 
 data "template_file" "minio-operator-values" {
-  template = file("${path.module}/yml/minio-operator-values.yaml")
+  template = file("${path.module}/yml/minio-operator-values.yaml.tpl")
+  vars     = {
+    nodegroup = var.shared_resource_name
+  }
 }
 
 data "template_file" "minio-tenant-values" {
@@ -57,6 +60,7 @@ data "template_file" "minio-tenant-values" {
     tenantPoolsVolumesPerServer = local.tenantPoolsVolumesPerServer
     tenantPoolsSize             = local.tenantPoolsSize
     tenantPoolsStorageClassName = local.tenantPoolsStorageClassName
+    nodegroup                   = var.shared_resource_name
   }
 }
 

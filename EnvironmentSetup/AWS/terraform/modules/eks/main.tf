@@ -9,6 +9,8 @@
 locals {
   timestamp = "${timestamp()}"
   timestamp_sanitized = formatdate("YYYYMMDDhhmm", local.timestamp)
+  core_dns_config = file("${path.module}/yml/add-on-coredns.json")
+  ebs_csi_config = file("${path.module}/yml/add-on-ebs-csi-driver.json")
 }
 
 data "aws_availability_zones" "available" {
@@ -98,14 +100,16 @@ module "eks" {
       })
     }
     coredns    = {
-      most_recent = true
+      most_recent           = true
+      configuration_values  = local.core_dns_config
     }
     kube-proxy = {
       most_recent = true
     }
     aws-ebs-csi-driver = {
-      most_recent = true
-      service_account_role_arn = aws_iam_role.AmazonEKS_EBS_CSI_DriverRoleWAS.arn
+      most_recent               = true
+      configuration_values      = local.ebs_csi_config
+      service_account_role_arn  = aws_iam_role.AmazonEKS_EBS_CSI_DriverRoleWAS.arn
     }
   }
 
@@ -138,8 +142,8 @@ module "eks" {
   }
 
   eks_managed_node_groups = {
-    eks = {
-      name              = "${var.shared_resource_name}-worker-nodes"
+    was = {
+      name              = "${var.shared_resource_name}"
       capacity_type     = var.capacity_type
       enable_monitoring = false
       desired_size      = var.desired_worker_node
@@ -171,13 +175,77 @@ module "eks" {
           "karpenter.sh/discovery" = var.namespace
         },
       )
-
-
       labels = {
-        node-group = var.namespace
+        "querium.com/node-group" = "${var.namespace}"
       }
+      taints = [{
+          key    = "querium.com/was-only"
+          effect = "NO_SCHEDULE"
+        }]
+    }
+
+    service = {
+      name              = var.service_nodegroup
+      capacity_type     = var.capacity_type
+      enable_monitoring = false
+      desired_size      = 2
+      max_size          = 2
+      min_size          = 2
+      instance_types    = [
+        "m4.large",
+        "m5.large",
+        "m5a.large",
+        "m5ad.large",
+        "m5d.large",
+        "m5dn.large",
+        "m5n.large",
+        "m5zn.large",
+        "m6a.large",
+        "m6i.large",
+        "m6id.large",
+        "m6idn.large",
+        "m6in.large",
+        "m7a.large",
+        "m7i-flex.large",
+        "m7i.large",
+        "t2.large",
+        "t3.large",
+        "t3a.large"        
+      ]
+
+      block_device_mappings = {
+        xvda = {
+          device_name = "/dev/xvda"
+          ebs = {
+            volume_type           = "gp3"
+            volume_size           = "20"
+            delete_on_termination = true
+          }
+        }
+      }
+      tags = merge(
+        var.tags,
+        # Tag node group resources for Karpenter auto-discovery
+        # NOTE - if creating multiple security groups with this module, only tag the
+        # security group that Karpenter should utilize with the following tag
+        { Name = "eks-service" },
+        # Tag node group resources for Karpenter auto-discovery
+        # NOTE - if creating multiple security groups with this module, only tag the
+        # security group that Karpenter should utilize with the following tag
+        { 
+          "karpenter.sh/discovery" = var.namespace
+        },
+      )
+      labels = {
+        "querium.com/node-group" = var.service_nodegroup
+      }
+      taints = [{
+          key    = "querium.com/service-only"
+          effect = "NO_SCHEDULE"
+        }]
 
     }
+
   }
 
   iam_role_additional_policies = {

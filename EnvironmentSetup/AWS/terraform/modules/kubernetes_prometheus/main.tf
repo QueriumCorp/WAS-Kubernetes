@@ -39,8 +39,10 @@ locals {
 }
 
 data "template_file" "prometheus-values" {
-  template = file("${path.module}/yml/prometheus-values.yaml")
-  vars     = {}
+  template = file("${path.module}/yml/prometheus-values.yaml.tpl")
+  vars     = {
+    nodegroup = var.service_nodegroup
+  }
 }
 
 resource "helm_release" "prometheus" {

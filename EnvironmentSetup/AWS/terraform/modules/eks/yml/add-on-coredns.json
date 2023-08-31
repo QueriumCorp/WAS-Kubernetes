@@ -1,0 +1,8 @@
+{
+    "tolerations": [
+            {
+            "key": "querium.com/service-only",
+            "operator": "Exists"
+            }
+        ]
+}

@@ -25,7 +25,10 @@ locals {
 }
 
 data "template_file" "strimzi-values" {
-  template = file("${path.module}/yml/strimzi-values.yaml")
+  template = file("${path.module}/yml/strimzi-values.yaml.tpl")
+  vars = {
+    nodegroup = var.service_nodegroup
+  }
 }
 
 ###############################################################################

@@ -14,3 +14,17 @@ spec:
     cleanup.policy: compact
     min.cleanable.dirty.ratio: 0.05
   topicName: endpoint-info
+  affinity:
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        preference:
+          matchExpressions:
+          - key: querium.com/node-group
+            operator: In
+            values:
+            - ${name}
+  tolerations:
+  - key: querium.com/was-only
+    operator: Exists
+    effect: NoSchedule

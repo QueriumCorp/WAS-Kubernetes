@@ -14,3 +14,7 @@ variable "namespace" {
 variable "domain" {
   type = string
 }
+variable "service_nodegroup" {
+  description = "identifies the service managed node group, toleration, affinity"
+  type        = string
+}

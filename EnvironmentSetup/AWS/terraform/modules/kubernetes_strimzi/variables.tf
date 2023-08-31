@@ -11,3 +11,7 @@ variable "name" {
   type    = string
   default = "was"
 }
+variable "service_nodegroup" {
+  description = "identifies the service managed node group, toleration, affinity"
+  type        = string
+}

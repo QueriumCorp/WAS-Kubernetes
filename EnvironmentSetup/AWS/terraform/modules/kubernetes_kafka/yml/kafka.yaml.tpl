@@ -1,3 +1,4 @@
+# https://strimzi.io/docs/operators/latest/full/deploying#assembly-scheduling-str
 apiVersion: kafka.strimzi.io/v1beta2
 kind: Kafka
 metadata:
@@ -5,6 +6,22 @@ metadata:
   namespace: ${kafka_namespace}
 spec:
   kafka:
+    template:
+      pod:
+        affinity:
+          nodeAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                - key: querium.com/node-group
+                  operator: In
+                  values:
+                  - ${name}
+        tolerations:
+        - key: querium.com/was-only
+          operator: Exists
+          effect: NoSchedule
     version: 3.4.0
     replicas: 3
     listeners:
@@ -31,6 +48,22 @@ spec:
         size: 100Gi
         deleteClaim: false
   zookeeper:
+    template:
+      pod:
+        affinity:
+          nodeAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                - key: querium.com/node-group
+                  operator: In
+                  values:
+                  - ${name}
+        tolerations:
+        - key: querium.com/was-only
+          operator: Exists
+          effect: NoSchedule  
     replicas: 3
     storage:
       type: persistent-claim
@@ -38,5 +71,19 @@ spec:
       class: gp3
       deleteClaim: false
   entityOperator:
-    topicOperator: {}
-    userOperator: {}
+    template:
+      pod:
+        affinity:
+          nodeAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              preference:
+                matchExpressions:
+                - key: querium.com/node-group
+                  operator: In
+                  values:
+                  - ${name}
+        tolerations:
+        - key: querium.com/was-only
+          operator: Exists
+          effect: NoSchedule

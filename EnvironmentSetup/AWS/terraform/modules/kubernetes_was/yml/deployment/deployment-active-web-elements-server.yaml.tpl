@@ -1,3 +1,4 @@
+# https://kubernetes.io/docs/tasks/configure-pod-container/assign-pods-nodes-using-node-affinity/
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -20,6 +21,19 @@ spec:
       labels:
         app: active-web-elements-server
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: querium.com/node-group
+                operator: In
+                values:
+                - ${namespace}
+      tolerations:
+      - key: querium.com/was-only
+        operator: Exists
+        effect: NoSchedule
       restartPolicy: Always
       containers:
       - env:

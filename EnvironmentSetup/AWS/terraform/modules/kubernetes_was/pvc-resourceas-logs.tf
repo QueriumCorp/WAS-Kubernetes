@@ -48,6 +48,11 @@ resource "kubernetes_persistent_volume" "resources-logs" {
       required {
         node_selector_term {
           match_expressions {
+            key      = "querium.com/node-group"
+            operator = "In"
+            values   = ["${var.namespace}"]
+          }
+          match_expressions {
             key      = "topology.kubernetes.io/zone"
             operator = "In"
             values   = [aws_ebs_volume.resources-logs.availability_zone]

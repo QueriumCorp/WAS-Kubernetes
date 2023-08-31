@@ -14,6 +14,10 @@ variable "namespace" {
   type    = string
   default = "was"
 }
+variable "service_nodegroup" {
+  description = "identifies the service managed node group, toleration, affinity"
+  type        = string
+}
 
 variable "cert_manager_namespace" {
   type    = string

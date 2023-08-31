@@ -45,6 +45,7 @@ data "template_file" "cert-manager-values" {
   vars = {
     role_arn  = module.cert_manager_irsa.iam_role_arn
     namespace = local.cert_manager_namespace
+    nodegroup = var.service_nodegroup
   }
 }
 

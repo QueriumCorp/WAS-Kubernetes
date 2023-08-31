@@ -23,7 +23,11 @@ locals {
 }
 
 data "template_file" "nginx-values" {
-  template = file("${path.module}/yml/nginx-values.yaml")
+  template = file("${path.module}/yml/nginx-values.yaml.tpl")
+  vars     = {
+    nodegroup = var.service_nodegroup
+  }
+
 }
 
 resource "helm_release" "ingress_nginx_controller" {

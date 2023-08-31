@@ -21,8 +21,10 @@ locals {
 }
 
 data "template_file" "metrics-server-values" {
-  template = file("${path.module}/config/metrics-server-values.yaml")
-  vars     = {}
+  template = file("${path.module}/config/metrics-server-values.yaml.tpl")
+  vars     = {
+    nodegroup = var.service_nodegroup
+  }
 }
 
 resource "helm_release" "metrics_server" {

@@ -12,6 +12,10 @@ variable "aws_region" {
   default = "us-east-2"
   type    = string
 }
+variable "service_nodegroup" {
+  description = "identifies the service managed node group, toleration, affinity"
+  type        = string
+}
 
 variable "aws_profile" {
   default = "default"

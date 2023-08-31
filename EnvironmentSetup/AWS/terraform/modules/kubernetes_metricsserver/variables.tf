@@ -6,3 +6,7 @@
 #
 # usage: create an EKS cluster
 #------------------------------------------------------------------------------
+variable "service_nodegroup" {
+  description = "identifies the service managed node group, toleration, affinity"
+  type        = string
+}

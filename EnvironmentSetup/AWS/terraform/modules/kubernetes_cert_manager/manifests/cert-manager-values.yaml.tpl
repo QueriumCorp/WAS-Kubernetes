@@ -11,3 +11,32 @@ securityContext:
   # -------------------------------------------------------------------------------
   fsGroup: 1001
 installCRDs: true
+affinity:
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        preference:
+          matchExpressions:
+          - key: querium.com/node-group
+            operator: In
+            values:
+            - ${nodegroup}
+tolerations:
+- key: querium.com/service-only
+  operator: Exists
+  effect: NoSchedule
+cainjector:
+  tolerations:
+  - key: querium.com/service-only
+    operator: Exists
+    effect: NoSchedule
+webhook:
+  tolerations:
+  - key: querium.com/service-only
+    operator: Exists
+    effect: NoSchedule
+startupapicheck:
+  tolerations:
+  - key: querium.com/service-only
+    operator: Exists
+    effect: NoSchedule

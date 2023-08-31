@@ -33,7 +33,11 @@ tenant:
       ## Used to specify labels for pods
       labels: { }
       ## Used to specify a toleration for a pod
-      tolerations: [ ]
+      tolerations:
+      - key: querium.com/was-only
+        operator: Exists
+        effect: NoSchedule
+  
       ## nodeSelector parameters for MinIO Pods. It specifies a map of key-value pairs. For the pod to be
       ## eligible to run on a node, the node must have each of the
       ## indicated key-value pairs as labels.
@@ -41,7 +45,16 @@ tenant:
       nodeSelector: { }
       ## Affinity settings for MinIO pods. Read more about affinity
       ## here: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity.
-      affinity: { }
+      affinity:
+      nodeAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          preference:
+            matchExpressions:
+            - key: querium.com/node-group
+              operator: In
+              values:
+              - ${nodegroup}
 ingress:
   api:
     enabled: false
@@ -61,3 +74,17 @@ ingress:
     host: minio-console.local
     path: /
     pathType: Prefix
+    tolerations:
+    - key: querium.com/was-only
+      operator: Exists
+      effect: NoSchedule
+    affinity:
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        preference:
+          matchExpressions:
+          - key: querium.com/node-group
+            operator: In
+            values:
+            - ${nodegroup}
