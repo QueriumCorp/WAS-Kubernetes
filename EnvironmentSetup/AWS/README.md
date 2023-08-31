@@ -103,15 +103,15 @@ Use these three environment variables for creating the uniquely named resources 
 ```console
 $ AWS_ACCOUNT=012345678912      # add your 12-digit AWS account number here
 $
-$ AWS_REGION=us-east-1          # any valid AWS region code.
+$ AWS_REGION=us-east-2          # any valid AWS region code.
 $ AWS_ENVIRONMENT=was           # any valid string. Keep it short -- 3 characters is ideal.
 ```
 
 First create an AWS S3 Bucket
 
 ```console
-$ AWS_S3_BUCKET="${AWS_ACCOUNT}-terraform-tfstate-${AWS_ENVIRONMENT}"
-$ aws s3api create-bucket --bucket $AWS_S3_BUCKET --region $AWS_REGION
+AWS_S3_BUCKET="${AWS_ACCOUNT}-tfstate-${AWS_ENVIRONMENT}"
+aws s3api create-bucket --bucket $AWS_S3_BUCKET --region $AWS_REGION --create-bucket-configuration LocationConstraint=$AWS_REGION
 ```
 
 Then create a DynamoDB table
@@ -150,9 +150,9 @@ $ vim terraform/was/terraform.tf
 
 ```terraform
   backend "s3" {
-    bucket         = "012345678912-terraform-tfstate-was"
+    bucket         = "012345678912-tfstate-was"
     key            = "was/terraform.tfstate"
-    region         = "us-east-1"
+    region         = "us-east-2"
     dynamodb_table = "terraform-state-lock-was"
     profile        = "default"
     encrypt        = false
@@ -169,7 +169,7 @@ Required inputs are as follows:
 
 ```terraform
 account_id           = "012345678912"
-aws_region           = "us-east-1"
+aws_region           = "us-east-2"
 domain               = "example.com"
 shared_resource_name = "was"
 ```
@@ -192,9 +192,9 @@ aws_profile          = "default"
 aws_auth_users       = []
 kms_key_owners       = []
 shared_resource_name = "was"
-azs                  = ["us-easta", "us-eastb", "us-eastc"]
-private_subnets      = ["10.0.0.0/20", "10.0.16.0/20", "10.0.32.0/20"]
-public_subnets       = ["10.0.48.0/20", "10.0.64.0/20", "10.0.80.0/20"]
+azs                  = ["us-east2b"]
+private_subnets      = ["10.0.0.0/20"]
+public_subnets       = ["10.0.48.0/20"]
 cidr                 = "10.0.0.0/16"
 cluster_version      = "1.27"
 capacity_type        = "SPOT"
@@ -252,6 +252,12 @@ This is a known shortcoming of Terraform when run on macOS M1 platforms. See thi
 
 You'll encounter this error if the AWS region code in which you are attempting to deploy WAS does not match the region for the AWS S3 bucket you created.
 
+#### Error: waiting for Security Group (sg-Odf68bde3fe22262d) Rule (sgrule-2953206013) create: couldn't find resource
+
+![Error: waiting for Security Group](https://raw.githubusercontent.com/QueriumCorp/WAS-Kubernetes/querium/EnvironmentSetup/AWS/doc/error-waiting-for-sg.png "Error: waiting for Security Group")
+
+Re-running `terraform apply` usually is successful.
+
 #### Error: Error acquiring the state lock
 
 Terraform sets a 'lock' in the AWS DynamoDB table that you created in the Terraform Setup above. If a Terraform operation fails then on your next operation attempt you will likely encounter the following error response, indicating that the Terraform state is currently locked.
@@ -262,7 +268,7 @@ Terraform sets a 'lock' in the AWS DynamoDB table that you created in the Terraf
 │ Error message: ConditionalCheckFailedException: The conditional request failed
 │ Lock Info:
 │   ID:        e1bd1079-86dc-0cd5-ea98-4d8c5ddb4d5a
-│   Path:      320713933456-terraform-tfstate-was-01/was/terraform.tfstate
+│   Path:      320713933456-tfstate-was/was/terraform.tfstate
 │   Operation: OperationTypeApply
 │   Who:       ubuntu@ip-192-168-2-200
 │   Version:   1.5.2
@@ -297,7 +303,7 @@ If necessary, you can use the following command to refresh your kubectl authenti
 First, configure kubectl to connect to your AWS EKS Kubernetes cluster.
 
 ```console
-$ AWS_REGION=us-east-1
+$ AWS_REGION=us-east-2
 $ EKS_CLUSTER_NAME=was
 $ aws eks --region $AWS_REGION update-kubeconfig --name $EKS_CLUSTER_NAME --alias $EKS_CLUSTER_NAME
 ```
@@ -418,9 +424,9 @@ Delete Terraform state management resources
 
 ```console
 $ AWS_ACCOUNT=012345678912      # add your 12-digit AWS account number here
-$ AWS_REGION=us-east-1
+$ AWS_REGION=us-east-2
 $ AWS_DYNAMODB_TABLE="terraform-state-lock-was"
-$ AWS_S3_BUCKET="${AWS_ACCOUNT}-terraform-tfstate-was"
+$ AWS_S3_BUCKET="${AWS_ACCOUNT}-tfstate-was"
 ```
 
 To delete the DynamoDB table

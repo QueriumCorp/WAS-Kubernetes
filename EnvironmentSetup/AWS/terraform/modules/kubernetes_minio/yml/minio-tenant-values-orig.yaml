@@ -111,7 +111,7 @@ tenant:
   ## Example:
   #   - name: my-minio-bucket
   #     objectLock: false        # optional
-  #     region: us-east-1        # optional
+  #     region: us-east-2        # optional
   buckets: [ ]
   ## List of secret names to use for generating MinIO users during tenant provisioning
   users: [ ]

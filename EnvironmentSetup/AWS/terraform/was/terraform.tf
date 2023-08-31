@@ -10,9 +10,9 @@
 terraform {
   required_version = "~> 1.5"
   backend "s3" {
-    bucket         = "320713933456-terraform-tfstate-was"
+    bucket         = "320713933456-tfstate-was"
     key            = "was/terraform.tfstate"
-    region         = "us-east-1"
+    region         = "us-east-2"
     dynamodb_table = "terraform-state-lock-was"
     profile        = "stepwise"
     encrypt        = false

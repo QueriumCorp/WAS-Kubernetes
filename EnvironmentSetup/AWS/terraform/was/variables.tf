@@ -10,7 +10,7 @@ variable "account_id" {
 }
 variable "aws_region" {
   description = "A region code describing the location of the physical AWS data center in which all resources will be deployed."
-  default     = "us-east-1"
+  default     = "us-east-2"
   type        = string
 }
 
@@ -46,7 +46,6 @@ variable "tags" {
 ###############################################################################
 variable "azs" {
   type    = list(string)
-  default = ["us-easta", "us-eastb", "us-eastc"]
 }
 
 variable "cidr" {
