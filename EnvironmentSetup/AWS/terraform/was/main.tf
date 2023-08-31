@@ -39,11 +39,12 @@ module "eks" {
   capacity_type        = var.capacity_type
   aws_auth_users       = var.aws_auth_users
   kms_key_owners       = var.kms_key_owners
-
+  service_nodegroup    = var.service_nodegroup
 }
 
 module "vpa" {
   source = "../modules/kubernetes_vpa"
+  service_nodegroup    = var.service_nodegroup
 
   depends_on = [module.eks]
 }
@@ -51,9 +52,10 @@ module "vpa" {
 module "cert_manager" {
   source = "../modules/kubernetes_cert_manager"
 
-  domain     = "${var.shared_resource_name}.${var.domain}"
-  namespace  = var.shared_resource_name
-  aws_region = var.aws_region
+  domain            = "${var.shared_resource_name}.${var.domain}"
+  namespace         = var.shared_resource_name
+  aws_region        = var.aws_region
+  service_nodegroup = var.service_nodegroup
 
   depends_on = [module.eks]
 
@@ -62,6 +64,8 @@ module "cert_manager" {
 module "metricsserver" {
   source = "../modules/kubernetes_metricsserver"
 
+  service_nodegroup    = var.service_nodegroup
+
   depends_on = [module.eks]
 }
 
@@ -69,8 +73,9 @@ module "metricsserver" {
 module "prometheus" {
   source = "../modules/kubernetes_prometheus"
 
-  domain         = "${var.shared_resource_name}.${var.domain}"
-  cluster_issuer = "${var.shared_resource_name}.${var.domain}"
+  domain            = "${var.shared_resource_name}.${var.domain}"
+  cluster_issuer    = "${var.shared_resource_name}.${var.domain}"
+  service_nodegroup = var.service_nodegroup
 
   depends_on = [module.eks, module.metricsserver]
 }
@@ -78,7 +83,8 @@ module "prometheus" {
 module "ingress_controller" {
   source = "../modules/kubernetes_ingress_controller"
 
-  domain = "${var.shared_resource_name}.${var.domain}"
+  domain            = "${var.shared_resource_name}.${var.domain}"
+  service_nodegroup = var.service_nodegroup
 
   depends_on = [module.eks]
 }
@@ -89,7 +95,8 @@ module "ingress_controller" {
 module "strimzi" {
   source = "../modules/kubernetes_strimzi"
 
-  name = var.shared_resource_name
+  name              = var.shared_resource_name
+  service_nodegroup = var.service_nodegroup
 
   depends_on = [
     module.eks

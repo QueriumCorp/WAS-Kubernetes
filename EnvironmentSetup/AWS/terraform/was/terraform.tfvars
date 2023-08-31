@@ -3,16 +3,16 @@
 ###############################################################################
 # Required inputs
 ###############################################################################
-account_id  = "320713933456"
-aws_region  = "us-east-2"
-aws_profile = "stepwise"
-domain      = "stepwisemath.ai"
-
+account_id        = "320713933456"
+aws_region        = "us-east-2"
+aws_profile       = "stepwise"
+domain            = "stepwisemath.ai"
+service_nodegroup = "service"
 
 ###############################################################################
 # Optional inputs
 ###############################################################################
-shared_resource_name = "was"
+shared_resource_name = "was-stepwise"
 cluster_version = "1.27"
 aws_auth_users = [
   {
@@ -80,10 +80,10 @@ instance_types = [
   "trn1.2xlarge",
   ]
 
-disk_size           = 100
-min_worker_node     = 2
-desired_worker_node = 2
-max_worker_node     = 5
+disk_size           = 250
+min_worker_node     = 1
+desired_worker_node = 1
+max_worker_node     = 1
 
 # Minio
 # -------------------------------------

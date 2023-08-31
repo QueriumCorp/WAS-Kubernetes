@@ -20,6 +20,11 @@ variable "aws_profile" {
   type        = string
 }
 
+variable "service_nodegroup" {
+  description = "identifies the service managed node group, toleration, affinity"
+  type        = string
+  default     = "service"
+}
 variable "domain" {
   description = "A root domain managed as an AWS Route53 HostedZone in your AWS account: example.com"
   type        = string
