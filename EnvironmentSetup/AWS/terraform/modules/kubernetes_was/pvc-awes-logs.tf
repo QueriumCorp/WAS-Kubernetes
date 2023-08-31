@@ -76,7 +76,10 @@ resource "aws_ebs_volume" "awes-logs" {
   size              = 10
   type              = "gp3"
 
-  tags = var.tags
+  tags = merge(
+    var.tags,
+    {Name = "awes-logs"}
+  )
 
   # local.ebsVolumePreventDestroy defaults to 'Y'
   # for anything other than an upper case 'N' we'll assume that

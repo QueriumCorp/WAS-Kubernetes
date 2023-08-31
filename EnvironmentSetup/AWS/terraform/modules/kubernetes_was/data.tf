@@ -14,10 +14,6 @@ data "aws_vpc" "was" {
   }
 }
 
-
-#data "aws_availability_zones" "available" {
-#}
-
 data "aws_subnets" "was" {
   filter {
     name   = "vpc-id"

@@ -7,9 +7,9 @@ module "was_s3_storage" {
   acl                      = "private"
   tags                     = var.tags
   control_object_ownership = true
-  object_ownership         = "BucketOwnerPreferred"
-  attach_policy            = true
-  policy                   = data.aws_iam_policy_document.bucket_policy.json
+  object_ownership         = "ObjectWriter"
+  # attach_policy            = true
+  # policy                   = data.aws_iam_policy_document.bucket_policy.json
 
   cors_rule = [
     {
