@@ -35,7 +35,7 @@ module "vpc" {
 
   name                 = var.shared_resource_name
   cidr                 = var.cidr
-  azs                  = ["${var.aws_region}a", "${var.aws_region}b", "${var.aws_region}c"]
+  azs                  = var.azs
 
   private_subnets      = var.private_subnets
   public_subnets       = var.public_subnets
@@ -66,7 +66,8 @@ module "eks" {
   cluster_name                    = var.shared_resource_name
   cluster_version                 = var.cluster_version
   vpc_id                          = module.vpc.vpc_id
-  subnet_ids                      = module.vpc.private_subnets
+  subnet_ids                      = [module.vpc.private_subnets[0]]
+  control_plane_subnet_ids        = module.vpc.private_subnets
   create_cloudwatch_log_group     = false
   cluster_endpoint_private_access = true
   cluster_endpoint_public_access  = true
@@ -83,7 +84,18 @@ module "eks" {
 
   cluster_addons = {
     vpc-cni = {
-      most_recent = true
+      most_recent          = true
+      before_compute       = true
+      configuration_values = jsonencode({
+        env = {
+          # Reference docs https://docs.aws.amazon.com/eks/latest/userguide/cni-increase-ip-addresses.html
+          # also see: https://medium.com/nerd-for-tech/eks-networking-cni-457ae298b9e6
+          ENABLE_PREFIX_DELEGATION = "true"
+          WARM_PREFIX_TARGET       = "1"
+          WARM_ENI_TARGET          = "0"
+          WARM_IP_TARGET           = "2"
+        }
+      })
     }
     coredns    = {
       most_recent = true
@@ -134,6 +146,7 @@ module "eks" {
       max_size          = var.max_worker_node
       min_size          = var.min_worker_node
       instance_types    = var.instance_types
+      availability_zones = var.azs[0]
 
       block_device_mappings = {
         xvda = {
@@ -197,7 +210,7 @@ data "template_file" "gp3" {
   template = file("${path.module}/yml/gp3.yaml")
 }
 
-resource "kubectl_manifest" "vpa-cert-manager" {
+resource "kubectl_manifest" "gp3" {
   yaml_body = data.template_file.gp3.rendered
 
   depends_on = [module.eks]

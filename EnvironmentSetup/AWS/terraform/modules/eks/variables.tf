@@ -9,7 +9,7 @@ variable "account_id" {
   type    = string
 }
 variable "aws_region" {
-  default = "us-east-1"
+  default = "us-east-2"
   type    = string
 }
 
@@ -80,7 +80,6 @@ variable "kms_key_owners" {
 
 variable "azs" {
   type    = list(string)
-  default = ["us-easta", "us-eastb", "us-eastc"]
 }
 variable "private_subnets" {
   description = "The CIDR's of the three internal subnetworks that Terraform with automatically create for you."

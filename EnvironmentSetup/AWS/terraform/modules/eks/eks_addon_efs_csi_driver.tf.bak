@@ -109,8 +109,8 @@ data "template_file" "efs-service-account" {
     account_id = var.account_id
   }
 }
-resource "kubectl_manifest" "efs-service-account" {
-  yaml_body = data.template_file.efs-service-account.rendered
+resource "kubernetes_manifest" "efs-service-account" {
+  manifest = yamldecode(data.template_file.efs-service-account.rendered)
 }
 
 # 6. Install the Amazon EFS driver
