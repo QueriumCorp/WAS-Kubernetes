@@ -11,7 +11,12 @@ prometheusOperator:
   admissionWebhooks:
     patch:
       tolerations:
-      - operator: Exists
+      - key: querium.com/service-only
+        operator: Exists
+        effect: NoSchedule
+      - key: querium.com/was-only
+        operator: Exists
+        effect: NoSchedule
 tolerations:
 - key: querium.com/service-only
   operator: Exists
