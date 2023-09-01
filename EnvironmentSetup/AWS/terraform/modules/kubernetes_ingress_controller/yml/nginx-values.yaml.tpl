@@ -1,18 +1,17 @@
 controller:
   affinity:
     nodeAffinity:
-      preferredDuringSchedulingIgnoredDuringExecution:
-      - weight: 100
-        preference:
-          matchExpressions:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
           - key: querium.com/node-group
             operator: In
             values:
             - ${nodegroup}
-  tolerations:
-  - key: querium.com/service-only
-    operator: Exists
-    effect: NoSchedule
+    tolerations:
+    - key: querium.com/service-only
+      operator: Exists
+      effect: NoSchedule
   admissionWebhooks:
     patch:
       tolerations:
@@ -21,26 +20,24 @@ controller:
       effect: NoSchedule
     affinity:
       nodeAffinity:
-        preferredDuringSchedulingIgnoredDuringExecution:
-        - weight: 100
-          preference:
-            matchExpressions:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
             - key: querium.com/node-group
               operator: In
               values:
               - ${nodegroup}
 defaultBackend:
   affinity:
-      nodeAffinity:
-        preferredDuringSchedulingIgnoredDuringExecution:
-        - weight: 100
-          preference:
-            matchExpressions:
-            - key: querium.com/node-group
-              operator: In
-              values:
-              - ${nodegroup}
-  tolerations:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: querium.com/node-group
+            operator: In
+            values:
+            - ${nodegroup}
+tolerations:
   - key: querium.com/service-only
     operator: Exists
     effect: NoSchedule

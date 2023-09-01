@@ -239,10 +239,10 @@ module "eks" {
       labels = {
         "querium.com/node-group" = var.service_nodegroup
       }
-      taints = [{
-          key    = "querium.com/service-only"
-          effect = "NO_SCHEDULE"
-        }]
+      # taints = [{
+      #     key    = "querium.com/service-only"
+      #     effect = "NO_SCHEDULE"
+      #   }]
 
     }
 

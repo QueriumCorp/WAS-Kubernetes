@@ -1,15 +1,14 @@
 kubecostToken: ${kubecostToken}
 global:
   grafana:
-    enabled: false
+    enabled: true
 kubecostMetrics:
   exporter:
     affinity:
       nodeAffinity:
-        preferredDuringSchedulingIgnoredDuringExecution:
-        - weight: 100
-          preference:
-            matchExpressions:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
             - key: querium.com/node-group
               operator: In
               values:
@@ -20,10 +19,9 @@ kubecostMetrics:
       effect: NoSchedule
 affinity:
   nodeAffinity:
-    preferredDuringSchedulingIgnoredDuringExecution:
-    - weight: 100
-      preference:
-        matchExpressions:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+      - matchExpressions:
         - key: querium.com/node-group
           operator: In
           values:
@@ -34,14 +32,13 @@ tolerations:
   effect: NoSchedule
 prometheus:
   kubeStateMetrics:
-    enabled: false
+    enabled: true
   server:
     affinity:
       nodeAffinity:
-        preferredDuringSchedulingIgnoredDuringExecution:
-        - weight: 100
-          preference:
-            matchExpressions:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
             - key: querium.com/node-group
               operator: In
               values:
@@ -53,10 +50,9 @@ prometheus:
 networkCosts:
   affinity:
     nodeAffinity:
-      preferredDuringSchedulingIgnoredDuringExecution:
-      - weight: 100
-        preference:
-          matchExpressions:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
           - key: querium.com/node-group
             operator: In
             values:

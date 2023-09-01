@@ -93,7 +93,6 @@ instance_types = [
   "c6id.xlarge",
   "m6idn.xlarge",
   "m5ad.xlarge",
-  "m7i-flex.xla",
   "r5dn.xlarge",
   "r3.xlarge",
   "m6id.xlarge",

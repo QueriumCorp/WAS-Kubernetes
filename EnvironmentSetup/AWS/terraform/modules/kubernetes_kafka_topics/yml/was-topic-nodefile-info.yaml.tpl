@@ -17,10 +17,9 @@ spec:
   topicName: nodefile-info
   affinity:
     nodeAffinity:
-      preferredDuringSchedulingIgnoredDuringExecution:
-      - weight: 100
-        preference:
-          matchExpressions:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
           - key: querium.com/node-group
             operator: In
             values:

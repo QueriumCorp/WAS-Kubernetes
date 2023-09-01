@@ -13,15 +13,14 @@ spec:
   template:
     pod:
       affinity:
-          nodeAffinity:
-            preferredDuringSchedulingIgnoredDuringExecution:
-            - weight: 100
-              preference:
-                matchExpressions:
-                - key: querium.com/node-group
-                  operator: In
-                  values:
-                  - ${name}
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: querium.com/node-group
+                operator: In
+                values:
+                - ${name}
       tolerations:
       - key: querium.com/was-only
         operator: Exists

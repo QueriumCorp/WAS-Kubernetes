@@ -4,50 +4,21 @@ alertmanager:
     - key: querium.com/service-only
       operator: Exists
       effect: NoSchedule
-    affinity:
-    nodeAffinity:
-      preferredDuringSchedulingIgnoredDuringExecution:
-      - weight: 100
-        preference:
-          matchExpressions:
-          - key: querium.com/node-group
-            operator: In
-            values:
-            - ${nodegroup}
-  
+    - key: querium.com/was-only
+      operator: Exists
+      effect: NoSchedule
 prometheusOperator:
   admissionWebhooks:
     patch:
       tolerations:
-      - key: querium.com/service-only
-        operator: Exists
-        effect: NoSchedule
-      affinity:
-      nodeAffinity:
-        preferredDuringSchedulingIgnoredDuringExecution:
-        - weight: 100
-          preference: 
-            matchExpressions:
-            - key: querium.com/node-group 
-              operator: In
-              values:
-              - ${nodegroup}
-
-  tolerations:
-  - key: querium.com/service-only
-    operator: Exists
-    effect: NoSchedule
-  affinity:
-  nodeAffinity:
-    preferredDuringSchedulingIgnoredDuringExecution:
-    - weight: 100
-      preference:
-        matchExpressions:
-        - key: querium.com/node-group
-          operator: In
-          values:
-          - ${nodegroup}
-        
+      - operator: Exists
+tolerations:
+- key: querium.com/service-only
+  operator: Exists
+  effect: NoSchedule
+- key: querium.com/was-only
+  operator: Exists
+  effect: NoSchedule
 ## Deploy a Prometheus instance
 ##
 prometheus:
@@ -62,17 +33,9 @@ prometheus:
     - key: querium.com/service-only
       operator: Exists
       effect: NoSchedule
-    affinity:
-    nodeAffinity:
-      preferredDuringSchedulingIgnoredDuringExecution:
-      - weight: 100
-        preference:
-          matchExpressions:
-          - key: querium.com/node-group
-            operator: In
-            values:
-            - ${nodegroup}
-
+    - key: querium.com/was-only
+      operator: Exists
+      effect: NoSchedule
 ## Configuration for thanosRuler
 ## ref: https://thanos.io/tip/components/rule.md/
 ##
@@ -85,15 +48,8 @@ thanosRuler:
     - key: querium.com/service-only
       operator: Exists
       effect: NoSchedule
-    affinity:
-    nodeAffinity:
-      preferredDuringSchedulingIgnoredDuringExecution:
-      - weight: 100
-        preference:
-          matchExpressions:
-          - key: querium.com/node-group
-            operator: In
-            values:
-            - ${nodegroup}
-
-grafana:
+    - key: querium.com/was-only
+      operator: Exists
+      effect: NoSchedule
+nodeExporter:
+  enabled: false
