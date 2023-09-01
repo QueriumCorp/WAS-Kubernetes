@@ -29,6 +29,7 @@ module "eks" {
   cidr                 = var.cidr
   private_subnets      = var.private_subnets
   public_subnets       = var.public_subnets
+  private_subnet_index = var.private_subnet_index
   namespace            = var.shared_resource_name
   cluster_version      = var.cluster_version
   disk_size            = var.disk_size
@@ -89,6 +90,17 @@ module "ingress_controller" {
   depends_on = [module.eks]
 }
 
+module "kubernetes_kubecost" {
+  source = "../modules/kubernetes_kubecost"
+
+  service_nodegroup   = var.service_nodegroup
+  stack_namespace     = var.shared_resource_name
+  services_subdomain  = "${var.shared_resource_name}.${var.domain}"
+  tags                = var.tags
+
+  depends_on = [module.eks]
+}
+
 
 # Strimzi is an operator that installs, configures and
 # manages all Kafka resources on a near real-time basis
@@ -135,8 +147,8 @@ module "minio" {
 module "was" {
   source = "../modules/kubernetes_was"
 
-  aws_region = var.aws_region
-
+  aws_region           = var.aws_region
+  private_subnet       = module.eks.private_subnet
   shared_resource_name = var.shared_resource_name
   namespace            = var.shared_resource_name
   domain               = "${var.shared_resource_name}.${var.domain}"

@@ -33,6 +33,11 @@ variable "domain" {
 variable "cluster_issuer" {
   type = string
 }
+
+variable "private_subnet" {
+  type = string  
+}
+
 variable "s3_bucket" {
   type = string
 }

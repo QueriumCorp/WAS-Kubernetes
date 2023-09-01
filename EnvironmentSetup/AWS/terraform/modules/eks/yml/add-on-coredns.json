@@ -3,6 +3,10 @@
             {
             "key": "querium.com/service-only",
             "operator": "Exists"
+            },
+            {
+                "key": "querium.com/was-only",
+                "operator": "Exists"
             }
-        ]
+            ]
 }

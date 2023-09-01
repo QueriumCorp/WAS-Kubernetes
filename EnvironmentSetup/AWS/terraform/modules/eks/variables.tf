@@ -94,7 +94,10 @@ variable "public_subnets" {
   type        = list(string)
 }
 
-
+variable "private_subnet_index" {
+  description = "0, 1, or 2 representing the index of the private_subnet to use for EKS compute resources"
+  type = number  
+}
 variable "cidr" {
   type    = string
 }

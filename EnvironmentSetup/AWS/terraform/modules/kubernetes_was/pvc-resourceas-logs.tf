@@ -77,11 +77,14 @@ resource "kubernetes_persistent_volume" "resources-logs" {
 #                     AWS ELASTIC BLOCK STORE RESOURCES
 #------------------------------------------------------------------------------
 resource "aws_ebs_volume" "resources-logs" {
-  availability_zone = data.aws_subnet.private_subnet.availability_zone
+  availability_zone = local.availability_zone
   size              = 10
   type              = "gp3"
 
-  tags = var.tags
+  tags = merge(
+    var.tags,
+    {Name = "was-app-resources-logs"}
+  )
 
   # local.ebsVolumePreventDestroy defaults to 'Y'
   # for anything other than an upper case 'N' we'll assume that

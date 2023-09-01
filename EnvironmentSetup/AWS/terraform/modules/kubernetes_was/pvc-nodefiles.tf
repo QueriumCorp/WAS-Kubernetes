@@ -77,13 +77,13 @@ resource "kubernetes_persistent_volume" "awes-nodefiles" {
 #                     AWS ELASTIC BLOCK STORE RESOURCES
 #------------------------------------------------------------------------------
 resource "aws_ebs_volume" "awes-nodefiles" {
-  availability_zone = data.aws_subnet.private_subnet.availability_zone
+  availability_zone = local.availability_zone
   size              = 10
   type              = "gp3"
 
   tags = merge(
     var.tags,
-    {Name = "awes-nodefiles"}
+    {Name = "was-app-awes-nodefiles"}
   )
 
   # local.ebsVolumePreventDestroy defaults to 'Y'

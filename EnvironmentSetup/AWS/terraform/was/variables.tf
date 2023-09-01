@@ -66,6 +66,10 @@ variable "public_subnets" {
   description = "the CIDRs of the three public subnets that Terraform will automatically create for you."
   type        = list(string)
 }
+variable "private_subnet_index" {
+  description = "0, 1, or 2 representing the index of the private_subnet to use for EKS compute resources"
+  type = number  
+}
 
 
 

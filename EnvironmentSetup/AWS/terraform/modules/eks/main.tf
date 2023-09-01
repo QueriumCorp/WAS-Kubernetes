@@ -68,7 +68,7 @@ module "eks" {
   cluster_name                    = var.shared_resource_name
   cluster_version                 = var.cluster_version
   vpc_id                          = module.vpc.vpc_id
-  subnet_ids                      = [module.vpc.private_subnets[0]]
+  subnet_ids                      = [module.vpc.private_subnets[var.private_subnet_index]]
   control_plane_subnet_ids        = module.vpc.private_subnets
   create_cloudwatch_log_group     = false
   cluster_endpoint_private_access = true
@@ -150,7 +150,7 @@ module "eks" {
       max_size          = var.max_worker_node
       min_size          = var.min_worker_node
       instance_types    = var.instance_types
-      availability_zones = var.azs[0]
+      availability_zones = var.azs[var.private_subnet_index]
 
       block_device_mappings = {
         xvda = {
