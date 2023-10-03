@@ -3,33 +3,33 @@
 ###############################################################################
 # Required inputs
 ###############################################################################
-account_id        = "320713933456"
+account_id        = "509521633951"
 aws_region        = "us-east-2"
-aws_profile       = "stepwise"
-domain            = "stepwisemath.ai"
+aws_profile       = "default"
+domain            = "querium.com"
 service_nodegroup = "service"
 
 ###############################################################################
 # Optional inputs
 ###############################################################################
-shared_resource_name = "was-stepwise"
+shared_resource_name = "was7"
 cluster_version = "1.27"
 aws_auth_users = [
   {
-    userarn  = "arn:aws:iam::320713933456:user/mcdaniel"
-    username = "mcdaniel"
+    userarn  = "arn:aws:iam::509521633951:user/LMcDaniel"
+    username = "LMcDaniel"
     groups   = ["system:masters"]
   },
   {
-    userarn  = "arn:aws:iam::320713933456:user/kent.fuka"
-    username = "kent.fuka"
+    userarn  = "arn:aws:iam::509521633951:user/querium.kent.fuka"
+    username = "querium.kent.fuka"
     groups   = ["system:masters"]
   },
 ]
 
 kms_key_owners = [
-  "arn:aws:iam::320713933456:user/mcdaniel",
-  "arn:aws:iam::320713933456:user/kent.fuka",
+  "arn:aws:iam::509521633951:user/LMcDaniel",
+  "arn:aws:iam::509521633951:user/querium.kent.fuka",
 ]
 tags = {
   Terraform   = "true"
