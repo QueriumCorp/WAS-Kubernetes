@@ -60,8 +60,19 @@ $ eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 
 Use homebrew to install all required packages.
 
+Need to install terraform 1.3.3 to avoid issue with template library.
+
 ```console
-$ brew install awscli kubernetes-cli terraform helm k9s
+brew uninstall terraform
+brew install tfenv
+TFENV_ARCH=amd64 tfenv install 1.3.3
+tfenv use 1.3.3
+```
+
+Install other non-terraform libraries.
+
+```console
+$ brew install awscli kubernetes-cli helm k9s
 ```
 
 ### Configure the AWS CLI
