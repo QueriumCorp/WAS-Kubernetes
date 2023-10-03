@@ -241,6 +241,7 @@ You can optionally run Terraform modules individually. Some examples include
 
 ```console
 $ terraform apply -target=module.eks
+$ aws eks update-kubeconfig --name was
 $ terraform apply -target=module.kafka
 $ terraform apply -target=module.minio
 $ terraform apply -target=module.was
