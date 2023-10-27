@@ -82,16 +82,16 @@ data "template_file" "hpa-autoscaler-endpoint-manager" {
 #------------------------------------------------------------------------------
 #                             services
 #------------------------------------------------------------------------------
-resource "kubectl_manifest" "service-active-web-elements-server" {
-  yaml_body = data.template_file.service-active-web-elements-server.rendered
+resource "kubernetes_manifest" "service-active-web-elements-server" {
+  manifest = yamldecode(data.template_file.service-active-web-elements-server.rendered)
 }
 
-resource "kubectl_manifest" "service-endpoint-manager" {
-  yaml_body = data.template_file.service-endpoint-manager.rendered
+resource "kubernetes_manifest" "service-endpoint-manager" {
+  manifest = yamldecode(data.template_file.service-endpoint-manager.rendered)
 }
 
-resource "kubectl_manifest" "service-resource-manager" {
-  yaml_body = data.template_file.service-resource-manager.rendered
+resource "kubernetes_manifest" "service-resource-manager" {
+  manifest = yamldecode(data.template_file.service-resource-manager.rendered)
 }
 
 #------------------------------------------------------------------------------
@@ -99,25 +99,25 @@ resource "kubectl_manifest" "service-resource-manager" {
 #------------------------------------------------------------------------------
 
 # prerequisites to Active Web Elements Server
-resource "kubectl_manifest" "deployment-resource-manager" {
-  yaml_body = data.template_file.deployment-resource-manager.rendered
+resource "kubernetes_manifest" "deployment-resource-manager" {
+  manifest = yamldecode(data.template_file.deployment-resource-manager.rendered)
   depends_on = [
-    kubectl_manifest.service-resource-manager
+    kubernetes_manifest.service-resource-manager
   ]
 }
-resource "kubectl_manifest" "deployment-endpoint-manager" {
-  yaml_body = data.template_file.deployment-endpoint-manager.rendered
+resource "kubernetes_manifest" "deployment-endpoint-manager" {
+  manifest = yamldecode(data.template_file.deployment-endpoint-manager.rendered)
   depends_on = [
-    kubectl_manifest.service-endpoint-manager
+    kubernetes_manifest.service-endpoint-manager
   ]
 }
 
-resource "kubectl_manifest" "deployment-active-web-elements-server" {
-  yaml_body = data.template_file.deployment-active-web-elements-server.rendered
+resource "kubernetes_manifest" "deployment-active-web-elements-server" {
+  manifest = yamldecode(data.template_file.deployment-active-web-elements-server.rendered)
   depends_on = [
-    kubectl_manifest.service-active-web-elements-server,
-    kubectl_manifest.deployment-resource-manager,
-    kubectl_manifest.deployment-endpoint-manager
+    kubernetes_manifest.service-active-web-elements-server,
+    kubernetes_manifest.deployment-resource-manager,
+    kubernetes_manifest.deployment-endpoint-manager
   ]
 }
 
@@ -125,13 +125,13 @@ resource "kubectl_manifest" "deployment-active-web-elements-server" {
 #------------------------------------------------------------------------------
 #                             hpa
 #------------------------------------------------------------------------------
-resource "kubectl_manifest" "hpa-autoscaler-active-web-elements-server" {
-  yaml_body = data.template_file.hpa-autoscaler-active-web-elements-server.rendered
+resource "kubernetes_manifest" "hpa-autoscaler-active-web-elements-server" {
+  manifest = yamldecode(data.template_file.hpa-autoscaler-active-web-elements-server.rendered)
 
-  depends_on = [kubectl_manifest.deployment-active-web-elements-server]
+  depends_on = [kubernetes_manifest.deployment-active-web-elements-server]
 }
-resource "kubectl_manifest" "hpa-autoscaler-endpoint-manager" {
-  yaml_body = data.template_file.hpa-autoscaler-endpoint-manager.rendered
+resource "kubernetes_manifest" "hpa-autoscaler-endpoint-manager" {
+  manifest = yamldecode(data.template_file.hpa-autoscaler-endpoint-manager.rendered)
 
-  depends_on = [kubectl_manifest.deployment-endpoint-manager]
+  depends_on = [kubernetes_manifest.deployment-endpoint-manager]
 }

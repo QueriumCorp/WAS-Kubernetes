@@ -7,6 +7,6 @@ data "template_file" "certificate" {
   }
 }
 
-resource "kubectl_manifest" "certificate" {
-  yaml_body = data.template_file.certificate.rendered
+resource "kubernetes_manifest" "certificate" {
+  manifest = yamldecode(data.template_file.certificate.rendered)
 }

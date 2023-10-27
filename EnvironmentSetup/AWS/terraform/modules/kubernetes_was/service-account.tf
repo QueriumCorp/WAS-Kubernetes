@@ -24,14 +24,14 @@ data "template_file" "service-account" {
 #------------------------------------------------------------------------------
 #                             resources
 #------------------------------------------------------------------------------
-resource "kubectl_manifest" "role-binding" {
-  yaml_body = data.template_file.role-binding.rendered
+resource "kubernetes_manifest" "role-binding" {
+  manifest = yamldecode(data.template_file.role-binding.rendered)
 }
 
-resource "kubectl_manifest" "role" {
-  yaml_body = data.template_file.role.rendered
+resource "kubernetes_manifest" "role" {
+  manifest = yamldecode(data.template_file.role.rendered)
 }
 
-resource "kubectl_manifest" "service-account" {
-  yaml_body = data.template_file.service-account.rendered
+resource "kubernetes_manifest" "service-account" {
+  manifest = yamldecode(data.template_file.service-account.rendered)
 }

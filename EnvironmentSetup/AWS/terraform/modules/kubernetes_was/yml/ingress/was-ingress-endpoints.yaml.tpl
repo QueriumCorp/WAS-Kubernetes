@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: ${namespace}-ingress
+  name: ${namespace}-ingress-endpoints
   namespace: ${namespace}
   annotations:
     kubernetes.io/ingress.class: nginx
@@ -20,8 +20,11 @@ metadata:
 
     # force ssl redirect
     # ---------------------
-    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
     nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+
+    nginx.ingress.kubernetes.io/rewrite-target: /endpoints/$1
 
 spec:
   tls:
@@ -33,14 +36,6 @@ spec:
   - host: ${domain}
     http:
         paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: active-web-elements-server
-                port:
-                  number: 8080
-
           - path: /endpoints/?(.*)
             pathType: Prefix
             backend:
@@ -48,35 +43,3 @@ spec:
                 name: endpoint-manager
                 port:
                   number: 8085
-
-          - path: /.applicationserver/kernel/restart
-            pathType: Prefix
-            backend:
-              service:
-                name: endpoint-manager
-                port:
-                  number: 8085
-
-          - path: /endpoints/?(.*)
-            pathType: Prefix
-            backend:
-              service:
-                name: endpoint-manager
-                port:
-                  number: 8085
-
-          - path: /nodefiles/?(.*)
-            pathType: Prefix
-            backend:
-              service:
-                name: resource-manager
-                port:
-                  number: 9090
-
-          - path: /resources/?(.*)
-            pathType: Prefix
-            backend:
-              service:
-                name: resource-manager
-                port:
-                  number: 9090
